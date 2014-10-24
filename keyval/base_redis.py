@@ -29,7 +29,7 @@ class String(base_abc.String):
             raise base.ObjectExists(obj)
 
         # Create Object
-        obj.driver.set(obj.key, val)
+        obj._driver.set(obj._key, val)
 
         # Return Object
         return obj
@@ -52,29 +52,29 @@ class String(base_abc.String):
         """Get Value as Corresponding Python Object"""
 
         # Get Object
-        return obj.driver.get(obj.key)
+        return self._driver.get(self._key)
 
     def rem(self):
         """Delete Object"""
 
         # Delete Object
-        if not self.driver.delete(self.key):
+        if not self._driver.delete(self._key):
             raise base.PersistentObjectError("Delete Failed")
 
         # Call Parent
-        super(StringObject, self).delete()
+        super(String, self).rem()
 
     def exists(self):
         """Check if Object Exists"""
 
         # Check Existence
-        return self.driver.exists(self.key)
+        return self._driver.exists(self._key)
 
     def __len__(self):
         """Get Length of String"""
 
         # Get Length
-        return self.driver.strlen(self.key)
+        return self._driver.strlen(self._key)
 
     def __getitem__(self):
         """Iterate Values"""

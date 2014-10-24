@@ -50,8 +50,8 @@ class PersistentObject(object):
         super(PersistentObject, self).__init__()
 
         # Save Attrs
-        self.driver = driver
-        self.key = str(key)
+        self._driver = driver
+        self._key = str(key)
 
     def __unicode__(self):
         """Return Unicode Representation"""
@@ -90,7 +90,7 @@ class PersistentObject(object):
 
     def key(self):
         """Get Key"""
-        return self.key
+        return self._key
 
     @abc.abstractmethod
     def val(self):
