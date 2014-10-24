@@ -1,18 +1,40 @@
 # -*- coding: utf-8 -*-
 
+
 # Andy Sayler
 # Summer 2014
 # Univerity of Colorado
 
 
-import unittest
+### Imports ###
 
+## stdlib ##
+import unittest
+import warnings
+
+### keyval ###
 import keyval.base
 
+
+### Globals ###
 
 _TEST_KEY_PRE = "TESTKEY"
 _TEST_VAL_PRE_STRING = "TESTVAL"
 
+### Initialization ###
+
+warnings.simplefilter('default')
+
+
+### Exceptions ###
+
+class BaseTestError(Exception):
+    """Base class for BaseTest Exceptions"""
+
+    def __init__(self, *args, **kwargs):
+        super(BaseTestError, self).__init__(*args, **kwargs)
+
+### Base Class ###
 
 class BaseTestCase(unittest.TestCase):
 
@@ -31,6 +53,9 @@ class BaseTestCase(unittest.TestCase):
         key = "{:s}_{:d}".format(_TEST_KEY_PRE, self.key_cnt)
         self.key_cnt += 1
         return key
+
+
+### Intermediate Classes ###
 
 class PersistentObjectMixin(object):
 
@@ -52,6 +77,9 @@ class PersistentObjectMixin(object):
 
         # Cleanup
         instance.rem()
+
+
+### Object Classes ###
 
 class StringMixin(PersistentObjectMixin):
 
