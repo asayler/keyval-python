@@ -12,8 +12,8 @@ import time
 import copy
 
 _ENCODING = 'utf-8'
-_FIELD_SEP = ':'
-_TYPE_SEP = '+'
+_SEP_FIELD = ':'
+_SEP_TYPE = '+'
 
 
 ### Exceptions ###
@@ -101,4 +101,17 @@ class PersistentObject(object):
     @abc.abstractmethod
     def exists(self):
         """Check if Object Exists"""
+        pass
+
+
+class StringObject(collections.Sequence, PersistentObject):
+
+    @abc.abstractmethod
+    def __len__(self):
+        """Get Len of Set"""
+        pass
+
+    @abc.abstractmethod
+    def __getitem__(self):
+        """Iterate Values"""
         pass
