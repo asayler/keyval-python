@@ -10,7 +10,8 @@ PYLINT = pylint
 
 REQUIRMENTS = requirments.txt
 
-UNITTEST_PATTERN = '*_test.py'
+UNITTEST_PATTERN = '*_tests.py'
+UNITTEST_DIRECTORY = "./tests"
 
 PYTHONPATH = $(shell readlink -f ./)
 EXPORT_PATH = export PYTHONPATH="$(PYTHONPATH)"
@@ -26,7 +27,7 @@ reqs: $(REQUIRMENTS)
 	$(PIP) install -r "$<" -U
 
 test:
-	$(EXPORT_PATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s "./tests"
+	$(EXPORT_PATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
 
 clean:
 	$(RM) unittests/*.pyc
