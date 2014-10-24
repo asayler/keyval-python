@@ -7,14 +7,14 @@
 
 import redis
 
-import base
+import base_abc
 
 class Driver(redis.StrictRedis):
 
     pass
 
 
-class StringObject(base.StringObject):
+class StringObject(base_abc.StringObject):
 
     @classmethod
     def from_new(cls, driver, key, val, *args, **kwargs):
@@ -25,7 +25,7 @@ class StringObject(base.StringObject):
 
         # Check Existence
         if obj.exists():
-            raise base.ObjectExists(obj)
+            raise base_abc.ObjectExists(obj)
 
         # Create Object
         obj.driver.set(obj.key, val)
@@ -42,7 +42,7 @@ class StringObject(base.StringObject):
 
         # Check Existence
         if not obj.exists():
-            raise base.ObjectDNE(obj)
+            raise base_abc.ObjectDNE(obj)
 
         # Return Object
         return obj
@@ -52,7 +52,7 @@ class StringObject(base.StringObject):
 
         # Delete Object
         if not self.driver.delete(self.key):
-            raise base.PersistentObjectError("Delete Failed")
+            raise base_abc.PersistentObjectError("Delete Failed")
 
         # Call Parent
         super(StringObject, self).delete()
