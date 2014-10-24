@@ -22,7 +22,27 @@ class KeyvalError(Exception):
     """Base class for Keyval Exceptions"""
 
     def __init__(self, *args, **kwargs):
-        super(Keyval, self).__init__(*args, **kwargs)
+        super(KeyvalError, self).__init__(*args, **kwargs)
+
+class PersistentObjectError(KeyvalError):
+    """Base class for PersistentObject Exceptions"""
+
+    def __init__(self, *args, **kwargs):
+        super(PersistentObjectError, self).__init__(*args, **kwargs)
+
+class ObjectExists(PersistentObjectError):
+    """Object Exists Exception"""
+
+    def __init__(self, obj):
+        msg = "{:s} already exists.".format(obj)
+        super(ObjectExists, self).__init__(msg)
+
+class ObjectDNE(PersistentObjectError):
+    """Object Does Not Exist Exception"""
+
+    def __init__(self, obj):
+        msg = "{:s} does not exist.".format(obj)
+        super(ObjectDNE, self).__init__(msg)
 
 
 ### Helpers ###
@@ -49,13 +69,14 @@ class PersistentObject(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, key):
+    def __init__(self, driver, key):
         """ Constructor"""
 
         # Call Parent
         super(PersistentObject, self).__init__()
 
         # Save Attrs
+        self.driver = driver
         self.key = str(key)
 
     def __unicode__(self):
@@ -79,19 +100,19 @@ class PersistentObject(object):
         return (repr(self) == repr(other))
 
     @abstractclassmethod
-    def from_new(cls, *args, **kwargs):
+    def from_new(cls, driver, key, *args, **kwargs):
         """New Constructor"""
-        return cls(*args, **kwargs)
+        return cls(driver, key, *args, **kwargs)
 
     @abstractclassmethod
-    def from_existing(cls, *args, **kwargs):
+    def from_existing(cls, driver, key, *args, **kwargs):
         """Existing Constructor"""
-        return cls(*args, **kwargs)
+        return cls(driver, key, *args, **kwargs)
 
-    @abstractclassmethod
-    def from_raw(cls, *args, **kwargs):
+    @classmethod
+    def from_raw(cls, driver, key, *args, **kwargs):
         """Raw Constructor"""
-        return cls(*args, **kwargs)
+        return cls(driver, key, *args, **kwargs)
 
     @abc.abstractmethod
     def delete(self):
