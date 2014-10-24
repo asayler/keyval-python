@@ -12,8 +12,8 @@ Under development.
 Providence
 ----------
 
-Forked from COG-core (https://github.com/asayler/COG) on 10/23/14 as
-of commit 68d1df183d33ca7c8ef4e26a72cfc0b231c4a805.
+Forked from COG-core at
+https://github.com/asayler/COG/commit/68d1df183d33ca7c8ef4e26a72cfc0b231c4a805.
 
 Licensing
 ---------
