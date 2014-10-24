@@ -11,38 +11,12 @@ import collections
 import time
 import copy
 
+import base
+
+
 _ENCODING = 'utf-8'
 _SEP_FIELD = ':'
 _SEP_TYPE = '+'
-
-
-### Exceptions ###
-
-class KeyvalError(Exception):
-    """Base class for Keyval Exceptions"""
-
-    def __init__(self, *args, **kwargs):
-        super(KeyvalError, self).__init__(*args, **kwargs)
-
-class PersistentObjectError(KeyvalError):
-    """Base class for PersistentObject Exceptions"""
-
-    def __init__(self, *args, **kwargs):
-        super(PersistentObjectError, self).__init__(*args, **kwargs)
-
-class ObjectExists(PersistentObjectError):
-    """Object Exists Exception"""
-
-    def __init__(self, obj):
-        msg = "{:s} already exists.".format(obj)
-        super(ObjectExists, self).__init__(msg)
-
-class ObjectDNE(PersistentObjectError):
-    """Object Does Not Exist Exception"""
-
-    def __init__(self, obj):
-        msg = "{:s} does not exist.".format(obj)
-        super(ObjectDNE, self).__init__(msg)
 
 
 ### Helpers ###
@@ -81,7 +55,7 @@ class PersistentObject(object):
 
     def __unicode__(self):
         """Return Unicode Representation"""
-        return unicode(repr(self))
+        return unicode(self.val())
 
     def __str__(self):
         """Return String Representation"""
@@ -97,7 +71,7 @@ class PersistentObject(object):
 
     def __eq__(self, other):
         """Test Equality"""
-        return (repr(self) == repr(other))
+        return (self.val() == other.val())
 
     @abstractclassmethod
     def from_new(cls, driver, key, *args, **kwargs):
@@ -114,8 +88,17 @@ class PersistentObject(object):
         """Raw Constructor"""
         return cls(driver, key, *args, **kwargs)
 
+    def key(self):
+        """Get Key"""
+        return self.key
+
     @abc.abstractmethod
-    def delete(self):
+    def val(self):
+        """Get Value as Corresponding Python Object"""
+        pass
+
+    @abc.abstractmethod
+    def rem(self):
         """Delete Object"""
         pass
 
@@ -125,7 +108,7 @@ class PersistentObject(object):
         pass
 
 
-class StringObject(collections.Sequence, PersistentObject):
+class String(collections.Sequence, PersistentObject):
 
     @abc.abstractmethod
     def __len__(self):

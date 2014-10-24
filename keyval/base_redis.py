@@ -7,6 +7,7 @@
 
 import redis
 
+import base
 import base_abc
 
 class Driver(redis.StrictRedis):
@@ -14,18 +15,18 @@ class Driver(redis.StrictRedis):
     pass
 
 
-class StringObject(base_abc.StringObject):
+class String(base_abc.String):
 
     @classmethod
     def from_new(cls, driver, key, val, *args, **kwargs):
         """New Constructor"""
 
         # Call Parent
-        obj = super(StringObject, cls).from_new(driver, key, *args, **kwargs)
+        obj = super(String, cls).from_new(driver, key, *args, **kwargs)
 
         # Check Existence
         if obj.exists():
-            raise base_abc.ObjectExists(obj)
+            raise base.ObjectExists(obj)
 
         # Create Object
         obj.driver.set(obj.key, val)
@@ -38,21 +39,27 @@ class StringObject(base_abc.StringObject):
         """Existing Constructor"""
 
         # Call Parent
-        obj = super(StringObject, cls).from_existing(driver, key, *args, **kwargs)
+        obj = super(String, cls).from_existing(driver, key, *args, **kwargs)
 
         # Check Existence
         if not obj.exists():
-            raise base_abc.ObjectDNE(obj)
+            raise base.ObjectDNE(obj)
 
         # Return Object
         return obj
 
-    def delete(self):
+    def val(self):
+        """Get Value as Corresponding Python Object"""
+
+        # Get Object
+        return obj.driver.get(obj.key)
+
+    def rem(self):
         """Delete Object"""
 
         # Delete Object
         if not self.driver.delete(self.key):
-            raise base_abc.PersistentObjectError("Delete Failed")
+            raise base.PersistentObjectError("Delete Failed")
 
         # Call Parent
         super(StringObject, self).delete()
