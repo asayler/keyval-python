@@ -67,11 +67,19 @@ class PersistentObject(object):
 
     def __hash__(self):
         """Return Hash"""
-        return hash(repr(self))
+        return hash(self.val())
 
     def __eq__(self, other):
         """Test Equality"""
         return (self.val() == other.val())
+
+    def __ne__(self, other):
+        """Test Equality"""
+        return (self.val() != other.val())
+
+    def __nonzero__(self):
+        """Test Bool"""
+        return bool(self.val())
 
     @abstractclassmethod
     def from_new(cls, driver, key, *args, **kwargs):

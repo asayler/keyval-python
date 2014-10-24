@@ -62,7 +62,7 @@ class PersistentObjectMixin(object):
     def __init__(self, *args, **kwargs):
         super(PersistentObjectMixin, self).__init__(*args, **kwargs)
 
-    def test_from_new_good(self):
+    def test_from_new(self):
 
         # Setup Test Vals
         key = self.generate_key()
@@ -77,6 +77,36 @@ class PersistentObjectMixin(object):
 
         # Cleanup
         instance.rem()
+
+    def test_from_existing(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create New Instance
+        self.factory.from_new(key, val)
+
+        # Get Existing Instance
+        instance = self.factory.from_existing(key)
+        self.assertTrue(instance)
+        self.assertTrue(instance.exists())
+        self.assertEqual(key, instance.key())
+        self.assertEqual(val, instance.val())
+
+        # Cleanup
+        instance.rem()
+
+    def test_from_raw(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+
+        # Get Raw Instance
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance)
+        self.assertFalse(instance.exists())
+        self.assertEqual(key, instance.key())
 
 
 ### Object Classes ###
