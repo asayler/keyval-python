@@ -160,7 +160,7 @@ class PersistentObjectMixin(object):
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
-        self.assertEqual(hash(val), hash(instance))
+        self.assertEqual(hash(key), hash(instance))
 
         # Cleanup
         instance.rem()
@@ -173,12 +173,27 @@ class PersistentObjectMixin(object):
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
-        self.assertEqual(bool(val), bool(instance))
+        self.assertTrue(instance)
 
         # Cleanup
         instance.rem()
 
     def test_eq(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance_a = self.factory.from_new(key, val)
+        instance_b = self.factory.from_existing(key)
+        self.assertEqual(instance_a, instance_b)
+        self.assertEqual(instance_b, instance_a)
+
+        # Cleanup
+        instance_b.rem()
+
+    def test_ne(self):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -189,33 +204,10 @@ class PersistentObjectMixin(object):
         # Create Instance
         instance_a = self.factory.from_new(key_a, val)
         instance_b = self.factory.from_new(key_b, val)
-        self.assertEqual(val, instance_a)
-        self.assertEqual(instance_a, val)
-        self.assertEqual(val, instance_b)
-        self.assertEqual(instance_b, val)
-        self.assertEqual(instance_a, instance_b)
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-
-    def test_ne(self):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        val_a = self.generate_val()
-        val_b = self.generate_val()
-        self.assertNotEqual(key_a, key_b)
-        self.assertNotEqual(val_a, val_b)
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        self.assertNotEqual(val_b, instance_a)
-        self.assertNotEqual(instance_a, val_b)
-        self.assertNotEqual(val_a, instance_b)
-        self.assertNotEqual(instance_b, val_a)
+        self.assertNotEqual(val, instance_a)
+        self.assertNotEqual(instance_a, val)
+        self.assertNotEqual(val, instance_b)
+        self.assertNotEqual(instance_b, val)
         self.assertNotEqual(instance_a, instance_b)
 
         # Cleanup

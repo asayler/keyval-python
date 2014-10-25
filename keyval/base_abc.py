@@ -82,27 +82,23 @@ class PersistentObject(object):
 
     def __hash__(self):
         """Return Hash"""
-        return hash(self.val())
+        return hash(self.key())
 
     def __nonzero__(self):
         """Test Bool"""
-        return bool(self.val())
+        return self.exists()
 
     def __eq__(self, other):
         """Test Equality"""
         if (type(self) == type(other)):
-            return (self.val() == other.val())
-        elif isinstance(other, str):
-            return (self.val() == other)
+            return (self.key() == other.key())
         else:
             return False
 
     def __ne__(self, other):
         """Test Unequality"""
         if (type(self) == type(other)):
-            return (self.val() != other.val())
-        elif isinstance(other, str):
-            return (self.val() != other)
+            return (self.key() != other.key())
         else:
             return True
 
