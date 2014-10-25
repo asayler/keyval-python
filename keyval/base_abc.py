@@ -56,12 +56,30 @@ class PersistentObject(object):
     @abstractclassmethod
     def from_new(cls, driver, key, *args, **kwargs):
         """New Constructor"""
-        return cls(driver, key, *args, **kwargs)
 
-    @abstractclassmethod
+        # Get Object
+        obj = cls(driver, key, *args, **kwargs)
+
+        # Check Existence
+        if obj.exists():
+            raise base.ObjectExists(obj)
+
+        # Return Object
+        return obj
+
+    @classmethod
     def from_existing(cls, driver, key, *args, **kwargs):
         """Existing Constructor"""
-        return cls(driver, key, *args, **kwargs)
+
+        # Get Object
+        obj = cls(driver, key, *args, **kwargs)
+
+        # Check Existence
+        if not obj.exists():
+            raise base.ObjectDNE(obj)
+
+        # Return Object
+        return obj
 
     @classmethod
     def from_raw(cls, driver, key, *args, **kwargs):
