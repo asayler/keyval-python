@@ -75,7 +75,7 @@ class RedisBaseTestCase(base_tests.BaseTestCase):
 
 ### Object Classes ###
 
-class StringTestCase(base_tests.StringMixin, RedisBaseTestCase):
+class StringTestCase(base_tests.SequenceMixin, RedisBaseTestCase):
     pass
 
 

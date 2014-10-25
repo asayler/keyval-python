@@ -217,13 +217,28 @@ class PersistentObjectMixin(object):
 
 ### Object Classes ###
 
-class StringMixin(PersistentObjectMixin):
+class SequenceMixin(PersistentObjectMixin):
 
     def __init__(self, *args, **kwargs):
-        super(StringMixin, self).__init__(*args, **kwargs)
+        super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
     def generate_val(self):
         val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
         self.val_cnt += 1
         return val
+
+    def test_len(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_raw(key)
+        self.assertEqual(0, len(instance))
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(len(val), len(instance))
+
+        # Cleanup
+        instance.rem()
