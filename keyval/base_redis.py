@@ -58,8 +58,7 @@ class String(base_abc.String):
         """Delete Object"""
 
         # Delete Object
-        if not self._driver.delete(self._key):
-            raise base.PersistentObjectError("Delete Failed")
+        self._driver.delete(self._key)
 
         # Call Parent
         super(String, self).rem()

@@ -53,34 +53,6 @@ class PersistentObject(object):
         self._driver = driver
         self._key = str(key)
 
-    def __unicode__(self):
-        """Return Unicode Representation"""
-        return unicode(self.val())
-
-    def __str__(self):
-        """Return String Representation"""
-        return unicode(self).encode(_ENCODING)
-
-    def __repr__(self):
-        """Return Unique Representation"""
-        return self.key
-
-    def __hash__(self):
-        """Return Hash"""
-        return hash(self.val())
-
-    def __eq__(self, other):
-        """Test Equality"""
-        return (self.val() == other.val())
-
-    def __ne__(self, other):
-        """Test Equality"""
-        return (self.val() != other.val())
-
-    def __nonzero__(self):
-        """Test Bool"""
-        return bool(self.val())
-
     @abstractclassmethod
     def from_new(cls, driver, key, *args, **kwargs):
         """New Constructor"""
@@ -95,6 +67,44 @@ class PersistentObject(object):
     def from_raw(cls, driver, key, *args, **kwargs):
         """Raw Constructor"""
         return cls(driver, key, *args, **kwargs)
+
+    def __unicode__(self):
+        """Return Unicode Representation"""
+        return unicode(self.val())
+
+    def __str__(self):
+        """Return String Representation"""
+        return unicode(self).encode(_ENCODING)
+
+    def __repr__(self):
+        """Return Unique Representation"""
+        return self.key()
+
+    def __hash__(self):
+        """Return Hash"""
+        return hash(self.val())
+
+    def __nonzero__(self):
+        """Test Bool"""
+        return bool(self.val())
+
+    def __eq__(self, other):
+        """Test Equality"""
+        if (type(self) == type(other)):
+            return (self.val() == other.val())
+        elif isinstance(other, str):
+            return (self.val() == other)
+        else:
+            return False
+
+    def __ne__(self, other):
+        """Test Unequality"""
+        if (type(self) == type(other)):
+            return (self.val() != other.val())
+        elif isinstance(other, str):
+            return (self.val() != other)
+        else:
+            return True
 
     def key(self):
         """Get Key"""
