@@ -135,6 +135,9 @@ class SequenceObject(collections.Sequence, PersistentObject):
         """Contains Item"""
         return item in self.val()
 
+
+### Abstract Objects ###
+
 class String(SequenceObject):
 
     pass
