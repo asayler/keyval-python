@@ -14,7 +14,6 @@ class Driver(redis.StrictRedis):
 
     pass
 
-
 class String(base_abc.String):
 
     @classmethod
@@ -74,8 +73,3 @@ class String(base_abc.String):
 
         # Get Length
         return self._driver.strlen(self._key)
-
-    def __getitem__(self):
-        """Iterate Values"""
-
-        raise NotImplementedError()

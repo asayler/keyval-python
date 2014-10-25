@@ -121,15 +121,20 @@ class PersistentObject(object):
         """Check if Object Exists"""
         pass
 
+class SequenceObject(collections.Sequence, PersistentObject):
 
-class String(collections.Sequence, PersistentObject):
-
-    @abc.abstractmethod
     def __len__(self):
         """Get Len of Set"""
-        pass
+        return len(self.val())
 
-    @abc.abstractmethod
-    def __getitem__(self):
-        """Iterate Values"""
-        pass
+    def __getitem__(self, key):
+        """Get Item"""
+        return self.val()[key]
+
+    def __contains__(self, item):
+        """Contains Item"""
+        return item in self.val()
+
+class String(SequenceObject):
+
+    pass
