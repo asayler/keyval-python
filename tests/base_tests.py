@@ -271,3 +271,17 @@ class SequenceMixin(PersistentObjectMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_iter(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+        for i in instance:
+            self.assertTrue(i in val)
+
+        # Cleanup
+        instance.rem()

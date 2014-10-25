@@ -135,6 +135,10 @@ class SequenceObject(collections.Sequence, PersistentObject):
         """Contains Item"""
         return item in self.val()
 
+    def __iter__(self):
+        """Iterate Across Val"""
+        for i in self.val():
+            yield i
 
 ### Abstract Objects ###
 
