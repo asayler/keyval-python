@@ -101,12 +101,14 @@ class PersistentObjectMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
+        val = None
 
         # Get Raw Instance
         instance = self.factory.from_raw(key)
         self.assertFalse(instance)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.key())
+        self.assertEqual(val, instance.val())
 
         # Cleanup
         instance.rem()
