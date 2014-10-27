@@ -122,7 +122,7 @@ class MutableString(base_abc.MutableString, String):
     def __setitem__(self, i, val):
         """Set Seq Item"""
 
-        self._driver.set(self._redis_key, i, str(val))
+        self._driver.setrange(self._redis_key, i, str(val))
 
     def __delitem__(self, i):
         """Del Seq Item"""
