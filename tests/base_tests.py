@@ -75,6 +75,9 @@ class PersistentObjectMixin(object):
         self.assertEqual(key, instance.key())
         self.assertEqual(val, instance.val())
 
+        # Recreate New Instance
+        self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
+
         # Cleanup
         instance.rem()
 
@@ -83,6 +86,9 @@ class PersistentObjectMixin(object):
         # Setup Test Vals
         key = self.generate_key()
         val = self.generate_val()
+
+        # Get Nonexistant Instance
+        self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
 
         # Create New Instance
         self.factory.from_new(key, val)
