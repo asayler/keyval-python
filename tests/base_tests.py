@@ -117,7 +117,7 @@ class PersistentMixin(object):
         self.assertEqual(val, instance.get_val())
 
         # Cleanup
-        instance.rem()
+        instance.rem(force=True)
 
     def test_unicode(self):
 

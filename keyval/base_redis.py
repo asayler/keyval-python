@@ -25,14 +25,26 @@ class Driver(redis.StrictRedis):
 
 class Persistent(base_abc.Persistent):
 
-    def rem(self):
+    def rem(self, force=False):
         """Delete Object"""
 
+        # Delete Transaction
+        def automic_rem(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                if force:
+                    return
+                else:
+                    raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.delete(self._redis_key)
+
         # Delete Object
-        self._driver.delete(self._redis_key)
+        self._driver.transaction(automic_rem, self._redis_key)
 
         # Call Parent
-        super(Persistent, self).rem()
+        super(Persistent, self).rem(force=force)
 
     def exists(self):
         """Check if Object Exists"""

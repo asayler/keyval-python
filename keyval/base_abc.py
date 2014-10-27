@@ -121,7 +121,7 @@ class Persistent(object):
         pass
 
     @abc.abstractmethod
-    def rem(self):
+    def rem(self, force=False):
         """Delete Object"""
         pass
 
