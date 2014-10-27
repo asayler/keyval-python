@@ -40,7 +40,15 @@ class Persistent(base_abc.Persistent):
         # Check Existence
         return self._driver.exists(self._redis_key)
 
+class Mutable(base_abc.Mutable, Persistent):
+
+    pass
+
 class Sequence(base_abc.Sequence, Persistent):
+
+    pass
+
+class MutableSequence(base_abc.MutableSequence, Sequence, Mutable):
 
     pass
 
@@ -67,7 +75,7 @@ class String(base_abc.String, Sequence):
         obj = super(String, cls).from_new(driver, key, *args, **kwargs)
 
         # Create Object
-        ret = obj._driver.setnx(obj._redis_key, val)
+        ret = obj._driver.setnx(obj._redis_key, str(val))
         if not ret:
             raise base.ObjectExists(obj)
 
@@ -85,3 +93,23 @@ class String(base_abc.String, Sequence):
 
         # Get Length
         return self._driver.strlen(self._redis_key)
+
+class MutableString(base_abc.MutableString, String):
+
+    def set_val(self, val):
+        """Set Value of Persistent Object"""
+
+        self._driver.set(self._redis_key, str(val))
+
+    def __setitem__(self, i, val):
+        """Set Seq Item"""
+
+        self._driver.set(self._redis_key, i, str(val))
+
+    def __delitem__(self, i):
+        """Del Seq Item"""
+        raise NotImplementedError("__delitem__ not yet implemented")
+
+    def insert(self, i, x):
+        """Insert Seq Item"""
+        raise NotImplementedError("__insert__ not yet implemented")

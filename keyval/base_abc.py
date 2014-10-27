@@ -130,6 +130,13 @@ class Persistent(object):
         """Check if Object Exists"""
         pass
 
+class Mutable(Persistent):
+
+    @abc.abstractmethod
+    def set_val(self, val):
+        """Set Value of Persistent Object"""
+        pass
+
 class Sequence(collections.Sequence, Persistent):
 
     def __len__(self):
@@ -137,33 +144,33 @@ class Sequence(collections.Sequence, Persistent):
         return len(self.get_val())
 
     def __getitem__(self, i):
-        """Get Item"""
+        """Get Seq Item"""
         return self.get_val()[i]
 
     def __contains__(self, i):
-        """Contains Item"""
+        """Contains Seq Item"""
         return i in self.get_val()
 
     def __iter__(self):
-        """Iterate Across Val"""
+        """Iterate Across Seq"""
         for i in self.get_val():
             yield i
 
-class MutableSequence(collections.MutableSequence, Sequence):
+class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
     @abc.abstractmethod
     def __setitem__(self, i, val):
-        """Get Item"""
+        """Set Seq Item"""
         pass
 
     @abc.abstractmethod
     def __delitem__(self, i):
-        """Get Item"""
+        """Del Seq Item"""
         pass
 
     @abc.abstractmethod
     def insert(self, i, x):
-        """Get Item"""
+        """Insert Seq Item"""
         pass
 
 
@@ -173,6 +180,6 @@ class String(Sequence):
 
     pass
 
-class MutableString(MutableSequence):
+class MutableString(MutableSequence, String):
 
     pass
