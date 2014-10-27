@@ -278,13 +278,14 @@ class SequenceMixin(PersistentMixin):
         val = self.generate_val()
 
         # Create Instance
-        instance = self.factory.from_raw(key)
-        self.assertEqual(0, len(instance))
         instance = self.factory.from_new(key, val)
         self.assertEqual(len(val), len(instance))
 
-        # Cleanup
+        # Rem Instance
         instance.rem()
+        self.assertRaises(keyval.base.ObjectDNE, len, instance)
+
+        # No Cleanup
 
     def test_getitem(self):
 

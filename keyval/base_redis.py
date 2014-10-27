@@ -112,12 +112,6 @@ class String(base_abc.String, Sequence):
         # Return Object
         return ret[0]
 
-    def __len__(self):
-        """Get Length of String"""
-
-        # Get Length
-        return self._driver.strlen(self._redis_key)
-
 class MutableString(base_abc.MutableString, String):
 
     def set_val(self, val):
