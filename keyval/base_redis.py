@@ -67,7 +67,9 @@ class String(base_abc.String, SequenceObject):
         obj = super(String, cls).from_new(driver, key, *args, **kwargs)
 
         # Create Object
-        obj._driver.set(obj._redis_key, val)
+        ret = obj._driver.setnx(obj._redis_key, val)
+        if not ret:
+            raise base.ObjectExists(obj)
 
         # Return Object
         return obj

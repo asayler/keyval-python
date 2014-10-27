@@ -53,11 +53,7 @@ class PersistentObject(object):
         """New Constructor"""
 
         # Get Object
-        obj = cls(driver, key, *args, **kwargs)
-
-        # Check Existence
-        if obj.exists():
-            raise base.ObjectExists(obj)
+        obj = cls.from_raw(driver, key, *args, **kwargs)
 
         # Return Object
         return obj
@@ -67,7 +63,7 @@ class PersistentObject(object):
         """Existing Constructor"""
 
         # Get Object
-        obj = cls(driver, key, *args, **kwargs)
+        obj = cls.from_raw(driver, key, *args, **kwargs)
 
         # Check Existence
         if not obj.exists():
