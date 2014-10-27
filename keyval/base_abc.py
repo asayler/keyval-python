@@ -34,7 +34,7 @@ class abstractclassmethod(classmethod):
 
 ### Abstract Base Objects ###
 
-class PersistentObject(object):
+class Persistent(object):
 
     __metaclass__ = abc.ABCMeta
 
@@ -42,7 +42,7 @@ class PersistentObject(object):
         """ Constructor"""
 
         # Call Parent
-        super(PersistentObject, self).__init__()
+        super(Persistent, self).__init__()
 
         # Save Attrs
         self._driver = driver
@@ -130,7 +130,7 @@ class PersistentObject(object):
         """Check if Object Exists"""
         pass
 
-class SequenceObject(collections.Sequence, PersistentObject):
+class Sequence(collections.Sequence, Persistent):
 
     def __len__(self):
         """Get Len of Set"""
@@ -151,6 +151,6 @@ class SequenceObject(collections.Sequence, PersistentObject):
 
 ### Abstract Objects ###
 
-class String(SequenceObject):
+class String(Sequence):
 
     pass

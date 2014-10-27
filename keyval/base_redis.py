@@ -23,7 +23,7 @@ class Driver(redis.StrictRedis):
 
 ### Base Objects ###
 
-class PersistentObject(base_abc.PersistentObject):
+class Persistent(base_abc.Persistent):
 
     def rem(self):
         """Delete Object"""
@@ -32,7 +32,7 @@ class PersistentObject(base_abc.PersistentObject):
         self._driver.delete(self._redis_key)
 
         # Call Parent
-        super(PersistentObject, self).rem()
+        super(Persistent, self).rem()
 
     def exists(self):
         """Check if Object Exists"""
@@ -40,14 +40,14 @@ class PersistentObject(base_abc.PersistentObject):
         # Check Existence
         return self._driver.exists(self._redis_key)
 
-class SequenceObject(base_abc.SequenceObject, PersistentObject):
+class Sequence(base_abc.Sequence, Persistent):
 
     pass
 
 
 ### Objects ###
 
-class String(base_abc.String, SequenceObject):
+class String(base_abc.String, Sequence):
 
     def __init__(self, driver, key):
         """ Constructor"""

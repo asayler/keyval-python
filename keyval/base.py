@@ -23,20 +23,20 @@ class KeyvalError(Exception):
     def __init__(self, *args, **kwargs):
         super(KeyvalError, self).__init__(*args, **kwargs)
 
-class PersistentObjectError(KeyvalError):
-    """Base class for PersistentObject Exceptions"""
+class PersistentError(KeyvalError):
+    """Base class for Persistent Exceptions"""
 
     def __init__(self, *args, **kwargs):
-        super(PersistentObjectError, self).__init__(*args, **kwargs)
+        super(PersistentError, self).__init__(*args, **kwargs)
 
-class ObjectExists(PersistentObjectError):
+class ObjectExists(PersistentError):
     """Object Exists Exception"""
 
     def __init__(self, obj):
         msg = "{:s} already exists.".format(repr(obj))
         super(ObjectExists, self).__init__(msg)
 
-class ObjectDNE(PersistentObjectError):
+class ObjectDNE(PersistentError):
     """Object Does Not Exist Exception"""
 
     def __init__(self, obj):

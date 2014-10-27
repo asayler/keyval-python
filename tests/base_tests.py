@@ -57,10 +57,10 @@ class BaseTestCase(unittest.TestCase):
 
 ### Intermediate Classes ###
 
-class PersistentObjectMixin(object):
+class PersistentMixin(object):
 
     def __init__(self, *args, **kwargs):
-        super(PersistentObjectMixin, self).__init__(*args, **kwargs)
+        super(PersistentMixin, self).__init__(*args, **kwargs)
 
     def test_from_new(self):
 
@@ -223,7 +223,7 @@ class PersistentObjectMixin(object):
 
 ### Object Classes ###
 
-class SequenceMixin(PersistentObjectMixin):
+class SequenceMixin(PersistentMixin):
 
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
