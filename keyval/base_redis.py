@@ -11,6 +11,9 @@ import base
 import base_abc
 
 
+_PREFIX_STRING = "string"
+
+
 ### Driver ###
 
 class Driver(redis.StrictRedis):
@@ -26,7 +29,7 @@ class PersistentObject(base_abc.PersistentObject):
         """Delete Object"""
 
         # Delete Object
-        self._driver.delete(self._key)
+        self._driver.delete(self._redis_key)
 
         # Call Parent
         super(PersistentObject, self).rem()
@@ -35,7 +38,7 @@ class PersistentObject(base_abc.PersistentObject):
         """Check if Object Exists"""
 
         # Check Existence
-        return self._driver.exists(self._key)
+        return self._driver.exists(self._redis_key)
 
 class SequenceObject(base_abc.SequenceObject, PersistentObject):
 
@@ -46,6 +49,16 @@ class SequenceObject(base_abc.SequenceObject, PersistentObject):
 
 class String(base_abc.String, SequenceObject):
 
+    def __init__(self, driver, key):
+        """ Constructor"""
+
+        # Call Parent
+        super(String, self).__init__(driver, key)
+
+        # Save Extra Attrs
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_STRING, base._SEP_FIELD, self._key)
+        self._redis_key = redis_key
+
     @classmethod
     def from_new(cls, driver, key, val, *args, **kwargs):
         """New Constructor"""
@@ -54,7 +67,7 @@ class String(base_abc.String, SequenceObject):
         obj = super(String, cls).from_new(driver, key, *args, **kwargs)
 
         # Create Object
-        obj._driver.set(obj._key, val)
+        obj._driver.set(obj._redis_key, val)
 
         # Return Object
         return obj
@@ -63,10 +76,10 @@ class String(base_abc.String, SequenceObject):
         """Get Value as Corresponding Python Object"""
 
         # Get Object
-        return self._driver.get(self._key)
+        return self._driver.get(self._redis_key)
 
     def __len__(self):
         """Get Length of String"""
 
         # Get Length
-        return self._driver.strlen(self._key)
+        return self._driver.strlen(self._redis_key)

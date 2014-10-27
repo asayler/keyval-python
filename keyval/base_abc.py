@@ -14,11 +14,6 @@ import copy
 import base
 
 
-_ENCODING = 'utf-8'
-_SEP_FIELD = ':'
-_SEP_TYPE = '+'
-
-
 ### Helpers ###
 
 class abstractstaticmethod(staticmethod):
@@ -92,7 +87,7 @@ class PersistentObject(object):
 
     def __str__(self):
         """Return String Representation"""
-        return unicode(self).encode(_ENCODING)
+        return unicode(self).encode(base._ENCODING)
 
     def __repr__(self):
         """Return Unique Representation"""

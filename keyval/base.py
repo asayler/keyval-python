@@ -11,6 +11,10 @@ import time
 import copy
 
 
+_ENCODING = 'utf-8'
+_SEP_FIELD = ':'
+
+
 ### Exceptions ###
 
 class KeyvalError(Exception):
