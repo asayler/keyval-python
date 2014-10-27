@@ -73,7 +73,7 @@ class PersistentMixin(object):
         self.assertTrue(instance)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.key())
-        self.assertEqual(val, instance.val())
+        self.assertEqual(val, instance.get_val())
 
         # Recreate New Instance
         self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
@@ -98,7 +98,7 @@ class PersistentMixin(object):
         self.assertTrue(instance)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.key())
-        self.assertEqual(val, instance.val())
+        self.assertEqual(val, instance.get_val())
 
         # Cleanup
         instance.rem()
@@ -114,7 +114,7 @@ class PersistentMixin(object):
         self.assertFalse(instance)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.key())
-        self.assertEqual(val, instance.val())
+        self.assertEqual(val, instance.get_val())
 
         # Cleanup
         instance.rem()

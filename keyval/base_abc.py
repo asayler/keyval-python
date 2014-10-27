@@ -79,7 +79,7 @@ class Persistent(object):
 
     def __unicode__(self):
         """Return Unicode Representation"""
-        return unicode(self.val())
+        return unicode(self.get_val())
 
     def __str__(self):
         """Return String Representation"""
@@ -116,7 +116,7 @@ class Persistent(object):
         return self._key
 
     @abc.abstractmethod
-    def val(self):
+    def get_val(self):
         """Get Value as Corresponding Python Object"""
         pass
 
@@ -134,23 +134,45 @@ class Sequence(collections.Sequence, Persistent):
 
     def __len__(self):
         """Get Len of Set"""
-        return len(self.val())
+        return len(self.get_val())
 
-    def __getitem__(self, key):
+    def __getitem__(self, i):
         """Get Item"""
-        return self.val()[key]
+        return self.get_val()[i]
 
-    def __contains__(self, item):
+    def __contains__(self, i):
         """Contains Item"""
-        return item in self.val()
+        return i in self.get_val()
 
     def __iter__(self):
         """Iterate Across Val"""
-        for i in self.val():
+        for i in self.get_val():
             yield i
+
+class MutableSequence(collections.MutableSequence, Sequence):
+
+    @abc.abstractmethod
+    def __setitem__(self, i, val):
+        """Get Item"""
+        pass
+
+    @abc.abstractmethod
+    def __delitem__(self, i):
+        """Get Item"""
+        pass
+
+    @abc.abstractmethod
+    def insert(self, i, x):
+        """Get Item"""
+        pass
+
 
 ### Abstract Objects ###
 
 class String(Sequence):
+
+    pass
+
+class MutableString(MutableSequence):
 
     pass

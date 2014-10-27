@@ -74,7 +74,7 @@ class String(base_abc.String, Sequence):
         # Return Object
         return obj
 
-    def val(self):
+    def get_val(self):
         """Get Value as Corresponding Python Object"""
 
         # Get Object
