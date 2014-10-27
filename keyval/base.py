@@ -33,14 +33,14 @@ class ObjectExists(PersistentObjectError):
     """Object Exists Exception"""
 
     def __init__(self, obj):
-        msg = "{:s} already exists.".format(obj)
+        msg = "{:s} already exists.".format(repr(obj))
         super(ObjectExists, self).__init__(msg)
 
 class ObjectDNE(PersistentObjectError):
     """Object Does Not Exist Exception"""
 
     def __init__(self, obj):
-        msg = "{:s} does not exist.".format(obj)
+        msg = "{:s} does not exist.".format(repr(obj))
         super(ObjectDNE, self).__init__(msg)
 
 
