@@ -140,6 +140,22 @@ class PersistentMixin(object):
 
         # No Cleanup
 
+    def test_get_val(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create New Instance
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+
+        # Rem Instance
+        instance.rem()
+        self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
+
+        # No Cleanup
+
     def test_unicode(self):
 
         # Setup Test Vals
