@@ -98,7 +98,7 @@ class String(base_abc.String, Sequence):
         """Get Value as Corresponding Python Object"""
 
         # Get Transaction
-        def automic_rem(pipe):
+        def automic_get(pipe):
 
             exists = pipe.exists(self._redis_key)
             if not exists:
@@ -107,7 +107,7 @@ class String(base_abc.String, Sequence):
             pipe.get(self._redis_key)
 
         # Execute Transaction
-        ret = self._driver.transaction(automic_rem, self._redis_key)
+        ret = self._driver.transaction(automic_get, self._redis_key)
 
         # Return Object
         return ret[0]
