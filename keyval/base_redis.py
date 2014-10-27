@@ -97,8 +97,20 @@ class String(base_abc.String, Sequence):
     def get_val(self):
         """Get Value as Corresponding Python Object"""
 
-        # Get Object
-        return self._driver.get(self._redis_key)
+        # Get Transaction
+        def automic_rem(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.get(self._redis_key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_rem, self._redis_key)
+
+        # Return Object
+        return ret[0]
 
     def __len__(self):
         """Get Length of String"""
