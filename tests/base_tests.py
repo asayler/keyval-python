@@ -114,10 +114,31 @@ class PersistentMixin(object):
         self.assertFalse(instance)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.key())
-        self.assertEqual(val, instance.get_val())
+        self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
 
-        # Cleanup
+        # No Cleanup
+
+    def test_rem(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create New Instance
+        instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
+
+        # Rem Instance
+        instance.rem()
+        self.assertFalse(instance.exists())
+
+        # Rem Non-existant Instance (No Force)
+        self.assertRaises(keyval.base.ObjectDNE, instance.rem)
+
+        # Rem Non-existant Instance (Force)
         instance.rem(force=True)
+
+        # No Cleanup
 
     def test_unicode(self):
 
