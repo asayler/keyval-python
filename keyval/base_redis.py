@@ -79,23 +79,7 @@ class String(base_abc.String, Sequence):
         redis_key = "{:s}{:s}{:s}".format(_PREFIX_STRING, base._SEP_FIELD, self._key)
         self._redis_key = redis_key
 
-    @classmethod
-    def from_new(cls, driver, key, val, *args, **kwargs):
-        """New Constructor"""
-
-        # Call Parent
-        obj = super(String, cls).from_new(driver, key, *args, **kwargs)
-
-        # Create Object
-        ret = obj._driver.setnx(obj._redis_key, str(val))
-        if not ret:
-            raise base.ObjectExists(obj)
-
-        # Return Object
-        return obj
-
-    def get_val(self):
-        """Get Value as Corresponding Python Object"""
+    def _get_val(self):
 
         # Get Transaction
         def automic_get(pipe):
@@ -111,6 +95,44 @@ class String(base_abc.String, Sequence):
 
         # Return Object
         return ret[0]
+
+    def _set_val(self, val, create=True, overwrite=True):
+
+        # Set Transaction
+        def automic_set(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not overwrite and exists:
+                raise base.ObjectExists(self)
+            if not create and not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.set(self._redis_key, str(val))
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_set, self._redis_key)
+
+        # Return Object
+        return ret[0]
+
+    @classmethod
+    def from_new(cls, driver, key, val, *args, **kwargs):
+        """New Constructor"""
+
+        # Call Parent
+        obj = super(String, cls).from_new(driver, key, *args, **kwargs)
+
+        # Create Object
+        obj._set_val(val, overwrite=False)
+
+        # Return Object
+        return obj
+
+    def get_val(self):
+        """Get Value as Corresponding Python Object"""
+
+        return self._get_val()
+
 
 class MutableString(base_abc.MutableString, String):
 
