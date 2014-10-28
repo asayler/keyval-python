@@ -158,9 +158,9 @@ class Sequence(collections.Sequence, Persistent):
         """Get Seq Item"""
         return self.get_val()[i]
 
-    def __contains__(self, i):
+    def __contains__(self, v):
         """Contains Seq Item"""
-        return i in self.get_val()
+        return v in self.get_val()
 
     def __iter__(self):
         """Iterate Across Seq"""
@@ -168,9 +168,17 @@ class Sequence(collections.Sequence, Persistent):
             yield i
 
     def __reversed__(self):
-        """Iterate Across Seq"""
+        """Iterate Backwards Across Seq"""
         for i in reversed(self.get_val()):
             yield i
+
+    def index(self, v):
+        """Return index of first occurance of v"""
+        return self.get_val().index(v)
+
+    def count(self, v):
+        """Return number os occurances of v"""
+        return self.get_val().count(v)
 
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
