@@ -9,6 +9,7 @@
 ### Imports ###
 
 ## stdlib ##
+import copy
 import unittest
 import warnings
 
@@ -350,6 +351,23 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSequenceMixin, self).__init__(*args, **kwargs)
 
+    def test_setitem(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in range(len(val)):
+            v = val[-(i+1)]
+            instance[i] = v
+            self.assertEqual(v, instance[i])
+
+        # Cleanup
+        instance.rem()
 
 ### Object Mixins ###
 
