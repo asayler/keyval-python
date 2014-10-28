@@ -368,6 +368,38 @@ class SequenceMixin(PersistentMixin):
         # Cleanup
         instance.rem()
 
+    def test_index(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in val:
+            self.assertEqual(val.index(i), instance.index(i))
+
+        # Cleanup
+        instance.rem()
+
+    def test_count(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in val:
+            self.assertEqual(val.count(i), instance.count(i))
+
+        # Cleanup
+        instance.rem()
+
 class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def __init__(self, *args, **kwargs):
