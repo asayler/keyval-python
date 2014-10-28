@@ -56,7 +56,7 @@ class Persistent(object):
         obj = cls.from_raw(driver, key, *args, **kwargs)
 
         # Create New Object
-        obj._set_val(val, overwrite=False)
+        obj._set_val(val, create=True, overwrite=False)
 
         # Return Object
         return obj
@@ -146,7 +146,7 @@ class Mutable(Persistent):
 
     def set_val(self, val):
         """Set Value of Persistent Object"""
-        return self._set_val(val)
+        return self._set_val(val, create=False, overwrite=True)
 
 class Sequence(collections.Sequence, Persistent):
 

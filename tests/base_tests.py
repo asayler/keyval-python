@@ -257,6 +257,30 @@ class PersistentMixin(object):
         instance_a.rem()
         instance_b.rem()
 
+class MutableMixin(PersistentMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(SequenceMixin, self).__init__(*args, **kwargs)
+
+    def test_set_val(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val1 = self.generate_val()
+        val2 = self.generate_val()
+        val3 = self.generate_val()
+
+        # Create New Instance and Set Value
+        instance = self.factory.from_new(key, val1)
+        instance.set_val(val2)
+        self.assertEqual(val2, instance.get_val())
+
+        # Rem Instance
+        instance.rem()
+        self.assertRaises(keyval.base.ObjectDNE, instance.set_val, val3)
+
+        # No Cleanup
+
 class SequenceMixin(PersistentMixin):
 
     def __init__(self, *args, **kwargs):
@@ -320,7 +344,6 @@ class SequenceMixin(PersistentMixin):
 
         # Cleanup
         instance.rem()
-
 
 ### Object Mixins ###
 
