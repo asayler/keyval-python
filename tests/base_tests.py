@@ -340,8 +340,30 @@ class SequenceMixin(PersistentMixin):
 
         # Create Instance
         instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        cnt = 0
         for i in instance:
-            self.assertTrue(i in val)
+            self.assertEqual(val[cnt], i)
+            cnt += 1
+
+        # Cleanup
+        instance.rem()
+
+    def test_reversed(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        cnt = -1
+        for i in reversed(instance):
+            self.assertEqual(val[cnt], i)
+            cnt -= 1
 
         # Cleanup
         instance.rem()
