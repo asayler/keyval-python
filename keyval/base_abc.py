@@ -167,6 +167,11 @@ class Sequence(collections.Sequence, Persistent):
         for i in self.get_val():
             yield i
 
+    def __reversed__(self):
+        """Iterate Across Seq"""
+        for i in reversed(self.get_val()):
+            yield i
+
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
     @abc.abstractmethod
