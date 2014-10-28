@@ -48,12 +48,15 @@ class Persistent(object):
         self._driver = driver
         self._key = str(key)
 
-    @abstractclassmethod
-    def from_new(cls, driver, key, *args, **kwargs):
+    @classmethod
+    def from_new(cls, driver, key, val, *args, **kwargs):
         """New Constructor"""
 
         # Get Object
         obj = cls.from_raw(driver, key, *args, **kwargs)
+
+        # Create New Object
+        obj._set_val(val, overwrite=False)
 
         # Return Object
         return obj
@@ -111,14 +114,23 @@ class Persistent(object):
         else:
             return True
 
+    @abc.abstractmethod
+    def _get_val(self):
+        """Get Value"""
+        pass
+
+    @abc.abstractmethod
+    def _set_val(self, val, create=True, overwrite=True):
+        """Set Value"""
+        pass
+
     def key(self):
         """Get Key"""
         return self._key
 
-    @abc.abstractmethod
     def get_val(self):
         """Get Value as Corresponding Python Object"""
-        pass
+        return self._get_val()
 
     @abc.abstractmethod
     def rem(self, force=False):
@@ -132,10 +144,9 @@ class Persistent(object):
 
 class Mutable(Persistent):
 
-    @abc.abstractmethod
     def set_val(self, val):
         """Set Value of Persistent Object"""
-        pass
+        return self._set_val(val)
 
 class Sequence(collections.Sequence, Persistent):
 

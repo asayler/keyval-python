@@ -115,31 +115,7 @@ class String(base_abc.String, Sequence):
         # Return Object
         return ret[0]
 
-    @classmethod
-    def from_new(cls, driver, key, val, *args, **kwargs):
-        """New Constructor"""
-
-        # Call Parent
-        obj = super(String, cls).from_new(driver, key, *args, **kwargs)
-
-        # Create Object
-        obj._set_val(val, overwrite=False)
-
-        # Return Object
-        return obj
-
-    def get_val(self):
-        """Get Value as Corresponding Python Object"""
-
-        return self._get_val()
-
-
 class MutableString(base_abc.MutableString, String):
-
-    def set_val(self, val):
-        """Set Value of Persistent Object"""
-
-        self._driver.set(self._redis_key, str(val))
 
     def __setitem__(self, i, val):
         """Set Seq Item"""
