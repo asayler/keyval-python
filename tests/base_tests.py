@@ -55,7 +55,7 @@ class BaseTestCase(unittest.TestCase):
         return key
 
 
-### Intermediate Classes ###
+### Base Mixins ###
 
 class PersistentMixin(object):
 
@@ -262,11 +262,6 @@ class SequenceMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
 
-    def generate_val(self):
-        val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
-        self.val_cnt += 1
-        return val
-
     def test_len(self):
 
         # Setup Test Vals
@@ -326,10 +321,16 @@ class SequenceMixin(PersistentMixin):
         # Cleanup
         instance.rem()
 
-### Object Classes ###
+
+### Object Mixins ###
 
 class StringMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
+
+    def generate_val(self):
+        val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
+        self.val_cnt += 1
+        return val
