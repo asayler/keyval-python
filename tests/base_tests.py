@@ -257,14 +257,10 @@ class PersistentMixin(object):
         instance_a.rem()
         instance_b.rem()
 
-
-### Object Classes ###
-
 class SequenceMixin(PersistentMixin):
 
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
     def generate_val(self):
         val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
@@ -329,3 +325,11 @@ class SequenceMixin(PersistentMixin):
 
         # Cleanup
         instance.rem()
+
+### Object Classes ###
+
+class StringMixin(SequenceMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(SequenceMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
