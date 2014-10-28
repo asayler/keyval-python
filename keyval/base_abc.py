@@ -120,7 +120,7 @@ class Persistent(object):
         pass
 
     @abc.abstractmethod
-    def _set_val(self, val, create=True, overwrite=True):
+    def _set_val(self, val, create=False, overwrite=True):
         """Set Value"""
         pass
 
@@ -182,10 +182,11 @@ class Sequence(collections.Sequence, Persistent):
 
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
-    @abc.abstractmethod
-    def __setitem__(self, i, val):
+    def __setitem__(self, i, v):
         """Set Seq Item"""
-        pass
+        val = self.get_val()
+        val[i] = v
+        self.set_val(val, create=False)
 
     @abc.abstractmethod
     def __delitem__(self, i):
