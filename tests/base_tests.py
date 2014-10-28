@@ -423,6 +423,27 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Cleanup
         instance.rem()
 
+    def test_delitem(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+        new = self.generate_val(empty=True)
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in range(len(val)):
+            if (i % 2):
+                del(instance[i])
+            else:
+                new += val[i]
+        self.assertEqual(new, instance.get_val())
+
+        # Cleanup
+        instance.rem()
+
 ### Object Mixins ###
 
 class StringMixin(SequenceMixin):
@@ -431,9 +452,12 @@ class StringMixin(SequenceMixin):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
-    def generate_val(self):
-        val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
-        self.val_cnt += 1
+    def generate_val(self, empty=False):
+        if not empty:
+            val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
+            self.val_cnt += 1
+        else:
+            val = ""
         return val
 
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
