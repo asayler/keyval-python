@@ -260,7 +260,7 @@ class PersistentMixin(object):
 class MutableMixin(PersistentMixin):
 
     def __init__(self, *args, **kwargs):
-        super(SequenceMixin, self).__init__(*args, **kwargs)
+        super(MutableMixin, self).__init__(*args, **kwargs)
 
     def test_set_val(self):
 
@@ -345,6 +345,12 @@ class SequenceMixin(PersistentMixin):
         # Cleanup
         instance.rem()
 
+class MutableSequenceMixin(SequenceMixin, MutableMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableSequenceMixin, self).__init__(*args, **kwargs)
+
+
 ### Object Mixins ###
 
 class StringMixin(SequenceMixin):
@@ -357,3 +363,9 @@ class StringMixin(SequenceMixin):
         val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
         self.val_cnt += 1
         return val
+
+class MutableStringMixin(MutableSequenceMixin, StringMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(SequenceMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableString)
