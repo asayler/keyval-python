@@ -447,6 +447,31 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Cleanup
         instance.rem()
 
+    def test_insert(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val()
+        new = self.generate_val(empty=True)
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        self.assertEqual(val, instance.get_val())
+        # Duplicate every other letter; start from end to avoid indexing issues
+        for i in reversed(range(len(val))):
+            v = val[i]
+            new += v
+            if (i % 2):
+                instance.insert(i, v)
+                new += v
+        new = new[::-1]
+        self.assertEqual(new, instance.get_val())
+
+        # Cleanup
+        instance.rem()
+
 ### Object Mixins ###
 
 class StringMixin(SequenceMixin):
