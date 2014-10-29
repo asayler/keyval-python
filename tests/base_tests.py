@@ -67,7 +67,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -86,7 +86,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Get Nonexistant Instance
         self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
@@ -123,7 +123,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -145,7 +145,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -161,7 +161,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -174,7 +174,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -187,7 +187,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -200,7 +200,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -213,7 +213,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -226,7 +226,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance_a = self.factory.from_new(key, val)
@@ -242,7 +242,7 @@ class PersistentMixin(object):
         # Setup Test Vals
         key_a = self.generate_key()
         key_b = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
         self.assertNotEqual(key_a, key_b)
 
         # Create Instance
@@ -267,9 +267,9 @@ class MutableMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val1 = self.generate_val()
-        val2 = self.generate_val()
-        val3 = self.generate_val()
+        val1 = self.generate_val_multi()
+        val2 = self.generate_val_multi()
+        val3 = self.generate_val_multi()
 
         # Create New Instance and Set Value
         instance = self.factory.from_new(key, val1)
@@ -291,7 +291,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -307,7 +307,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -321,13 +321,13 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
         for i in val:
             self.assertTrue(i in instance)
-        self.assertFalse(self.generate_val() in instance)
+        self.assertFalse(self.generate_val_multi() in instance)
 
         # Cleanup
         instance.rem()
@@ -336,7 +336,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -354,7 +354,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -372,7 +372,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -388,7 +388,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -409,7 +409,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
+        val = self.generate_val_multi()
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -427,8 +427,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
-        new = self.generate_val(empty=True)
+        val = self.generate_val_multi()
+        new = self.generate_val_multi(length=0)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -451,10 +451,10 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val()
-        new = self.generate_val(empty=True)
+        val = self.generate_val_multi()
+        new = self.generate_val_multi(length=0)
 
-        # Create Instance
+        # Test Empty Instance
         instance = self.factory.from_new(key, val)
 
         # Test Instance
@@ -480,12 +480,17 @@ class StringMixin(SequenceMixin):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
-    def generate_val(self, empty=False):
-        if not empty:
-            val = "{:s}_{:d}".format(_TEST_VAL_PRE_STRING, self.val_cnt)
-            self.val_cnt += 1
-        else:
-            val = ""
+    def generate_val_single(self):
+
+        cnt = self.val_cnt % 26
+        self.val_cnt += 1
+        return chr(ord('A') + cnt)
+
+    def generate_val_multi(self, length=10):
+
+        val = ""
+        for i in range(length):
+            val += self.generate_val_single()
         return val
 
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
