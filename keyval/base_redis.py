@@ -120,9 +120,11 @@ class MutableString(base_abc.MutableString, String):
     def __setitem__(self, i, v):
         """Set Seq Item"""
 
+        # Check Input
         v = str(v)
         if len(v) != 1:
             raise ValueError("{:s} must be a single charecter".format(v))
+
         self._driver.setrange(self._redis_key, i, v)
 
     def __delitem__(self, i):
@@ -137,6 +139,31 @@ class MutableString(base_abc.MutableString, String):
 
         self.set_val(new)
 
-    def insert(self, i, x):
+    def insert(self, i, v):
         """Insert Seq Item"""
-        raise NotImplementedError("__insert__ not yet implemented")
+
+        # Check Input
+        v = str(v)
+        if len(v) != 1:
+            raise ValueError("{:s} must be a single charecter".format(v))
+
+        # Set Transaction
+        def automic_insert(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+            if (i > 0):
+                start = pipe.getrange(self._redis_key, 0, i-1)
+            else:
+                start = ""
+            end = pipe.getrange(self._redis_key, i, -1)
+            new = start + v + end
+            pipe.multi()
+            pipe.set(self._redis_key, new)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_insert, self._redis_key)
+
+        # Return Object
+        return ret[0]
