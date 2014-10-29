@@ -451,26 +451,52 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
-        new = self.generate_val_multi(length=0)
+
+        # Test Null Instance
+        instance = self.factory.from_raw(key)
+        v = self.generate_val_single()
+        self.assertRaises(keyval.base.ObjectDNE, instance.insert, 0, v)
 
         # Test Empty Instance
+        val = self.generate_val_multi(length=0)
+        v = self.generate_val_single()
         instance = self.factory.from_new(key, val)
-
-        # Test Instance
         self.assertEqual(val, instance.get_val())
-        # Duplicate every other letter; start from end to avoid indexing issues
-        for i in reversed(range(len(val))):
-            v = val[i]
-            new += v
-            if (i % 2):
-                instance.insert(i, v)
-                new += v
-        new = new[::-1]
-        self.assertEqual(new, instance.get_val())
-
-        # Cleanup
+        instance.insert(0, v)
+        val = v + val[0:]
+        self.assertEqual(val, instance.get_val())
         instance.rem()
+
+        # Test Instance - Beginning
+        val = self.generate_val_multi(length=10)
+        v = self.generate_val_single()
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        instance.insert(0, v)
+        val = v + val[0:10]
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
+        # Test Instance - Middle
+        val = self.generate_val_multi(length=10)
+        v = self.generate_val_single()
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        instance.insert(5, v)
+        val = val[0:5] + v + val[5:10]
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
+        # Test Instance - End
+        val = self.generate_val_multi(length=10)
+        v = self.generate_val_single()
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        instance.insert(10, v)
+        val = val[0:10] + v
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
 
 ### Object Mixins ###
 
