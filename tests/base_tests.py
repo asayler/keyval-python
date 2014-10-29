@@ -434,11 +434,14 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         instance = self.factory.from_new(key, val)
 
         # Test Instance
-        for i in range(len(val)):
+        self.assertEqual(val, instance.get_val())
+        # Delete every other letter; start from end to avoid indexing issues
+        for i in reversed(range(len(val))):
             if (i % 2):
                 del(instance[i])
             else:
                 new += val[i]
+        new = new[::-1]
         self.assertEqual(new, instance.get_val())
 
         # Cleanup

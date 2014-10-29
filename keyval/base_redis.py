@@ -134,7 +134,6 @@ class MutableString(base_abc.MutableString, String):
         for cnt in range(len(val)):
             if cnt != i:
                 new += val[cnt]
-                print(val[cnt])
 
         self.set_val(new)
 
