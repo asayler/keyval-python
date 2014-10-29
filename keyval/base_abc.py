@@ -194,11 +194,11 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         del(val[i])
         self.set_val(val)
 
-    @abc.abstractmethod
-    def insert(self, i, x):
+    def insert(self, i, v):
         """Insert Seq Item"""
-        pass
-
+        val = self.get_val()
+        val.insert(i, v)
+        self.set_val(val)
 
 ### Abstract Objects ###
 
