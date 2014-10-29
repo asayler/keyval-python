@@ -117,14 +117,26 @@ class String(base_abc.String, Sequence):
 
 class MutableString(base_abc.MutableString, String):
 
-    def __setitem__(self, i, val):
+    def __setitem__(self, i, v):
         """Set Seq Item"""
 
-        self._driver.setrange(self._redis_key, i, str(val))
+        v = str(v)
+        if len(v) != 1:
+            raise ValueError("{:s} must be a single charecter".format(v))
+        self._driver.setrange(self._redis_key, i, v)
 
     def __delitem__(self, i):
         """Del Seq Item"""
-        raise NotImplementedError("__delitem__ not yet implemented")
+
+        val = self.get_val()
+        new = ""
+
+        for cnt in range(len(val)):
+            if cnt != i:
+                new += val[cnt]
+                print(val[cnt])
+
+        self.set_val(new)
 
     def insert(self, i, x):
         """Insert Seq Item"""

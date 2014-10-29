@@ -186,12 +186,13 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         """Set Seq Item"""
         val = self.get_val()
         val[i] = v
-        self.set_val(val, create=False)
+        self.set_val(val)
 
-    @abc.abstractmethod
     def __delitem__(self, i):
         """Del Seq Item"""
-        pass
+        val = self.get_val()
+        del(val[i])
+        self.set_val(val)
 
     @abc.abstractmethod
     def insert(self, i, x):
