@@ -125,7 +125,31 @@ class MutableString(base_abc.MutableString, String):
         if len(v) != 1:
             raise ValueError("{:s} must be a single charecter".format(v))
 
-        self._driver.setrange(self._redis_key, i, v)
+        # Transaction
+        def automic_setitem(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Check Index
+            length = pipe.strlen(self._redis_key)
+            if (i >= length) or (i < -length):
+                raise IndexError("{:d} out of range".format(i))
+
+            # Normalize Index
+            if (i >= 0):
+                norm_i = i
+            else:
+                norm_i = length + i
+
+            # Set Item
+            pipe.multi()
+            pipe.setrange(self._redis_key, norm_i, v)
+
+        # Execute Transaction
+        self._driver.transaction(automic_setitem, self._redis_key)
 
     def __delitem__(self, i):
         """Del Seq Item"""
