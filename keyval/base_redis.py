@@ -108,12 +108,13 @@ class String(base_abc.String, Sequence):
                 raise base.ObjectDNE(self)
             pipe.multi()
             pipe.set(self._redis_key, str(val))
+            pipe.get(self._redis_key)
 
         # Execute Transaction
         ret = self._driver.transaction(automic_set, self._redis_key)
 
         # Return Object
-        return ret[0]
+        return ret[1]
 
 class MutableString(base_abc.MutableString, String):
 
