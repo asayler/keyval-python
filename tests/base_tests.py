@@ -544,20 +544,42 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         delitem_test_oob(-11, 10)
         delitem_test_oob(-12, 10)
 
+    def helper_test_wrapper(self, test_func, ref_func, index, size):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(length=size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        item = self.generate_val_single()
+        test_func(instance, index, item)
+        new = ref_func(val, index, item)
+        self.assertNotEqual(val, new)
+        self.assertEqual(new, instance.get_val())
+        instance.rem()
+
+    def helper_test_raises(self, test_func, error, index, size, item):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(length=size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        self.assertRaises(error, test_func, instance, index, item)
+        instance.rem()
+
     def test_insert(self):
 
+        def test_func(instance, index, item):
+            return instance.insert(index, item)
+
+        def ref_func(ref, index, item):
+            return ref[:index] + item + ref[index:]
+
         def insert_test_good(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            new = self.generate_val_multi(length=0)
-            v = self.generate_val_single()
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            instance.insert(i, v)
-            new = val[:i] + v + val[i:]
-            self.assertNotEqual(val, new)
-            self.assertEqual(new, instance.get_val())
-            instance.rem()
+            self.helper_test_wrapper(test_func, ref_func, i, l)
+
+        def insert_test_badval(i, l):
+            item = self.generate_val_multi(3)
+            self.helper_test_raises(test_func, ValueError, i, l, item)
 
         def insert_test_null(i):
             key = self.generate_key()
@@ -566,16 +588,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             self.assertFalse(instance.exists())
             self.assertRaises(keyval.base.ObjectDNE, instance.insert, i, v)
 
-        def insert_test_badval(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            v = self.generate_val_multi(3)
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            self.assertRaises(ValueError, instance.insert, i, v)
-            instance.rem()
-
-        # Test Null Instance
+        # test Null Instance
         insert_test_null( 0)
         insert_test_null( 1)
         insert_test_null(-1)
