@@ -408,7 +408,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
     def test_setitem(self):
 
         def setitem(instance, i, v):
-            instance[i] = v
+            x = instance[i] = v
+            return x
 
         def setitem_test_good(i, l):
             key = self.generate_key()
@@ -417,7 +418,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             v = self.generate_val_single()
             instance = self.factory.from_new(key, val)
             self.assertEqual(val, instance.get_val())
-            setitem(instance, i, v)
+            self.assertEqual(v, setitem(instance, i, v))
             if (i != 0) and (i != -l):
                 new += val[:i]
             new += v
