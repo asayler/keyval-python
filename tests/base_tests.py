@@ -449,25 +449,27 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_insert(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
+        # Test Insert at Index
+        def insert_test(i, l):
+            key = self.generate_key()
+            v = self.generate_val_single()
+            if l is not None:
+                val = self.generate_val_multi(length=l)
+                instance = self.factory.from_new(key, val)
+                self.assertEqual(val, instance.get_val())
+                instance.insert(i, v)
+                val = val[:i] + v + val[i:]
+                self.assertEqual(val, instance.get_val())
+                instance.rem()
+            else:
+                instance = self.factory.from_raw(key)
+                self.assertFalse(instance.exists())
+                self.assertRaises(keyval.base.ObjectDNE, instance.insert, i, v)
 
         # Test Null Instance
-        instance = self.factory.from_raw(key)
-        v = self.generate_val_single()
-        self.assertRaises(keyval.base.ObjectDNE, instance.insert, 0, v)
-
-        def insert_test(i, l):
-
-            # Test Insert at Index
-            val = self.generate_val_multi(length=l)
-            v = self.generate_val_single()
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            instance.insert(i, v)
-            val = val[:i] + v + val[i:]
-            self.assertEqual(val, instance.get_val())
-            instance.rem()
+        insert_test( 0, None)
+        insert_test( 1, None)
+        insert_test(-1, None)
 
         # Test Empty Instance
         insert_test( 0, 0)
