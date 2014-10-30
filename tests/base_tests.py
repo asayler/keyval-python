@@ -425,27 +425,27 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_delitem(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi()
-        new = self.generate_val_multi(length=0)
+        def delitem(instance, i):
+            del(instance[i])
 
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        self.assertEqual(val, instance.get_val())
-        # Delete every other letter; start from end to avoid indexing issues
-        for i in reversed(range(len(val))):
-            if (i % 2):
-                del(instance[i])
+        # Test Delete Item at Index
+        def delitem_test(i, l):
+            key = self.generate_key()
+            if l is not None:
+                val = self.generate_val_multi(length=l)
+                instance = self.factory.from_new(key, val)
+                self.assertEqual(val, instance.get_val())
+                delitem(instance, i)
+                val = val[:i] + val[i+1:]
+                self.assertEqual(val, instance.get_val())
+                instance.rem()
             else:
-                new += val[i]
-        new = new[::-1]
-        self.assertEqual(new, instance.get_val())
+                instance = self.factory.from_raw(key)
+                self.assertFalse(instance.exists())
+                self.assertRaises(keyval.base.ObjectDNE, delitem, instance, i)
 
-        # Cleanup
-        instance.rem()
+        delitem_test(0, None)
+        delitem_test(5, 10)
 
     def test_insert(self):
 
