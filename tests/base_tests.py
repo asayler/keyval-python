@@ -407,21 +407,66 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_setitem(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi()
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        for i in range(len(val)):
-            v = val[-(i+1)]
+        def setitem(instance, i, v):
             instance[i] = v
-            self.assertEqual(v, instance[i])
 
-        # Cleanup
-        instance.rem()
+        def setitem_test_good(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            new = self.generate_val_multi(length=0)
+            v = self.generate_val_single()
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            setitem(instance, i, v)
+            if (i != 0) and (i != -l):
+                new += val[:i]
+            new += v
+            if (i != (l-1)) and (i != -1):
+                new += val[i+1:]
+            self.assertNotEqual(new, val)
+            self.assertEqual(len(new), len(val))
+            self.assertEqual(new, instance.get_val())
+            instance.rem()
+
+        def setitem_test_null(i):
+            key = self.generate_key()
+            v = self.generate_val_single()
+            instance = self.factory.from_raw(key)
+            self.assertFalse(instance.exists())
+            self.assertRaises(keyval.base.ObjectDNE, setitem, instance, i, v)
+
+        def setitem_test_oob(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            v = self.generate_val_single()
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            self.assertRaises(IndexError, setitem, instance, i, v)
+            instance.rem()
+
+        # Test Null Instance
+        setitem_test_null( 0)
+        setitem_test_null(-1)
+        setitem_test_null( 1)
+
+        # Test Empty Instance
+        setitem_test_oob( 0, 0)
+        setitem_test_oob( 1, 0)
+        setitem_test_oob(-1, 0)
+
+        # Test Valid
+        setitem_test_good(  0, 10)
+        setitem_test_good(-10, 10)
+        setitem_test_good(  5, 10)
+        setitem_test_good( -5, 10)
+        setitem_test_good(  9, 10)
+        setitem_test_good( -1, 10)
+
+        # Test OOB
+        setitem_test_oob( 10, 10)
+        setitem_test_oob( 11, 10)
+        setitem_test_oob(-11, 10)
+        setitem_test_oob(-12, 10)
 
     def test_delitem(self):
 
