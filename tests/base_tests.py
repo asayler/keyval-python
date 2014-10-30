@@ -405,54 +405,65 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSequenceMixin, self).__init__(*args, **kwargs)
 
+
+    def helper_test_wrapper(self, size, test_func, index, item, ref_func):
+
+        key = self.generate_key()
+        old = self.generate_val_multi(length=size)
+        instance = self.factory.from_new(key, old)
+        self.assertEqual(old, instance.get_val())
+        test_func(instance, index, item)
+        new = ref_func(old, index, item)
+        self.assertNotEqual(old, new)
+        self.assertEqual(new, instance.get_val())
+        instance.rem()
+
+    def helper_test_raises(self, size, test_func, index, item, error):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(length=size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        self.assertRaises(error, test_func, instance, index, item)
+        instance.rem()
+
+    def helper_test_dne(self, test_func, index, item):
+
+        key = self.generate_key()
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance.exists())
+        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index, item)
+
     def test_setitem(self):
 
-        def setitem(instance, i, v):
-            x = instance[i] = v
-            return x
+        def test_func(instance, index, item):
+            ret = instance[index] = item
+            return ret
 
-        def setitem_test_good(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            new = self.generate_val_multi(length=0)
-            v = self.generate_val_single()
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            self.assertEqual(v, setitem(instance, i, v))
-            if (i != 0) and (i != -l):
-                new += val[:i]
-            new += v
-            if (i != (l-1)) and (i != -1):
-                new += val[i+1:]
-            self.assertNotEqual(new, val)
-            self.assertEqual(len(new), len(val))
-            self.assertEqual(new, instance.get_val())
-            instance.rem()
+        def ref_func(ref, index, item):
+            out = self.generate_val_multi(length=0)
+            if (index != 0) and (index != -len(ref)):
+                out += ref[:index]
+            out += item
+            if (index != (len(ref)-1)) and (index != -1):
+                out += ref[index+1:]
+            return out
 
-        def setitem_test_null(i):
-            key = self.generate_key()
-            v = self.generate_val_single()
-            instance = self.factory.from_raw(key)
-            self.assertFalse(instance.exists())
-            self.assertRaises(keyval.base.ObjectDNE, setitem, instance, i, v)
+        def setitem_test_good(index, size):
+            item = self.generate_val_multi(length=1)
+            self.helper_test_wrapper(size, test_func, index, item, ref_func)
 
-        def setitem_test_oob(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            v = self.generate_val_single()
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            self.assertRaises(IndexError, setitem, instance, i, v)
-            instance.rem()
+        def setitem_test_null(index):
+            item = self.generate_val_multi(length=1)
+            self.helper_test_dne(test_func, index, item)
 
-        def setitem_test_badval(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            v = self.generate_val_multi(3)
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            self.assertRaises(ValueError, setitem, instance, i, v)
-            instance.rem()
+        def setitem_test_badval(index, size):
+            item = self.generate_val_multi(length=3)
+            self.helper_test_raises(size, test_func, index, item, ValueError)
+
+        def setitem_test_oob(index, size):
+            item = self.generate_val_multi(length=1)
+            self.helper_test_raises(size, test_func, index, item, IndexError)
 
         # Test Null Instance
         setitem_test_null( 0)
@@ -543,34 +554,6 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         delitem_test_oob( 11, 10)
         delitem_test_oob(-11, 10)
         delitem_test_oob(-12, 10)
-
-    def helper_test_wrapper(self, size, test_func, index, item, ref_func):
-
-        key = self.generate_key()
-        old = self.generate_val_multi(length=size)
-        instance = self.factory.from_new(key, old)
-        self.assertEqual(old, instance.get_val())
-        test_func(instance, index, item)
-        new = ref_func(old, index, item)
-        self.assertNotEqual(old, new)
-        self.assertEqual(new, instance.get_val())
-        instance.rem()
-
-    def helper_test_raises(self, size, test_func, index, item, error):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(length=size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        self.assertRaises(error, test_func, instance, index, item)
-        instance.rem()
-
-    def helper_test_dne(self, test_func, index, item):
-
-        key = self.generate_key()
-        instance = self.factory.from_raw(key)
-        self.assertFalse(instance.exists())
-        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index, item)
 
     def test_insert(self):
 
