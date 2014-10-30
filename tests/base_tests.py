@@ -550,7 +550,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         val = self.generate_val_multi(length=size)
         instance = self.factory.from_new(key, val)
         self.assertEqual(val, instance.get_val())
-        item = self.generate_val_single()
+        item = self.generate_val_multi(length=1)
         test_func(instance, index, item)
         new = ref_func(val, index, item)
         self.assertNotEqual(val, new)
