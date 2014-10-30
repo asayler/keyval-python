@@ -429,23 +429,33 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             del(instance[i])
 
         # Test Delete Item at Index
-        def delitem_test(i, l):
+        def delitem_test_good(i, l):
             key = self.generate_key()
-            if l is not None:
-                val = self.generate_val_multi(length=l)
-                instance = self.factory.from_new(key, val)
-                self.assertEqual(val, instance.get_val())
-                delitem(instance, i)
-                val = val[:i] + val[i+1:]
-                self.assertEqual(val, instance.get_val())
-                instance.rem()
-            else:
-                instance = self.factory.from_raw(key)
-                self.assertFalse(instance.exists())
-                self.assertRaises(keyval.base.ObjectDNE, delitem, instance, i)
+            val = self.generate_val_multi(length=l)
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            delitem(instance, i)
+            val = val[:i] + val[i+1:]
+            self.assertEqual(val, instance.get_val())
+            instance.rem()
 
-        delitem_test(0, None)
-        delitem_test(5, 10)
+        def delitem_test_null(i):
+            key = self.generate_key()
+            instance = self.factory.from_raw(key)
+            self.assertFalse(instance.exists())
+            self.assertRaises(keyval.base.ObjectDNE, delitem, instance, i)
+
+        def delitem_test_oob(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            self.assertRaises(IndexError, delitem, instance, i)
+            instance.rem()
+
+        delitem_test_null(0)
+        delitem_test_good(5, 10)
+        delitem_test_oob(10, 10)
 
     def test_insert(self):
 
