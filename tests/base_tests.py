@@ -405,18 +405,18 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSequenceMixin, self).__init__(*args, **kwargs)
 
-
     def helper_test_wrapper(self, size, test_func, index, item, ref_func):
 
         key = self.generate_key()
         old = self.generate_val_multi(length=size)
         instance = self.factory.from_new(key, old)
         self.assertEqual(old, instance.get_val())
-        test_func(instance, index, item)
+        ret = test_func(instance, index, item)
         new = ref_func(old, index, item)
         self.assertNotEqual(old, new)
         self.assertEqual(new, instance.get_val())
         instance.rem()
+        return ret
 
     def helper_test_raises(self, size, test_func, index, item, error):
 
@@ -451,7 +451,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def setitem_test_good(index, size):
             item = self.generate_val_multi(length=1)
-            self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            self.assertEqual(item, ret)
 
         def setitem_test_null(index):
             item = self.generate_val_multi(length=1)
@@ -565,7 +566,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def insert_test_good(index, size):
             item = self.generate_val_multi(length=1)
-            self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            self.assertIsNone(ret)
 
         def insert_test_badval(index, size):
             item = self.generate_val_multi(length=3)
