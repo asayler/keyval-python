@@ -581,15 +581,15 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         def ref_func(ref, index, item):
             return ref[:index] + item + ref[index:]
 
-        def insert_test_good(i, l):
-            self.helper_test_wrapper(test_func, ref_func, i, l)
+        def insert_test_good(index, size):
+            self.helper_test_wrapper(test_func, ref_func, index, size)
 
-        def insert_test_badval(i, l):
+        def insert_test_badval(index, size):
             item = self.generate_val_multi(3)
-            self.helper_test_raises(test_func, ValueError, i, l, item)
+            self.helper_test_raises(test_func, ValueError, index, size, item)
 
-        def insert_test_null(i):
-            self.helper_test_dne(test_func, i)
+        def insert_test_null(index):
+            self.helper_test_dne(test_func, index)
 
         # test Null Instance
         insert_test_null( 0)
