@@ -445,6 +445,15 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             self.assertRaises(IndexError, setitem, instance, i, v)
             instance.rem()
 
+        def setitem_test_badval(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            v = self.generate_val_multi(3)
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            self.assertRaises(ValueError, setitem, instance, i, v)
+            instance.rem()
+
         # Test Null Instance
         setitem_test_null( 0)
         setitem_test_null(-1)
@@ -468,6 +477,14 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         setitem_test_oob( 11, 10)
         setitem_test_oob(-11, 10)
         setitem_test_oob(-12, 10)
+
+        # Test Bad Val
+        setitem_test_badval(  0, 10)
+        setitem_test_badval(-10, 10)
+        setitem_test_badval(  5, 10)
+        setitem_test_badval( -5, 10)
+        setitem_test_badval(  9, 10)
+        setitem_test_badval( -1, 10)
 
     def test_delitem(self):
 
@@ -549,10 +566,27 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             self.assertFalse(instance.exists())
             self.assertRaises(keyval.base.ObjectDNE, instance.insert, i, v)
 
+        def insert_test_badval(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            v = self.generate_val_multi(3)
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            self.assertRaises(ValueError, instance.insert, i, v)
+            instance.rem()
+
         # Test Null Instance
         insert_test_null( 0)
         insert_test_null( 1)
         insert_test_null(-1)
+
+        # Test Bad Val
+        insert_test_badval(  0, 10)
+        insert_test_badval(-10, 10)
+        insert_test_badval(  5, 10)
+        insert_test_badval( -5, 10)
+        insert_test_badval(  9, 10)
+        insert_test_badval( -1, 10)
 
         # Test Empty Instance
         insert_test_good( 0, 0)
