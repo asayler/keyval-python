@@ -544,20 +544,19 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         delitem_test_oob(-11, 10)
         delitem_test_oob(-12, 10)
 
-    def helper_test_wrapper(self, test_func, ref_func, index, size):
+    def helper_test_wrapper(self, size, test_func, index, item, ref_func):
 
         key = self.generate_key()
-        val = self.generate_val_multi(length=size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        item = self.generate_val_multi(length=1)
+        old = self.generate_val_multi(length=size)
+        instance = self.factory.from_new(key, old)
+        self.assertEqual(old, instance.get_val())
         test_func(instance, index, item)
-        new = ref_func(val, index, item)
-        self.assertNotEqual(val, new)
+        new = ref_func(old, index, item)
+        self.assertNotEqual(old, new)
         self.assertEqual(new, instance.get_val())
         instance.rem()
 
-    def helper_test_raises(self, test_func, error, index, size, item):
+    def helper_test_raises(self, size, test_func, index, item, error):
 
         key = self.generate_key()
         val = self.generate_val_multi(length=size)
@@ -566,11 +565,10 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         self.assertRaises(error, test_func, instance, index, item)
         instance.rem()
 
-    def helper_test_dne(self, test_func, index):
+    def helper_test_dne(self, test_func, index, item):
         key = self.generate_key()
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
-        item = self.generate_val_multi(length=1)
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index, item)
 
     def test_insert(self):
@@ -582,14 +580,16 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             return ref[:index] + item + ref[index:]
 
         def insert_test_good(index, size):
-            self.helper_test_wrapper(test_func, ref_func, index, size)
+            item = self.generate_val_multi(length=1)
+            self.helper_test_wrapper(size, test_func, index, item, ref_func)
 
         def insert_test_badval(index, size):
-            item = self.generate_val_multi(3)
-            self.helper_test_raises(test_func, ValueError, index, size, item)
+            item = self.generate_val_multi(length=3)
+            self.helper_test_raises(size, test_func, index, item, ValueError)
 
         def insert_test_null(index):
-            self.helper_test_dne(test_func, index)
+            item = self.generate_val_multi(length=1)
+            self.helper_test_dne(test_func, index, item)
 
         # test Null Instance
         insert_test_null( 0)
