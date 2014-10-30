@@ -500,37 +500,29 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_delitem(self):
 
-        def delitem(instance, i):
-            del(instance[i])
+        def test_func(instance, index, item):
+            del(instance[index])
 
-        def delitem_test_good(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            new = self.generate_val_multi(length=0)
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            delitem(instance, i)
-            if (i != 0) and (i != -l):
-                new += val[:i]
-            if (i != (l-1)) and (i != -1):
-                new += val[i+1:]
-            self.assertNotEqual(new, val)
-            self.assertEqual(new, instance.get_val())
-            instance.rem()
+        def ref_func(ref, index, item):
+            out = self.generate_val_multi(length=0)
+            if (index != 0) and (index != -len(ref)):
+                out += ref[:index]
+            if (index != (len(ref)-1)) and (index != -1):
+                out += ref[index+1:]
+            return out
 
-        def delitem_test_null(i):
-            key = self.generate_key()
-            instance = self.factory.from_raw(key)
-            self.assertFalse(instance.exists())
-            self.assertRaises(keyval.base.ObjectDNE, delitem, instance, i)
+        def delitem_test_good(index, size):
+            item = self.generate_val_multi(length=1)
+            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            self.assertIsNone(ret)
 
-        def delitem_test_oob(i, l):
-            key = self.generate_key()
-            val = self.generate_val_multi(length=l)
-            instance = self.factory.from_new(key, val)
-            self.assertEqual(val, instance.get_val())
-            self.assertRaises(IndexError, delitem, instance, i)
-            instance.rem()
+        def delitem_test_null(index):
+            item = self.generate_val_multi(length=1)
+            self.helper_test_dne(test_func, index, item)
+
+        def delitem_test_oob(index, size):
+            item = self.generate_val_multi(length=1)
+            self.helper_test_raises(size, test_func, index, item, IndexError)
 
         # Test Null Instance
         delitem_test_null( 0)
