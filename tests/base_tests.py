@@ -483,52 +483,55 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_insert(self):
 
-        # Test Insert at Index
-        def insert_test(i, l):
+        def insert_test_good(i, l):
+            key = self.generate_key()
+            val = self.generate_val_multi(length=l)
+            new = self.generate_val_multi(length=0)
+            v = self.generate_val_single()
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            instance.insert(i, v)
+            new = val[:i] + v + val[i:]
+            self.assertNotEqual(val, new)
+            self.assertEqual(new, instance.get_val())
+            instance.rem()
+
+        def insert_test_null(i):
             key = self.generate_key()
             v = self.generate_val_single()
-            if l is not None:
-                val = self.generate_val_multi(length=l)
-                instance = self.factory.from_new(key, val)
-                self.assertEqual(val, instance.get_val())
-                instance.insert(i, v)
-                val = val[:i] + v + val[i:]
-                self.assertEqual(val, instance.get_val())
-                instance.rem()
-            else:
-                instance = self.factory.from_raw(key)
-                self.assertFalse(instance.exists())
-                self.assertRaises(keyval.base.ObjectDNE, instance.insert, i, v)
+            instance = self.factory.from_raw(key)
+            self.assertFalse(instance.exists())
+            self.assertRaises(keyval.base.ObjectDNE, instance.insert, i, v)
 
         # Test Null Instance
-        insert_test( 0, None)
-        insert_test( 1, None)
-        insert_test(-1, None)
+        insert_test_null( 0)
+        insert_test_null( 1)
+        insert_test_null(-1)
 
         # Test Empty Instance
-        insert_test( 0, 0)
-        insert_test( 1, 0)
-        insert_test(-1, 0)
+        insert_test_good( 0, 0)
+        insert_test_good( 1, 0)
+        insert_test_good(-1, 0)
 
         # Test Insert Before
-        insert_test(-12, 10)
-        insert_test(-11, 10)
+        insert_test_good(-12, 10)
+        insert_test_good(-11, 10)
 
         # Test Insert Beginning
-        insert_test(  0, 10)
-        insert_test(-10, 10)
+        insert_test_good(  0, 10)
+        insert_test_good(-10, 10)
 
         # Test Instance - Middle
-        insert_test( 5, 10)
-        insert_test(-5, 10)
+        insert_test_good( 5, 10)
+        insert_test_good(-5, 10)
 
         # Test Insert End
-        insert_test( 9, 10)
-        insert_test(-1, 10)
+        insert_test_good( 9, 10)
+        insert_test_good(-1, 10)
 
         # Test Instert After
-        insert_test(10, 10)
-        insert_test(11, 10)
+        insert_test_good(10, 10)
+        insert_test_good(11, 10)
 
 
 ### Object Mixins ###

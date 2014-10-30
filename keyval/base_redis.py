@@ -169,12 +169,15 @@ class MutableString(base_abc.MutableString, String):
         if len(v) != 1:
             raise ValueError("{:s} must be a single charecter".format(v))
 
-        # Set Transaction
+        # Transaction
         def automic_insert(pipe):
 
+            # Check Exists
             exists = pipe.exists(self._redis_key)
             if not exists:
                 raise base.ObjectDNE(self)
+
+            # Get Ranges
             length = pipe.strlen(self._redis_key)
             if (i == 0) or (i <= -length):
                 start = ""
@@ -184,12 +187,11 @@ class MutableString(base_abc.MutableString, String):
                 end = ""
             else:
                 end = pipe.getrange(self._redis_key, i, length)
+
+            # Set New Val
             new = start + v + end
             pipe.multi()
             pipe.set(self._redis_key, new)
 
         # Execute Transaction
-        ret = self._driver.transaction(automic_insert, self._redis_key)
-
-        # Return Object
-        return ret[0]
+        self._driver.transaction(automic_insert, self._redis_key)
