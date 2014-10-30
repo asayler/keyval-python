@@ -153,11 +153,15 @@ class MutableString(base_abc.MutableString, String):
             exists = pipe.exists(self._redis_key)
             if not exists:
                 raise base.ObjectDNE(self)
-            if (i > 0):
-                start = pipe.getrange(self._redis_key, 0, i-1)
-            else:
+            length = pipe.strlen(self._redis_key)
+            if (i == 0) or (i <= -length):
                 start = ""
-            end = pipe.getrange(self._redis_key, i, -1)
+            else:
+                start = pipe.getrange(self._redis_key, 0, (i-1))
+            if (i >= length):
+                end = ""
+            else:
+                end = pipe.getrange(self._redis_key, i, length)
             new = start + v + end
             pipe.multi()
             pipe.set(self._redis_key, new)

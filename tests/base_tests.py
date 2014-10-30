@@ -457,45 +457,42 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         v = self.generate_val_single()
         self.assertRaises(keyval.base.ObjectDNE, instance.insert, 0, v)
 
-        # Test Empty Instance
-        val = self.generate_val_multi(length=0)
-        v = self.generate_val_single()
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        instance.insert(0, v)
-        val = v + val[0:]
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
+        def insert_test(i, l):
 
-        # Test Instance - Beginning
-        val = self.generate_val_multi(length=10)
-        v = self.generate_val_single()
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        instance.insert(0, v)
-        val = v + val[0:10]
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
+            # Test Insert at Index
+            val = self.generate_val_multi(length=l)
+            v = self.generate_val_single()
+            instance = self.factory.from_new(key, val)
+            self.assertEqual(val, instance.get_val())
+            instance.insert(i, v)
+            val = val[:i] + v + val[i:]
+            self.assertEqual(val, instance.get_val())
+            instance.rem()
+
+        # Test Empty Instance
+        insert_test( 0, 0)
+        insert_test( 1, 0)
+        insert_test(-1, 0)
+
+        # Test Insert Before
+        insert_test(-12, 10)
+        insert_test(-11, 10)
+
+        # Test Insert Beginning
+        insert_test(  0, 10)
+        insert_test(-10, 10)
 
         # Test Instance - Middle
-        val = self.generate_val_multi(length=10)
-        v = self.generate_val_single()
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        instance.insert(5, v)
-        val = val[0:5] + v + val[5:10]
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
+        insert_test( 5, 10)
+        insert_test(-5, 10)
 
-        # Test Instance - End
-        val = self.generate_val_multi(length=10)
-        v = self.generate_val_single()
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        instance.insert(10, v)
-        val = val[0:10] + v
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
+        # Test Insert End
+        insert_test( 9, 10)
+        insert_test(-1, 10)
+
+        # Test Instert After
+        insert_test(10, 10)
+        insert_test(11, 10)
 
 
 ### Object Mixins ###
