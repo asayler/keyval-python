@@ -566,6 +566,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         instance.rem()
 
     def helper_test_dne(self, test_func, index, item):
+
         key = self.generate_key()
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
