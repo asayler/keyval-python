@@ -130,14 +130,36 @@ class MutableString(base_abc.MutableString, String):
     def __delitem__(self, i):
         """Del Seq Item"""
 
-        val = self.get_val()
-        new = ""
+        # Transaction
+        def automic_delitem(pipe):
 
-        for cnt in range(len(val)):
-            if cnt != i:
-                new += val[cnt]
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
 
-        self.set_val(new)
+            # Check Index
+            length = pipe.strlen(self._redis_key)
+            if (i >= length) or (i < -length):
+                raise IndexError("{:d} out of range".format(i))
+
+            # Get Ranges
+            if (i == 0) or (i == -length):
+                start = ""
+            else:
+                start = pipe.getrange(self._redis_key, 0, (i-1))
+            if (i == (length-1)) or (i == -1):
+                end = ""
+            else:
+                end = pipe.getrange(self._redis_key, (i+1), length)
+
+            # Set New Val
+            new = start + end
+            pipe.multi()
+            pipe.set(self._redis_key, new)
+
+        # Execute Transaction
+        self._driver.transaction(automic_delitem, self._redis_key)
 
     def insert(self, i, v):
         """Insert Seq Item"""

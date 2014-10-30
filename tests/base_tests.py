@@ -428,15 +428,19 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         def delitem(instance, i):
             del(instance[i])
 
-        # Test Delete Item at Index
         def delitem_test_good(i, l):
             key = self.generate_key()
             val = self.generate_val_multi(length=l)
+            new = self.generate_val_multi(length=0)
             instance = self.factory.from_new(key, val)
             self.assertEqual(val, instance.get_val())
             delitem(instance, i)
-            val = val[:i] + val[i+1:]
-            self.assertEqual(val, instance.get_val())
+            if (i != 0) and (i != -l):
+                new += val[:i]
+            if (i != (l-1)) and (i != -1):
+                new += val[i+1:]
+            self.assertNotEqual(new, val)
+            self.assertEqual(new, instance.get_val())
             instance.rem()
 
         def delitem_test_null(i):
@@ -453,9 +457,29 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             self.assertRaises(IndexError, delitem, instance, i)
             instance.rem()
 
-        delitem_test_null(0)
-        delitem_test_good(5, 10)
-        delitem_test_oob(10, 10)
+        # Test Null Instance
+        delitem_test_null( 0)
+        delitem_test_null(-1)
+        delitem_test_null( 1)
+
+        # Test Empty Instance
+        delitem_test_oob( 0, 0)
+        delitem_test_oob( 1, 0)
+        delitem_test_oob(-1, 0)
+
+        # Test Valid
+        delitem_test_good(  0, 10)
+        delitem_test_good(-10, 10)
+        delitem_test_good(  5, 10)
+        delitem_test_good( -5, 10)
+        delitem_test_good(  9, 10)
+        delitem_test_good( -1, 10)
+
+        # Test OOB
+        delitem_test_oob( 10, 10)
+        delitem_test_oob( 11, 10)
+        delitem_test_oob(-11, 10)
+        delitem_test_oob(-12, 10)
 
     def test_insert(self):
 
