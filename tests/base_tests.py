@@ -287,6 +287,18 @@ class SequenceMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
 
+    def helper_test_args(self, size, test_func, ref_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, *args)
+        ref = ref_func(val, *args)
+        self.assertEqual(ret, ref)
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
     def helper_test_index(self, test_func, index, size, ref_func):
 
         key = self.generate_key()
@@ -343,13 +355,6 @@ class SequenceMixin(PersistentMixin):
         self.assertRaises(error, test_func, instance, v)
         instance.rem()
 
-    def helper_dne_index(self, test_func, index):
-
-        key = self.generate_key()
-        instance = self.factory.from_raw(key)
-        self.assertFalse(instance.exists())
-        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index)
-
     def helper_dne_args(self, test_func, *args):
 
         key = self.generate_key()
@@ -359,19 +364,16 @@ class SequenceMixin(PersistentMixin):
 
     def test_len(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
+        test_func = len
+        ref_func = len
 
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(len(val), len(instance))
+        # Test DNE
+        self.helper_dne_args(test_func)
 
-        # Rem Instance
-        instance.rem()
-        self.assertRaises(keyval.base.ObjectDNE, len, instance)
-
-        # No Cleanup
+        # Test Good
+        for i in range(10):
+            self.helper_test_args( 0, test_func, ref_func)
+            self.helper_test_args(10, test_func, ref_func)
 
     def test_getitem(self):
 
@@ -382,8 +384,7 @@ class SequenceMixin(PersistentMixin):
             return ref[index]
 
         # Test DNE
-        self.helper_dne_index(test_func, 0)
-        self.helper_dne_index(test_func, 10)
+        self.helper_dne_args(test_func, None)
 
         # Test Good
         for i in range(10):
