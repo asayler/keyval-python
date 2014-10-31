@@ -299,6 +299,31 @@ class SequenceMixin(PersistentMixin):
         self.assertEqual(val, instance.get_val())
         instance.rem()
 
+    def helper_test_val_in(self, test_func, index, size, ref_func):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, val[index])
+        ref = ref_func(val, val[index])
+        self.assertEqual(ret, ref)
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
+    def helper_test_val_out(self, test_func, size, ref_func):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        v = self.generate_val_single(exclude=val)
+        ret = test_func(instance, v)
+        ref = ref_func(val, v)
+        self.assertEqual(ret, ref)
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
     def helper_raises_index(self, test_func, index, size, error):
 
         key = self.generate_key()
@@ -308,12 +333,29 @@ class SequenceMixin(PersistentMixin):
         self.assertRaises(error, test_func, instance, index)
         instance.rem()
 
+    def helper_raises_val_out(self, test_func, size, error):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        v = self.generate_val_single(exclude=val)
+        self.assertRaises(error, test_func, instance, v)
+        instance.rem()
+
     def helper_dne_index(self, test_func, index):
 
         key = self.generate_key()
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index)
+
+    def helper_dne_args(self, test_func, *args):
+
+        key = self.generate_key()
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance.exists())
+        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
     def test_len(self):
 
@@ -359,18 +401,57 @@ class SequenceMixin(PersistentMixin):
 
     def test_contains(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
+        def test_func(instance, val):
+            return val in instance
 
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-        for i in val:
-            self.assertTrue(i in instance)
-        self.assertFalse(self.generate_val_multi(10) in instance)
+        def ref_func(ref, val):
+            return val in ref
 
-        # Cleanup
-        instance.rem()
+        # Test DNE
+        self.helper_dne_args(test_func, None)
+
+        # Test In
+        for i in range(10):
+            self.helper_test_val_in(test_func, i,      10, ref_func)
+            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
+
+        # Test Out
+        for i in range(10):
+            self.helper_test_val_out(test_func, 10, ref_func)
+
+    def test_index(self):
+
+        test_func = type(self.factory.from_raw(None)).index
+        ref_func = type(self.generate_val_multi(0)).index
+
+        # Test DNE
+        self.helper_dne_args(test_func, None)
+
+        # Test In
+        for i in range(10):
+            self.helper_test_val_in(test_func, i,      10, ref_func)
+            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
+
+        # Test Out
+        for i in range(10):
+            self.helper_raises_val_out(test_func, 10, ValueError)
+
+    def test_count(self):
+
+        test_func = type(self.factory.from_raw(None)).count
+        ref_func = type(self.generate_val_multi(0)).count
+
+        # Test DNE
+        self.helper_dne_args(test_func, None)
+
+        # Test In
+        for i in range(10):
+            self.helper_test_val_in(test_func, i,      10, ref_func)
+            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
+
+        # Test Out
+        for i in range(10):
+            self.helper_test_val_out(test_func, 10, ref_func)
 
     def test_iter(self):
 
@@ -404,38 +485,6 @@ class SequenceMixin(PersistentMixin):
         for i in reversed(instance):
             self.assertEqual(val[cnt], i)
             cnt -= 1
-
-        # Cleanup
-        instance.rem()
-
-    def test_index(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        for i in val:
-            self.assertEqual(val.index(i), instance.index(i))
-
-        # Cleanup
-        instance.rem()
-
-    def test_count(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        for i in val:
-            self.assertEqual(val.count(i), instance.count(i))
 
         # Cleanup
         instance.rem()
@@ -662,11 +711,19 @@ class StringMixin(SequenceMixin):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
-    def generate_val_single(self):
+    def generate_val_single(self, exclude=None):
 
-        cnt = self.val_cnt % 26
+        if exclude is None:
+            exclude = ""
+
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                break
+
         self.val_cnt += 1
-        return chr(ord('A') + cnt)
+        return val
 
     def generate_val_multi(self, size):
 
