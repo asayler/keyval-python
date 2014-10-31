@@ -67,7 +67,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -86,7 +86,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Get Nonexistant Instance
         self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
@@ -123,7 +123,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -145,7 +145,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -161,7 +161,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -174,7 +174,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -187,7 +187,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -200,7 +200,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -213,7 +213,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -226,7 +226,7 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance_a = self.factory.from_new(key, val)
@@ -242,7 +242,7 @@ class PersistentMixin(object):
         # Setup Test Vals
         key_a = self.generate_key()
         key_b = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
         self.assertNotEqual(key_a, key_b)
 
         # Create Instance
@@ -267,9 +267,9 @@ class MutableMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val1 = self.generate_val_multi()
-        val2 = self.generate_val_multi()
-        val3 = self.generate_val_multi()
+        val1 = self.generate_val_multi(10)
+        val2 = self.generate_val_multi(10)
+        val3 = self.generate_val_multi(10)
 
         # Create New Instance and Set Value
         instance = self.factory.from_new(key, val1)
@@ -291,7 +291,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -307,7 +307,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -321,13 +321,13 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
         for i in val:
             self.assertTrue(i in instance)
-        self.assertFalse(self.generate_val_multi() in instance)
+        self.assertFalse(self.generate_val_multi(10) in instance)
 
         # Cleanup
         instance.rem()
@@ -336,7 +336,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -354,7 +354,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -372,7 +372,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -388,7 +388,7 @@ class SequenceMixin(PersistentMixin):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi()
+        val = self.generate_val_multi(10)
 
         # Create Instance
         instance = self.factory.from_new(key, val)
@@ -405,10 +405,10 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSequenceMixin, self).__init__(*args, **kwargs)
 
-    def helper_test_wrapper(self, size, test_func, index, item, ref_func):
+    def helper_test_index_item(self, test_func, index, item, size, ref_func):
 
         key = self.generate_key()
-        old = self.generate_val_multi(length=size)
+        old = self.generate_val_multi(size)
         instance = self.factory.from_new(key, old)
         self.assertEqual(old, instance.get_val())
         ret = test_func(instance, index, item)
@@ -418,16 +418,16 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         instance.rem()
         return ret
 
-    def helper_test_raises(self, size, test_func, index, item, error):
+    def helper_raises_index_item(self, test_func, index, item, size, error):
 
         key = self.generate_key()
-        val = self.generate_val_multi(length=size)
+        val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
         self.assertEqual(val, instance.get_val())
         self.assertRaises(error, test_func, instance, index, item)
         instance.rem()
 
-    def helper_test_dne(self, test_func, index, item):
+    def helper_dne_index_item(self, test_func, index, item):
 
         key = self.generate_key()
         instance = self.factory.from_raw(key)
@@ -436,12 +436,14 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_setitem(self):
 
+        # Test Functions
+
         def test_func(instance, index, item):
             ret = instance[index] = item
             return ret
 
         def ref_func(ref, index, item):
-            out = self.generate_val_multi(length=0)
+            out = self.generate_val_multi(0)
             if (index != 0) and (index != -len(ref)):
                 out += ref[:index]
             out += item
@@ -449,22 +451,26 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
                 out += ref[index+1:]
             return out
 
+        # Test Wrappers
+
         def setitem_test_good(index, size):
-            item = self.generate_val_multi(length=1)
-            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            item = self.generate_val_multi(1)
+            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
             self.assertEqual(item, ret)
 
         def setitem_test_null(index):
-            item = self.generate_val_multi(length=1)
-            self.helper_test_dne(test_func, index, item)
+            item = self.generate_val_multi(1)
+            self.helper_dne_index_item(test_func, index, item)
 
         def setitem_test_badval(index, size):
-            item = self.generate_val_multi(length=3)
-            self.helper_test_raises(size, test_func, index, item, ValueError)
+            item = self.generate_val_multi(3)
+            self.helper_raises_index_item(test_func, index, item, size, ValueError)
 
         def setitem_test_oob(index, size):
-            item = self.generate_val_multi(length=1)
-            self.helper_test_raises(size, test_func, index, item, IndexError)
+            item = self.generate_val_multi(1)
+            self.helper_raises_index_item(test_func, index, item, size, IndexError)
+
+        # Test Values
 
         # Test Null Instance
         setitem_test_null( 0)
@@ -504,7 +510,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             del(instance[index])
 
         def ref_func(ref, index, item):
-            out = self.generate_val_multi(length=0)
+            out = self.generate_val_multi(0)
             if (index != 0) and (index != -len(ref)):
                 out += ref[:index]
             if (index != (len(ref)-1)) and (index != -1):
@@ -512,17 +518,17 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             return out
 
         def delitem_test_good(index, size):
-            item = self.generate_val_multi(length=1)
-            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            item = self.generate_val_multi(1)
+            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
             self.assertIsNone(ret)
 
         def delitem_test_null(index):
-            item = self.generate_val_multi(length=1)
-            self.helper_test_dne(test_func, index, item)
+            item = self.generate_val_multi(1)
+            self.helper_dne_index_item(test_func, index, item)
 
         def delitem_test_oob(index, size):
-            item = self.generate_val_multi(length=1)
-            self.helper_test_raises(size, test_func, index, item, IndexError)
+            item = self.generate_val_multi(1)
+            self.helper_raises_index_item(test_func, index, item, size, IndexError)
 
         # Test Null Instance
         delitem_test_null( 0)
@@ -557,17 +563,17 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             return ref[:index] + item + ref[index:]
 
         def insert_test_good(index, size):
-            item = self.generate_val_multi(length=1)
-            ret = self.helper_test_wrapper(size, test_func, index, item, ref_func)
+            item = self.generate_val_multi(1)
+            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
             self.assertIsNone(ret)
 
         def insert_test_badval(index, size):
-            item = self.generate_val_multi(length=3)
-            self.helper_test_raises(size, test_func, index, item, ValueError)
+            item = self.generate_val_multi(3)
+            self.helper_raises_index_item(test_func, index, item, size, ValueError)
 
         def insert_test_null(index):
-            item = self.generate_val_multi(length=1)
-            self.helper_test_dne(test_func, index, item)
+            item = self.generate_val_multi(1)
+            self.helper_dne_index_item(test_func, index, item)
 
         # test Null Instance
         insert_test_null( 0)
@@ -622,10 +628,10 @@ class StringMixin(SequenceMixin):
         self.val_cnt += 1
         return chr(ord('A') + cnt)
 
-    def generate_val_multi(self, length=10):
+    def generate_val_multi(self, size):
 
         val = ""
-        for i in range(length):
+        for i in range(size):
             val += self.generate_val_single()
         return val
 
