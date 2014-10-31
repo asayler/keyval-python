@@ -287,6 +287,34 @@ class SequenceMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
 
+    def helper_test_index(self, test_func, index, size, ref_func):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, index)
+        ref = ref_func(val, index)
+        self.assertEqual(ret, ref)
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
+    def helper_raises_index(self, test_func, index, size, error):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        self.assertRaises(error, test_func, instance, index)
+        instance.rem()
+
+    def helper_dne_index(self, test_func, index):
+
+        key = self.generate_key()
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance.exists())
+        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index)
+
     def test_len(self):
 
         # Setup Test Vals
@@ -305,17 +333,29 @@ class SequenceMixin(PersistentMixin):
 
     def test_getitem(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
+        def test_func(instance, index):
+            return instance[index]
 
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-        for i in range(len(val)):
-            self.assertEqual(val[i], instance[i])
+        def ref_func(ref, index):
+            return ref[index]
 
-        # Cleanup
-        instance.rem()
+        # Test DNE
+        self.helper_dne_index(test_func, 0)
+        self.helper_dne_index(test_func, 10)
+
+        # Test Good
+        for i in range(10):
+            self.helper_test_index(test_func, i,      10, ref_func)
+            self.helper_test_index(test_func, (i-10), 10, ref_func)
+
+        # Test OOB
+        self.helper_raises_index(test_func,   0,  0, IndexError)
+        self.helper_raises_index(test_func,   1,  0, IndexError)
+        self.helper_raises_index(test_func,  -1,  0, IndexError)
+        self.helper_raises_index(test_func,  10, 10, IndexError)
+        self.helper_raises_index(test_func,  11, 10, IndexError)
+        self.helper_raises_index(test_func, -11, 10, IndexError)
+        self.helper_raises_index(test_func, -12, 10, IndexError)
 
     def test_contains(self):
 
