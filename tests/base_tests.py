@@ -63,6 +63,13 @@ class PersistentMixin(object):
     def __init__(self, *args, **kwargs):
         super(PersistentMixin, self).__init__(*args, **kwargs)
 
+    def helper_dne_args(self, test_func, *args):
+
+        key = self.generate_key()
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance.exists())
+        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
+
     def test_from_new(self):
 
         # Setup Test Vals
@@ -263,24 +270,46 @@ class MutableMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(MutableMixin, self).__init__(*args, **kwargs)
 
+    def helper_test_mutable_args(self, size, test_func, ref_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, *args)
+        ref = ref_func(val, *args)
+        self.assertEqual(ret, ref)
+        instance.rem()
+
+    def helper_raises_args(self, size, error, test_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        self.assertRaises(error, test_func, instance, *args)
+        instance.rem()
+
     def test_set_val(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val1 = self.generate_val_multi(10)
-        val2 = self.generate_val_multi(10)
-        val3 = self.generate_val_multi(10)
+        def test_func(instance, new_val):
+            instance.set_val(new_val)
+            return instance.get_val()
 
-        # Create New Instance and Set Value
-        instance = self.factory.from_new(key, val1)
-        instance.set_val(val2)
-        self.assertEqual(val2, instance.get_val())
+        def ref_func(ref, new_val):
+            return new_val
 
-        # Rem Instance
-        instance.rem()
-        self.assertRaises(keyval.base.ObjectDNE, instance.set_val, val3)
+        # Setup
+        new_val = self.generate_val_multi(10)
 
-        # No Cleanup
+        # Test DNE
+        self.helper_dne_args(test_func, new_val)
+
+        # Test Good
+        self.helper_test_mutable_args(10, test_func, ref_func, new_val)
+
+        # Test Bad
+        self.helper_raises_args(10, ValueError, test_func, None)
 
 class SequenceMixin(PersistentMixin):
 
@@ -354,13 +383,6 @@ class SequenceMixin(PersistentMixin):
         v = self.generate_val_single(exclude=val)
         self.assertRaises(error, test_func, instance, v)
         instance.rem()
-
-    def helper_dne_args(self, test_func, *args):
-
-        key = self.generate_key()
-        instance = self.factory.from_raw(key)
-        self.assertFalse(instance.exists())
-        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
     def test_len(self):
 

@@ -98,6 +98,11 @@ class String(base_abc.String, Sequence):
 
     def _set_val(self, val, create=True, overwrite=True):
 
+        # Check Input
+        if val is None:
+            raise ValueError("val must not be None")
+        val = str(val)
+
         # Set Transaction
         def automic_set(pipe):
 
@@ -107,7 +112,7 @@ class String(base_abc.String, Sequence):
             if not create and not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
-            pipe.set(self._redis_key, str(val))
+            pipe.set(self._redis_key, val)
             pipe.get(self._redis_key)
 
         # Execute Transaction
