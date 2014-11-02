@@ -340,15 +340,14 @@ class SequenceMixin(PersistentMixin):
     def test_len(self):
 
         test_func = len
-        ref_func = len
 
         # Test DNE
         self.helper_dne_args(test_func)
 
         # Test Good
         for i in range(10):
-            self.helper_test_args_immutable( 0, ref_func, test_func)
-            self.helper_test_args_immutable(10, ref_func, test_func)
+            self.helper_test_args_immutable( 0, test_func, test_func)
+            self.helper_test_args_immutable(10, test_func, test_func)
 
     def test_getitem(self):
 
