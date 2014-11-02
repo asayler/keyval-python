@@ -76,14 +76,18 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(10)
 
-        # Create New Instance
+        # Create Invalid Instance
+        self.assertRaises(ValueError, self.factory.from_new, None, None)
+        self.assertRaises(ValueError, self.factory.from_new, key, None)
+        self.assertRaises(ValueError, self.factory.from_new, None, val)
+
+        # Create Valid Instance
         instance = self.factory.from_new(key, val)
-        self.assertTrue(instance)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.key())
         self.assertEqual(val, instance.get_val())
 
-        # Recreate New Instance
+        # Recreate Instance
         self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
 
         # Cleanup
@@ -95,15 +99,18 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(10)
 
+        # Get Invalid Instance
+        self.assertRaises(ValueError, self.factory.from_existing, None)
+
         # Get Nonexistant Instance
         self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
 
         # Create New Instance
-        self.factory.from_new(key, val)
+        instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
 
         # Get Existing Instance
         instance = self.factory.from_existing(key)
-        self.assertTrue(instance)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.key())
         self.assertEqual(val, instance.get_val())
@@ -115,16 +122,15 @@ class PersistentMixin(object):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = None
+
+        # Get Invalid Instance
+        self.assertRaises(ValueError, self.factory.from_raw, None)
 
         # Get Raw Instance
         instance = self.factory.from_raw(key)
-        self.assertFalse(instance)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.key())
         self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
-
-        # No Cleanup
 
     def test_rem(self):
 
@@ -136,7 +142,7 @@ class PersistentMixin(object):
         instance = self.factory.from_new(key, val)
         self.assertTrue(instance.exists())
 
-        # Rem Instance
+        # Remove Instance
         instance.rem()
         self.assertFalse(instance.exists())
 
@@ -145,8 +151,7 @@ class PersistentMixin(object):
 
         # Rem Non-existant Instance (Force)
         instance.rem(force=True)
-
-        # No Cleanup
+        self.assertFalse(instance.exists())
 
     def test_get_val(self):
 
@@ -222,7 +227,11 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(10)
 
-        # Create New Instance
+        # Test Non-existent Instance
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance)
+
+        # Test New Instance
         instance = self.factory.from_new(key, val)
         self.assertTrue(instance)
 
@@ -444,7 +453,7 @@ class SequenceMixin(PersistentMixin):
 
     def test_index(self):
 
-        test_func = type(self.factory.from_raw(None)).index
+        test_func = self.factory.obj.index
         ref_func = type(self.generate_val_multi(0)).index
 
         # Test DNE
@@ -461,7 +470,7 @@ class SequenceMixin(PersistentMixin):
 
     def test_count(self):
 
-        test_func = type(self.factory.from_raw(None)).count
+        test_func = self.factory.obj.count
         ref_func = type(self.generate_val_multi(0)).count
 
         # Test DNE

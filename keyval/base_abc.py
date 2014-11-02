@@ -41,12 +41,19 @@ class Persistent(object):
     def __init__(self, driver, key):
         """ Constructor"""
 
+        # Check Input
+        if driver is None:
+            raise ValueError("driver must not be None")
+        if key is None:
+            raise ValueError("key must not be None")
+        key = str(key)
+
         # Call Parent
         super(Persistent, self).__init__()
 
         # Save Attrs
         self._driver = driver
-        self._key = str(key)
+        self._key = key
 
     @classmethod
     def from_new(cls, driver, key, val, *args, **kwargs):
@@ -78,6 +85,7 @@ class Persistent(object):
     @classmethod
     def from_raw(cls, driver, key, *args, **kwargs):
         """Raw Constructor"""
+
         return cls(driver, key, *args, **kwargs)
 
     def __unicode__(self):
