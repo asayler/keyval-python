@@ -548,13 +548,6 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         self.assertRaises(error, test_func, instance, index, item)
         instance.rem()
 
-    def helper_dne_index_item(self, test_func, index, item):
-
-        key = self.generate_key()
-        instance = self.factory.from_raw(key)
-        self.assertFalse(instance.exists())
-        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, index, item)
-
     def test_setitem(self):
 
         # Test Functions
@@ -581,7 +574,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def setitem_test_null(index):
             item = self.generate_val_multi(1)
-            self.helper_dne_index_item(test_func, index, item)
+            self.helper_dne_args(test_func, index, item)
 
         def setitem_test_badval(index, size):
             item = self.generate_val_multi(3)
@@ -645,7 +638,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def delitem_test_null(index):
             item = self.generate_val_multi(1)
-            self.helper_dne_index_item(test_func, index, item)
+            self.helper_dne_args(test_func, index, item)
 
         def delitem_test_oob(index, size):
             item = self.generate_val_multi(1)
@@ -694,7 +687,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def insert_test_null(index):
             item = self.generate_val_multi(1)
-            self.helper_dne_index_item(test_func, index, item)
+            self.helper_dne_args(test_func, index, item)
 
         # test Null Instance
         insert_test_null( 0)
