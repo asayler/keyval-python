@@ -79,6 +79,18 @@ class PersistentMixin(object):
         self.assertFalse(instance.exists())
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
+    def helper_test_args_immutable(self, size, ref_func, test_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, *args)
+        ref = ref_func(val, *args)
+        self.assertEqual(ret, ref)
+        self.assertEqual(val, instance.get_val())
+        instance.rem()
+
     def test_from_new(self):
 
         # Setup Test Vals
@@ -325,43 +337,6 @@ class SequenceMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
 
-    def helper_test_args_immutable(self, size, ref_func, test_func, *args):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        ret = test_func(instance, *args)
-        ref = ref_func(val, *args)
-        self.assertEqual(ret, ref)
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
-
-    def helper_test_val_in(self, test_func, index, size, ref_func):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        ret = test_func(instance, val[index])
-        ref = ref_func(val, val[index])
-        self.assertEqual(ret, ref)
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
-
-    def helper_test_val_out(self, test_func, size, ref_func):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        v = self.generate_val_single(exclude=val)
-        ret = test_func(instance, v)
-        ref = ref_func(val, v)
-        self.assertEqual(ret, ref)
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
-
     def test_len(self):
 
         test_func = len
@@ -380,16 +355,13 @@ class SequenceMixin(PersistentMixin):
         def test_func(instance, index):
             return instance[index]
 
-        def ref_func(ref, index):
-            return ref[index]
-
         # Test DNE
         self.helper_dne_args(test_func, None)
 
         # Test Good
         for i in range(10):
-            self.helper_test_args_immutable(10, ref_func, test_func, i,    )
-            self.helper_test_args_immutable(10, ref_func, test_func, (i-10))
+            self.helper_test_args_immutable(10, test_func, test_func,  i,   )
+            self.helper_test_args_immutable(10, test_func, test_func, (i-10))
 
         # Test OOB
         self.helper_raises_args( 0, IndexError, test_func,   0)
@@ -402,60 +374,69 @@ class SequenceMixin(PersistentMixin):
 
     def test_contains(self):
 
-        def test_func(instance, val):
-            return val in instance
-
-        def ref_func(ref, val):
-            return val in ref
+        def test_func(instance, item):
+            return item in instance
 
         # Test DNE
         self.helper_dne_args(test_func, None)
 
         # Test In
+        def test_func_in(instance, index):
+            item = instance[index]
+            return test_func(instance, item)
         for i in range(10):
-            self.helper_test_val_in(test_func, i,      10, ref_func)
-            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
-
-        # Test Out
-        for i in range(10):
-            self.helper_test_val_out(test_func, 10, ref_func)
-
-    def test_index(self):
-
-        test_func = self.factory.obj.index
-        ref_func = type(self.generate_val_multi(0)).index
-
-        # Test DNE
-        self.helper_dne_args(test_func, None)
-
-        # Test In
-        for i in range(10):
-            self.helper_test_val_in(test_func, i,      10, ref_func)
-            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
+            self.helper_test_args_immutable(10, test_func_in, test_func_in,  i,   )
+            self.helper_test_args_immutable(10, test_func_in, test_func_in, (i-10))
 
         # Test Out
         def test_func_out(instance):
-            val = instance.get_val()
-            v = self.generate_val_single(exclude=val)
-            return instance.index(v)
-        self.helper_raises_args(10, ValueError, test_func_out)
+            item = self.generate_val_single(exclude=instance)
+            return test_func(instance, item)
+        self.helper_test_args_immutable(10, test_func_out, test_func_out)
 
-    def test_count(self):
+    def test_index(self):
 
-        test_func = self.factory.obj.count
-        ref_func = type(self.generate_val_multi(0)).count
+        def test_func(instance, item):
+            return instance.index(item)
 
         # Test DNE
         self.helper_dne_args(test_func, None)
 
         # Test In
+        def test_func_item_in(instance, index):
+            item = instance[index]
+            return test_func(instance, item)
         for i in range(10):
-            self.helper_test_val_in(test_func, i,      10, ref_func)
-            self.helper_test_val_in(test_func, (i-10), 10, ref_func)
+            self.helper_test_args_immutable(10, test_func_item_in, test_func_item_in,  i    )
+            self.helper_test_args_immutable(10, test_func_item_in, test_func_item_in, (i-10))
 
         # Test Out
+        def test_func_item_out(instance):
+            item = self.generate_val_single(exclude=instance)
+            return test_func(instance, item)
+        self.helper_raises_args(10, ValueError, test_func_item_out)
+
+    def test_count(self):
+
+        def test_func(instance, item):
+            return instance.count(item)
+
+        # Test DNE
+        self.helper_dne_args(test_func, None)
+
+        # Test In
+        def test_func_item_in(instance, index):
+            item = instance[index]
+            return test_func(instance, item)
         for i in range(10):
-            self.helper_test_val_out(test_func, 10, ref_func)
+            self.helper_test_args_immutable(10, test_func_item_in, test_func_item_in,  i)
+            self.helper_test_args_immutable(10, test_func_item_in, test_func_item_in, (i-10))
+
+        # Test Out
+        def test_func_item_out(instance):
+            item = self.generate_val_single(exclude=instance)
+            return test_func(instance, item)
+        self.helper_test_args_immutable(10, test_func_item_out, test_func_item_out)
 
     def test_iter(self):
 
