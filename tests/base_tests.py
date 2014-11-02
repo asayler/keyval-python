@@ -63,6 +63,15 @@ class PersistentMixin(object):
     def __init__(self, *args, **kwargs):
         super(PersistentMixin, self).__init__(*args, **kwargs)
 
+    def helper_raises_args(self, size, error, test_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        self.assertRaises(error, test_func, instance, *args)
+        instance.rem()
+
     def helper_dne_args(self, test_func, *args):
 
         key = self.generate_key()
@@ -290,15 +299,6 @@ class MutableMixin(PersistentMixin):
         self.assertEqual(ret, ref)
         instance.rem()
 
-    def helper_raises_args(self, size, error, test_func, *args):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        self.assertRaises(error, test_func, instance, *args)
-        instance.rem()
-
     def test_set_val(self):
 
         def test_func(instance, new_val):
@@ -374,25 +374,6 @@ class SequenceMixin(PersistentMixin):
         self.assertEqual(val, instance.get_val())
         instance.rem()
 
-    def helper_raises_index(self, test_func, index, size, error):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        self.assertRaises(error, test_func, instance, index)
-        instance.rem()
-
-    def helper_raises_val_out(self, test_func, size, error):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        v = self.generate_val_single(exclude=val)
-        self.assertRaises(error, test_func, instance, v)
-        instance.rem()
-
     def test_len(self):
 
         test_func = len
@@ -423,13 +404,13 @@ class SequenceMixin(PersistentMixin):
             self.helper_test_index(test_func, (i-10), 10, ref_func)
 
         # Test OOB
-        self.helper_raises_index(test_func,   0,  0, IndexError)
-        self.helper_raises_index(test_func,   1,  0, IndexError)
-        self.helper_raises_index(test_func,  -1,  0, IndexError)
-        self.helper_raises_index(test_func,  10, 10, IndexError)
-        self.helper_raises_index(test_func,  11, 10, IndexError)
-        self.helper_raises_index(test_func, -11, 10, IndexError)
-        self.helper_raises_index(test_func, -12, 10, IndexError)
+        self.helper_raises_args( 0, IndexError, test_func,   0)
+        self.helper_raises_args( 0, IndexError, test_func,   1)
+        self.helper_raises_args( 0, IndexError, test_func,  -1)
+        self.helper_raises_args(10, IndexError, test_func,  10)
+        self.helper_raises_args(10, IndexError, test_func,  11)
+        self.helper_raises_args(10, IndexError, test_func, -11)
+        self.helper_raises_args(10, IndexError, test_func, -12)
 
     def test_contains(self):
 
@@ -465,8 +446,11 @@ class SequenceMixin(PersistentMixin):
             self.helper_test_val_in(test_func, (i-10), 10, ref_func)
 
         # Test Out
-        for i in range(10):
-            self.helper_raises_val_out(test_func, 10, ValueError)
+        def test_func_out(instance):
+            val = instance.get_val()
+            v = self.generate_val_single(exclude=val)
+            return instance.index(v)
+        self.helper_raises_args(10, ValueError, test_func_out)
 
     def test_count(self):
 
@@ -539,15 +523,6 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         instance.rem()
         return ret
 
-    def helper_raises_index_item(self, test_func, index, item, size, error):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        self.assertRaises(error, test_func, instance, index, item)
-        instance.rem()
-
     def test_setitem(self):
 
         # Test Functions
@@ -578,11 +553,11 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def setitem_test_badval(index, size):
             item = self.generate_val_multi(3)
-            self.helper_raises_index_item(test_func, index, item, size, ValueError)
+            self.helper_raises_args(size, ValueError, test_func, index, item)
 
         def setitem_test_oob(index, size):
             item = self.generate_val_multi(1)
-            self.helper_raises_index_item(test_func, index, item, size, IndexError)
+            self.helper_raises_args(size, IndexError, test_func, index, item)
 
         # Test Values
 
@@ -642,7 +617,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def delitem_test_oob(index, size):
             item = self.generate_val_multi(1)
-            self.helper_raises_index_item(test_func, index, item, size, IndexError)
+            self.helper_raises_args(size, IndexError, test_func, index, item)
 
         # Test Null Instance
         delitem_test_null( 0)
@@ -683,7 +658,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def insert_test_badval(index, size):
             item = self.generate_val_multi(3)
-            self.helper_raises_index_item(test_func, index, item, size, ValueError)
+            self.helper_raises_args(size, ValueError, test_func, index, item)
 
         def insert_test_null(index):
             item = self.generate_val_multi(1)
