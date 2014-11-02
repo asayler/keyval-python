@@ -288,7 +288,7 @@ class MutableMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(MutableMixin, self).__init__(*args, **kwargs)
 
-    def helper_test_mutable_args(self, size, test_func, ref_func, *args):
+    def helper_test_args_mutable(self, size, ref_func, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -315,7 +315,7 @@ class MutableMixin(PersistentMixin):
         self.helper_dne_args(test_func, new_val)
 
         # Test Good
-        self.helper_test_mutable_args(10, test_func, ref_func, new_val)
+        self.helper_test_args_mutable(10, ref_func, test_func, new_val)
 
         # Test Bad
         self.helper_raises_args(10, ValueError, test_func, None)
@@ -325,7 +325,7 @@ class SequenceMixin(PersistentMixin):
     def __init__(self, *args, **kwargs):
         super(SequenceMixin, self).__init__(*args, **kwargs)
 
-    def helper_test_args(self, size, test_func, ref_func, *args):
+    def helper_test_args_immutable(self, size, ref_func, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -333,18 +333,6 @@ class SequenceMixin(PersistentMixin):
         self.assertEqual(val, instance.get_val())
         ret = test_func(instance, *args)
         ref = ref_func(val, *args)
-        self.assertEqual(ret, ref)
-        self.assertEqual(val, instance.get_val())
-        instance.rem()
-
-    def helper_test_index(self, test_func, index, size, ref_func):
-
-        key = self.generate_key()
-        val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        ret = test_func(instance, index)
-        ref = ref_func(val, index)
         self.assertEqual(ret, ref)
         self.assertEqual(val, instance.get_val())
         instance.rem()
@@ -384,8 +372,8 @@ class SequenceMixin(PersistentMixin):
 
         # Test Good
         for i in range(10):
-            self.helper_test_args( 0, test_func, ref_func)
-            self.helper_test_args(10, test_func, ref_func)
+            self.helper_test_args_immutable( 0, ref_func, test_func)
+            self.helper_test_args_immutable(10, ref_func, test_func)
 
     def test_getitem(self):
 
@@ -400,8 +388,8 @@ class SequenceMixin(PersistentMixin):
 
         # Test Good
         for i in range(10):
-            self.helper_test_index(test_func, i,      10, ref_func)
-            self.helper_test_index(test_func, (i-10), 10, ref_func)
+            self.helper_test_args_immutable(10, ref_func, test_func, i,    )
+            self.helper_test_args_immutable(10, ref_func, test_func, (i-10))
 
         # Test OOB
         self.helper_raises_args( 0, IndexError, test_func,   0)
