@@ -598,6 +598,100 @@ class StringMixin(SequenceMixin):
         self.helper_raises( 0, IndexError, getitem,  1)
         self.helper_raises( 0, IndexError, getitem, -1)
 
+class MutableStringMixin(MutableSequenceMixin, StringMixin):
+
+    class MutableStringRef(collections.MutableSequence, object):
+
+        def __init__(self, val):
+
+            # Call Parent
+            super(MutableStringRef, self).__init__()
+
+            # Save Val
+            self._val = val
+
+        def __unicode__(self):
+            """Return Unicode Representation"""
+            return unicode(self._val)
+
+        def __str__(self):
+            """Return String Representation"""
+            return unicode(self).encode(base._ENCODING)
+
+        def __repr__(self):
+            """Return Unique Representation"""
+            return repr(self._val)
+
+        def __hash__(self):
+            """Return Hash"""
+            return hash(self._val)
+
+        def __nonzero__(self):
+            """Test Bool"""
+            return bool(self._val)
+
+        def __eq__(self, other):
+            """Test Equality"""
+            return self._val == other
+
+        def __ne__(self, other):
+            """Test Unequality"""
+            return self._val != other
+
+        def __len__(self):
+            """Get Len of Set"""
+            return len(self._val)
+
+        def __getitem__(self, i):
+            """Get Seq Item"""
+            return self._val[i]
+
+        def __contains__(self, v):
+            """Contains Seq Item"""
+            return v in self._val
+
+        def __iter__(self):
+            """Iterate Across Seq"""
+            for c in self._val:
+                yield c
+
+        def __reversed__(self):
+            """Iterate Backwards Across Seq"""
+            for c in reversed(self._val):
+                yield c
+
+        def index(self, v):
+            """Return index of first occurance of v"""
+            return self._val.index(v)
+
+        def count(self, v):
+            """Return number os occurances of v"""
+            return self._val.count(v)
+
+        def __setitem__(self, idx, item):
+            """Set Seq Item"""
+            val_in = self._val
+            val_out = ""
+            if (index != 0) and (index != -len(val_in)):
+                val_out += val_in[:index]
+            val_out += item
+            if (index != (len(val_in)-1)) and (index != -1):
+                val_out += val_in[index+1:]
+            return out
+
+        def __delitem__(self, i):
+            """Del Seq Item"""
+            pass
+
+        def insert(self, i, v):
+            """Insert Seq Item"""
+            pass
+
+    def __init__(self, *args, **kwargs):
+        super(MutableStringMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+
+
 class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
