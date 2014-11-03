@@ -205,12 +205,14 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         """Insert Seq Item"""
         pass
 
+
 ### Abstract Objects ###
 
 class String(Sequence):
-
     pass
 
 class MutableString(MutableSequence, String):
+    pass
 
+class List(Sequence):
     pass

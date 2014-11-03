@@ -225,3 +225,57 @@ class MutableString(base_abc.MutableString, String):
 
         # Execute Transaction
         self._driver.transaction(automic_insert, self._redis_key)
+
+class List(base_abc.List, Sequence):
+
+    def __init__(self, driver, key):
+        """ Constructor"""
+
+        # Call Parent
+        super(List, self).__init__(driver, key)
+
+        # Save Extra Attrs
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_LIST, base._SEP_FIELD, self._key)
+        self._redis_key = redis_key
+
+    def _get_val(self):
+
+        # Get Transaction
+        def automic_get(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.lrange(self._redis_key, 0, -1)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_get, self._redis_key)
+
+        # Return Object
+        return ret[0]
+
+    def _set_val(self, val, create=True, overwrite=True):
+
+        # Check Input
+        if val is None:
+            raise ValueError("val must not be None")
+        val = str(val)
+
+        # Set Transaction
+        def automic_set(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not overwrite and exists:
+                raise base.ObjectExists(self)
+            if not create and not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.rpush(self._redis_key, *val)
+            pipe.lrange(self._redis_key, 0, -1)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_set, self._redis_key)
+
+        # Return Object
+        return ret[1]
