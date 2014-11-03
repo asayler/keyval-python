@@ -55,13 +55,6 @@ class BaseTestCase(unittest.TestCase):
         self.key_cnt += 1
         return key
 
-    def generate_val_multi(self, size, exclude=None):
-
-        val = self.generate_val_single(null=True)
-        for i in range(size):
-            val += self.generate_val_single(exclude=exclude)
-        return val
-
 ### Base Mixins ###
 
 class PersistentMixin(object):
@@ -697,4 +690,11 @@ class StringMixin(SequenceMixin):
         else:
             val = ""
 
+        return val
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = self.generate_val_single(null=True)
+        for i in range(size):
+            val += self.generate_val_single(exclude=exclude)
         return val
