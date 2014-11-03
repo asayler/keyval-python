@@ -290,17 +290,14 @@ class PersistentMixin(object):
 
 class MutableMixin(PersistentMixin):
 
-    def helper_test_args_mutable(self, size, test_func, ref_func=None, *args):
-
-        if ref_func is None:
-            ref_func = test_func
+    def helper_test_args_mutable(self, size, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
         self.assertEqual(val, instance.get_val())
         ret = test_func(instance, *args)
-        ref = ref_func(val, *args)
+        ref = test_func(val, *args)
         self.assertEqual(ret, ref)
         self.assertEqual(val, instance.get_val())
         instance.rem()
@@ -343,7 +340,7 @@ class SequenceMixin(PersistentMixin):
 
         # Test Good
         for i in range(10):
-            self.helper_test_args_immutable(10, getitem,  i,   )
+            self.helper_test_args_immutable(10, getitem,  i    )
             self.helper_test_args_immutable(10, getitem, (i-10))
 
         # Test OOB
@@ -367,7 +364,7 @@ class SequenceMixin(PersistentMixin):
             item = instance[index]
             return contains(instance, item)
         for i in range(10):
-            self.helper_test_args_immutable(10, contains_in,  i,   )
+            self.helper_test_args_immutable(10, contains_in,  i    )
             self.helper_test_args_immutable(10, contains_in, (i-10))
 
         # Test Out
@@ -458,88 +455,30 @@ class SequenceMixin(PersistentMixin):
 
 class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
-    def helper_test_index_item(self, test_func, index, item, size, ref_func):
-
-        key = self.generate_key()
-        old = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, old)
-        self.assertEqual(old, instance.get_val())
-        ret = test_func(instance, index, item)
-        new = ref_func(old, index, item)
-        self.assertNotEqual(old, new)
-        self.assertEqual(new, instance.get_val())
-        instance.rem()
-        return ret
-
     def test_setitem(self):
 
         # Test Functions
+        def setitem(instance, idx, item):
+            instance[idx] = item
 
-        def test_func(instance, index, item):
-            ret = instance[index] = item
-            return ret
+        # Test DNE
+        item = self.generate_val_single()
+        self.helper_dne_args(setitem, None, item)
 
-        def ref_func(ref, index, item):
-            out = self.generate_val_multi(0)
-            if (index != 0) and (index != -len(ref)):
-                out += ref[:index]
-            out += item
-            if (index != (len(ref)-1)) and (index != -1):
-                out += ref[index+1:]
-            return out
-
-        # Test Wrappers
-
-        def setitem_test_good(index, size):
-            item = self.generate_val_multi(1)
-            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
-            self.assertEqual(item, ret)
-
-        def setitem_test_null(index):
-            item = self.generate_val_multi(1)
-            self.helper_dne_args(test_func, index, item)
-
-        def setitem_test_badval(index, size):
-            item = self.generate_val_multi(3)
-            self.helper_raises_args(size, ValueError, test_func, index, item)
-
-        def setitem_test_oob(index, size):
-            item = self.generate_val_multi(1)
-            self.helper_raises_args(size, IndexError, test_func, index, item)
-
-        # Test Values
-
-        # Test Null Instance
-        setitem_test_null( 0)
-        setitem_test_null(-1)
-        setitem_test_null( 1)
-
-        # Test Empty Instance
-        setitem_test_oob( 0, 0)
-        setitem_test_oob( 1, 0)
-        setitem_test_oob(-1, 0)
-
-        # Test Valid
-        setitem_test_good(  0, 10)
-        setitem_test_good(-10, 10)
-        setitem_test_good(  5, 10)
-        setitem_test_good( -5, 10)
-        setitem_test_good(  9, 10)
-        setitem_test_good( -1, 10)
+        # Test Good
+        for i in range(10):
+            item = self.generate_val_single()
+            self.helper_test_args_mutable(10, setitem,  i,     item)
+            self.helper_test_args_mutable(10, setitem, (i-10), item)
 
         # Test OOB
-        setitem_test_oob( 10, 10)
-        setitem_test_oob( 11, 10)
-        setitem_test_oob(-11, 10)
-        setitem_test_oob(-12, 10)
-
-        # Test Bad Val
-        setitem_test_badval(  0, 10)
-        setitem_test_badval(-10, 10)
-        setitem_test_badval(  5, 10)
-        setitem_test_badval( -5, 10)
-        setitem_test_badval(  9, 10)
-        setitem_test_badval( -1, 10)
+        item = self.generate_val_single()
+        self.helper_raises_args( 1, IndexError, setitem,   1, item)
+        self.helper_raises_args( 1, IndexError, setitem,  -2, item)
+        self.helper_raises_args(10, IndexError, setitem,  10, item)
+        self.helper_raises_args(10, IndexError, setitem,  11, item)
+        self.helper_raises_args(10, IndexError, setitem, -11, item)
+        self.helper_raises_args(10, IndexError, setitem, -12, item)
 
     def test_delitem(self):
 
@@ -724,3 +663,9 @@ class ListMixin(SequenceMixin):
         key = self.generate_key()
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
+
+class MutableListMixin(MutableSequenceMixin, ListMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(ListMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)

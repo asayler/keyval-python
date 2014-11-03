@@ -81,6 +81,9 @@ class StringTestCase(base_tests.StringMixin, RedisBaseTestCase):
 class ListTestCase(base_tests.ListMixin, RedisBaseTestCase):
     pass
 
+class MutableListTestCase(base_tests.MutableListMixin, RedisBaseTestCase):
+    pass
+
 ### Main ###
 
 if __name__ == '__main__':
