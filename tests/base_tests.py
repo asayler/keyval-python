@@ -10,6 +10,7 @@
 
 ## stdlib ##
 import copy
+import collections
 import unittest
 import warnings
 
