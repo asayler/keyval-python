@@ -282,3 +282,100 @@ class List(base_abc.List, Sequence):
 
         # Return Object
         return ret[1]
+
+class MutableList(base_abc.MutableList, List):
+
+    def __setitem__(self, i, v):
+        """Set Seq Item"""
+
+        # Transaction
+        def automic_setitem(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Check Index
+            length = pipe.llen(self._redis_key)
+            if (i >= length) or (i < -length):
+                raise IndexError("{:d} out of range".format(i))
+
+            # Normalize Index
+            if (i >= 0):
+                norm_i = i
+            else:
+                norm_i = length + i
+
+            # Set Item
+            pipe.multi()
+            pipe.lset(self._redis_key, norm_i, v)
+
+        # Execute Transaction
+        self._driver.transaction(automic_setitem, self._redis_key)
+
+    def __delitem__(self, i):
+        """Del Seq Item"""
+
+        # Transaction
+        def automic_delitem(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Check Index
+            length = pipe.llen(self._redis_key)
+            if (i >= length) or (i < -length):
+                raise IndexError("{:d} out of range".format(i))
+
+            # Get Ranges
+            if (i == 0) or (i == -length):
+                start = []
+            else:
+                start = pipe.lrange(self._redis_key, 0, (i-1))
+            if (i == (length-1)) or (i == -1):
+                end = []
+            else:
+                end = pipe.lrange(self._redis_key, (i+1), length)
+
+            # Set New Val
+            new = start + end
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.rpush(self._redis_key, *new)
+
+        # Execute Transaction
+        self._driver.transaction(automic_delitem, self._redis_key)
+
+    def insert(self, i, v):
+        """Insert Seq Item"""
+
+        # Transaction
+        def automic_insert(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Get Ranges
+            length = pipe.llen(self._redis_key)
+            if (i == 0) or (i <= -length):
+                start = []
+            else:
+                start = pipe.lrange(self._redis_key, 0, (i-1))
+            if (i >= length):
+                end = []
+            else:
+                end = pipe.lrange(self._redis_key, i, length)
+
+            # Set New Val
+            new = start + [v] + end
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.rpush(self._redis_key, *new)
+
+        # Execute Transaction
+        self._driver.transaction(automic_insert, self._redis_key)

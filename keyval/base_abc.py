@@ -216,3 +216,6 @@ class MutableString(MutableSequence, String):
 
 class List(Sequence):
     pass
+
+class MutableList(MutableSequence, List):
+    pass
