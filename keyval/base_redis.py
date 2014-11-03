@@ -373,3 +373,39 @@ class MutableList(base_abc.MutableList, List):
 
         # Execute Transaction
         self._driver.transaction(automic_insert, self._redis_key)
+
+    def append(self, itm):
+        """Append Seq Item"""
+
+        # Transaction
+        def automic_append(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Append
+            pipe.multi()
+            pipe.rpush(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_append, self._redis_key)
+
+    def extend(self, seq):
+        """Append Seq wuth another Seq"""
+
+        # Transaction
+        def automic_extend(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Extend
+            pipe.multi()
+            pipe.rpush(self._redis_key, *seq)
+
+        # Execute Transaction
+        self._driver.transaction(automic_extend, self._redis_key)

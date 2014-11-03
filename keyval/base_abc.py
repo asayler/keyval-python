@@ -191,19 +191,34 @@ class Sequence(collections.Sequence, Persistent):
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
     @abc.abstractmethod
-    def __setitem__(self, i, v):
+    def __setitem__(self, idx, itm):
         """Set Seq Item"""
         pass
 
     @abc.abstractmethod
-    def __delitem__(self, i):
+    def __delitem__(self, idx):
         """Del Seq Item"""
         pass
 
     @abc.abstractmethod
-    def insert(self, i, v):
+    def insert(self, idx, itm):
         """Insert Seq Item"""
         pass
+
+    @abc.abstractmethod
+    def append(self, itm):
+        """Append Seq Item"""
+        pass
+
+    @abc.abstractmethod
+    def extend(self, seq):
+        """Extend Seq with another Seq"""
+        pass
+
+    # @abc.abstractmethod
+    # def reverse(self):
+    #     """Reverse Seq"""
+    #     pass
 
 
 ### Abstract Objects ###
