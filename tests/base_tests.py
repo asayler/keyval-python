@@ -90,6 +90,19 @@ class PersistentMixin(object):
         self.assertEqual(orig_val, val)
         instance.rem()
 
+    def helper_exp_immutable(self, size, exp_ret, test_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
+        self.assertEqual(val, instance.get_val())
+        orig_val = copy.copy(val)
+        ret = test_func(instance, *args)
+        self.assertEqual(exp_ret, ret)
+        self.assertEqual(orig_val, instance.get_val())
+        instance.rem()
+
     def test_from_new(self):
 
         # Setup Test Vals
@@ -295,6 +308,7 @@ class MutableMixin(PersistentMixin):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
         self.assertEqual(val, instance.get_val())
         ret = test_func(instance, *args)
         ref = test_func(val, *args)
@@ -307,6 +321,7 @@ class MutableMixin(PersistentMixin):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
         self.assertEqual(val, instance.get_val())
         ret = test_func(instance, *args)
         self.assertEqual(exp_ret, ret)
