@@ -302,6 +302,17 @@ class MutableMixin(PersistentMixin):
         self.assertEqual(val, instance.get_val())
         instance.rem()
 
+    def helper_exp_mutable(self, size, exp_ret, exp_val, test_func, *args):
+
+        key = self.generate_key()
+        val = self.generate_val_multi(size)
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(val, instance.get_val())
+        ret = test_func(instance, *args)
+        self.assertEqual(exp_ret, ret)
+        self.assertEqual(exp_val, instance.get_val())
+        instance.rem()
+
     def test_set_val(self):
 
         def test_func(instance, new_val):
@@ -314,7 +325,7 @@ class MutableMixin(PersistentMixin):
         self.helper_dne(test_func, new_val)
 
         # Test Good
-        self.helper_cmp_mutable(10, test_func, new_val)
+        self.helper_exp_mutable(10, None, new_val, test_func, new_val)
 
         # Test Bad
         self.helper_raises(10, ValueError, test_func, None)
