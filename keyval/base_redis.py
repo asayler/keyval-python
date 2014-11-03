@@ -12,6 +12,7 @@ import base_abc
 
 
 _PREFIX_STRING = "string"
+_PREFIX_LIST = "list"
 
 
 ### Driver ###
@@ -260,7 +261,9 @@ class List(base_abc.List, Sequence):
         # Check Input
         if val is None:
             raise ValueError("val must not be None")
-        val = str(val)
+        val = list(val)
+        if len(val) == 0:
+            raise ValueError("list must have non-zero length")
 
         # Set Transaction
         def automic_set(pipe):

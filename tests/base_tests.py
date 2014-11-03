@@ -80,6 +80,7 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
         self.assertEqual(val, instance.get_val())
         orig_val = copy.copy(val)
         ret = test_func(instance, *args)
@@ -222,7 +223,7 @@ class PersistentMixin(object):
         self.helper_dne_args(bool)
 
         # Test Good
-        self.helper_test_args_immutable( 0, bool)
+        self.helper_test_args_immutable( 1, bool)
         self.helper_test_args_immutable(10, bool)
 
     def test_repr(self):
@@ -329,7 +330,7 @@ class SequenceMixin(PersistentMixin):
         self.helper_dne_args(len)
 
         # Test Good
-        self.helper_test_args_immutable( 0, len)
+        self.helper_test_args_immutable( 1, len)
         self.helper_test_args_immutable(10, len)
 
     def test_getitem(self):
@@ -346,9 +347,8 @@ class SequenceMixin(PersistentMixin):
             self.helper_test_args_immutable(10, getitem, (i-10))
 
         # Test OOB
-        self.helper_raises_args( 0, IndexError, getitem,   0)
-        self.helper_raises_args( 0, IndexError, getitem,   1)
-        self.helper_raises_args( 0, IndexError, getitem,  -1)
+        self.helper_raises_args( 1, IndexError, getitem,   1)
+        self.helper_raises_args( 1, IndexError, getitem,  -2)
         self.helper_raises_args(10, IndexError, getitem,  10)
         self.helper_raises_args(10, IndexError, getitem,  11)
         self.helper_raises_args(10, IndexError, getitem, -11)
@@ -659,25 +659,46 @@ class StringMixin(SequenceMixin):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
-    def generate_val_single(self, exclude=None, null=False):
+    def generate_val_single(self, exclude=None):
 
-        if not null:
-            if exclude is None:
-                exclude = ""
-            while True:
-                cnt = self.val_cnt % 26
-                val = chr(ord('A') + cnt)
-                if val not in exclude:
-                    self.val_cnt += 1
-                    break
-        else:
-            val = ""
-
+        if exclude is None:
+            exclude = ""
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                self.val_cnt += 1
+                break
         return val
 
     def generate_val_multi(self, size, exclude=None):
 
-        val = self.generate_val_single(null=True)
+        val = ""
         for i in range(size):
             val += self.generate_val_single(exclude=exclude)
+        return val
+
+class ListMixin(SequenceMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(ListMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.List)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = []
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return val
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = []
+        for i in range(size):
+            val.append(self.generate_val_single(exclude=exclude))
         return val
