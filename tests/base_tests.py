@@ -55,6 +55,12 @@ class BaseTestCase(unittest.TestCase):
         self.key_cnt += 1
         return key
 
+    def generate_val_multi(self, size, exclude=None):
+
+        val = self.generate_val_single(null=True)
+        for i in range(size):
+            val += self.generate_val_single(exclude=exclude)
+        return val
 
 ### Base Mixins ###
 
@@ -308,6 +314,7 @@ class MutableMixin(PersistentMixin):
         self.assertEqual(val, instance.get_val())
         ret = test_func(instance, *args)
         ref = ref_func(val, *args)
+        self.assertEqual(val, instance.get_val())
         self.assertEqual(ret, ref)
         instance.rem()
 
@@ -318,6 +325,7 @@ class MutableMixin(PersistentMixin):
             return instance.get_val()
 
         def ref_func(ref, new_val):
+            ref = new_val
             return new_val
 
         # Setup
@@ -679,25 +687,20 @@ class StringMixin(SequenceMixin):
         super(SequenceMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
-    def generate_val_single(self, exclude=None):
+    def generate_val_single(self, exclude=None, null=False):
 
-        if exclude is None:
-            exclude = ""
+        if not null:
+            if exclude is None:
+                exclude = ""
+            while True:
+                cnt = self.val_cnt % 26
+                val = chr(ord('A') + cnt)
+                if val not in exclude:
+                    self.val_cnt += 1
+                    break
+        else:
+            val = ""
 
-        while True:
-            cnt = self.val_cnt % 26
-            val = chr(ord('A') + cnt)
-            if val not in exclude:
-                break
-
-        self.val_cnt += 1
-        return val
-
-    def generate_val_multi(self, size):
-
-        val = ""
-        for i in range(size):
-            val += self.generate_val_single()
         return val
 
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
