@@ -678,6 +678,21 @@ class StringMixin(SequenceMixin):
             val += self.generate_val_single(exclude=exclude)
         return val
 
+    def test_empty(self):
+
+        # Test Len
+        self.helper_test_args_immutable( 0, len)
+
+        # Test Bool
+        self.helper_test_args_immutable( 0, bool)
+
+        # Test getitem
+        def getitem(instance, index):
+            return instance[index]
+        self.helper_raises_args( 0, IndexError, getitem,  0)
+        self.helper_raises_args( 0, IndexError, getitem,  1)
+        self.helper_raises_args( 0, IndexError, getitem, -1)
+
 class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
@@ -702,3 +717,10 @@ class ListMixin(SequenceMixin):
         for i in range(size):
             val.append(self.generate_val_single(exclude=exclude))
         return val
+
+    def test_empty(self):
+
+        # Create Empty Instance
+        key = self.generate_key()
+        val = self.generate_val_multi(0)
+        self.assertRaises(ValueError, self.factory.from_new, key, val)
