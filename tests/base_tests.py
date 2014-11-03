@@ -457,7 +457,6 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_setitem(self):
 
-        # Test Functions
         def setitem(instance, idx, item):
             instance[idx] = item
 
@@ -469,6 +468,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         for i in range(10):
             item = self.generate_val_single()
             self.helper_test_args_mutable(10, setitem,  i,     item)
+            item = self.generate_val_single()
             self.helper_test_args_mutable(10, setitem, (i-10), item)
 
         # Test OOB
@@ -482,112 +482,52 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_delitem(self):
 
-        def test_func(instance, index, item):
-            del(instance[index])
+        def delitem(instance, idx, item):
+            del(instance[idx])
 
-        def ref_func(ref, index, item):
-            out = self.generate_val_multi(0)
-            if (index != 0) and (index != -len(ref)):
-                out += ref[:index]
-            if (index != (len(ref)-1)) and (index != -1):
-                out += ref[index+1:]
-            return out
+        # Test DNE
+        item = self.generate_val_single()
+        self.helper_dne_args(delitem, None, item)
 
-        def delitem_test_good(index, size):
-            item = self.generate_val_multi(1)
-            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
-            self.assertIsNone(ret)
-
-        def delitem_test_null(index):
-            item = self.generate_val_multi(1)
-            self.helper_dne_args(test_func, index, item)
-
-        def delitem_test_oob(index, size):
-            item = self.generate_val_multi(1)
-            self.helper_raises_args(size, IndexError, test_func, index, item)
-
-        # Test Null Instance
-        delitem_test_null( 0)
-        delitem_test_null(-1)
-        delitem_test_null( 1)
-
-        # Test Empty Instance
-        delitem_test_oob( 0, 0)
-        delitem_test_oob( 1, 0)
-        delitem_test_oob(-1, 0)
-
-        # Test Valid
-        delitem_test_good(  0, 10)
-        delitem_test_good(-10, 10)
-        delitem_test_good(  5, 10)
-        delitem_test_good( -5, 10)
-        delitem_test_good(  9, 10)
-        delitem_test_good( -1, 10)
+        # Test Good
+        for i in range(10):
+            item = self.generate_val_single()
+            self.helper_test_args_mutable(10, delitem,  i,     item)
+            item = self.generate_val_single()
+            self.helper_test_args_mutable(10, delitem, (i-10), item)
 
         # Test OOB
-        delitem_test_oob( 10, 10)
-        delitem_test_oob( 11, 10)
-        delitem_test_oob(-11, 10)
-        delitem_test_oob(-12, 10)
+        item = self.generate_val_single()
+        self.helper_raises_args(10, IndexError, delitem,  10, item)
+        self.helper_raises_args(10, IndexError, delitem,  11, item)
+        self.helper_raises_args(10, IndexError, delitem, -11, item)
+        self.helper_raises_args(10, IndexError, delitem, -12, item)
 
     def test_insert(self):
 
-        def test_func(instance, index, item):
-            return instance.insert(index, item)
+        def insert(instance, idx, item):
+            return instance.insert(idx, item)
 
-        def ref_func(ref, index, item):
-            return ref[:index] + item + ref[index:]
+        # Test DNE
+        item = self.generate_val_single()
+        self.helper_dne_args(insert, None, item)
 
-        def insert_test_good(index, size):
-            item = self.generate_val_multi(1)
-            ret = self.helper_test_index_item(test_func, index, item, size, ref_func)
-            self.assertIsNone(ret)
+        # Test Inside
+        for i in range(10):
+            item = self.generate_val_single()
+            self.helper_test_args_mutable(10, insert,  i,     item)
+            item = self.generate_val_single()
+            self.helper_test_args_mutable(10, insert, (i-10), item)
 
-        def insert_test_badval(index, size):
-            item = self.generate_val_multi(3)
-            self.helper_raises_args(size, ValueError, test_func, index, item)
+        # Test Before
+        item = self.generate_val_single()
+        self.helper_test_args_mutable(10, insert, -11, item)
+        self.helper_test_args_mutable(10, insert, -12, item)
 
-        def insert_test_null(index):
-            item = self.generate_val_multi(1)
-            self.helper_dne_args(test_func, index, item)
-
-        # test Null Instance
-        insert_test_null( 0)
-        insert_test_null( 1)
-        insert_test_null(-1)
-
-        # Test Bad Val
-        insert_test_badval(  0, 10)
-        insert_test_badval(-10, 10)
-        insert_test_badval(  5, 10)
-        insert_test_badval( -5, 10)
-        insert_test_badval(  9, 10)
-        insert_test_badval( -1, 10)
-
-        # Test Empty Instance
-        insert_test_good( 0, 0)
-        insert_test_good( 1, 0)
-        insert_test_good(-1, 0)
-
-        # Test Insert Before
-        insert_test_good(-12, 10)
-        insert_test_good(-11, 10)
-
-        # Test Insert Beginning
-        insert_test_good(  0, 10)
-        insert_test_good(-10, 10)
-
-        # Test Instance - Middle
-        insert_test_good( 5, 10)
-        insert_test_good(-5, 10)
-
-        # Test Insert End
-        insert_test_good( 9, 10)
-        insert_test_good(-1, 10)
-
-        # Test Instert After
-        insert_test_good(10, 10)
-        insert_test_good(11, 10)
+        # Test After
+        item = self.generate_val_single()
+        self.helper_test_args_mutable(10, insert, 10, item)
+        self.helper_test_args_mutable(10, insert, 11, item)
 
 
 ### Object Mixins ###
