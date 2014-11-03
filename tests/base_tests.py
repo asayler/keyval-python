@@ -59,7 +59,7 @@ class BaseTestCase(unittest.TestCase):
 
 class PersistentMixin(object):
 
-    def helper_raises_args(self, size, error, test_func, *args):
+    def helper_raises(self, size, error, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -68,14 +68,14 @@ class PersistentMixin(object):
         self.assertRaises(error, test_func, instance, *args)
         instance.rem()
 
-    def helper_dne_args(self, test_func, *args):
+    def helper_dne(self, test_func, *args):
 
         key = self.generate_key()
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
-    def helper_test_args_immutable(self, size, test_func, *args):
+    def helper_cmp_immutable(self, size, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -204,27 +204,27 @@ class PersistentMixin(object):
     def test_unicode(self):
 
         # Test DNE
-        self.helper_dne_args(unicode)
+        self.helper_dne(unicode)
 
         # Test Good
-        self.helper_test_args_immutable(10, unicode)
+        self.helper_cmp_immutable(10, unicode)
 
     def test_string(self):
 
         # Test DNE
-        self.helper_dne_args(str)
+        self.helper_dne(str)
 
         # Test Good
-        self.helper_test_args_immutable(10, str)
+        self.helper_cmp_immutable(10, str)
 
     def test_bool(self):
 
         # Test DNE
-        self.helper_dne_args(bool)
+        self.helper_dne(bool)
 
         # Test Good
-        self.helper_test_args_immutable( 1, bool)
-        self.helper_test_args_immutable(10, bool)
+        self.helper_cmp_immutable( 1, bool)
+        self.helper_cmp_immutable(10, bool)
 
     def test_repr(self):
 
@@ -290,7 +290,7 @@ class PersistentMixin(object):
 
 class MutableMixin(PersistentMixin):
 
-    def helper_test_args_mutable(self, size, test_func, *args):
+    def helper_cmp_mutable(self, size, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -311,24 +311,24 @@ class MutableMixin(PersistentMixin):
         new_val = self.generate_val_multi(10)
 
         # Test DNE
-        self.helper_dne_args(test_func, new_val)
+        self.helper_dne(test_func, new_val)
 
         # Test Good
-        self.helper_test_args_mutable(10, test_func, new_val)
+        self.helper_cmp_mutable(10, test_func, new_val)
 
         # Test Bad
-        self.helper_raises_args(10, ValueError, test_func, None)
+        self.helper_raises(10, ValueError, test_func, None)
 
 class SequenceMixin(PersistentMixin):
 
     def test_len(self):
 
         # Test DNE
-        self.helper_dne_args(len)
+        self.helper_dne(len)
 
         # Test Good
-        self.helper_test_args_immutable( 1, len)
-        self.helper_test_args_immutable(10, len)
+        self.helper_cmp_immutable( 1, len)
+        self.helper_cmp_immutable(10, len)
 
     def test_getitem(self):
 
@@ -336,20 +336,20 @@ class SequenceMixin(PersistentMixin):
             return instance[index]
 
         # Test DNE
-        self.helper_dne_args(getitem, None)
+        self.helper_dne(getitem, None)
 
         # Test Good
         for i in range(10):
-            self.helper_test_args_immutable(10, getitem,  i    )
-            self.helper_test_args_immutable(10, getitem, (i-10))
+            self.helper_cmp_immutable(10, getitem,  i    )
+            self.helper_cmp_immutable(10, getitem, (i-10))
 
         # Test OOB
-        self.helper_raises_args( 1, IndexError, getitem,   1)
-        self.helper_raises_args( 1, IndexError, getitem,  -2)
-        self.helper_raises_args(10, IndexError, getitem,  10)
-        self.helper_raises_args(10, IndexError, getitem,  11)
-        self.helper_raises_args(10, IndexError, getitem, -11)
-        self.helper_raises_args(10, IndexError, getitem, -12)
+        self.helper_raises( 1, IndexError, getitem,   1)
+        self.helper_raises( 1, IndexError, getitem,  -2)
+        self.helper_raises(10, IndexError, getitem,  10)
+        self.helper_raises(10, IndexError, getitem,  11)
+        self.helper_raises(10, IndexError, getitem, -11)
+        self.helper_raises(10, IndexError, getitem, -12)
 
     def test_contains(self):
 
@@ -357,21 +357,21 @@ class SequenceMixin(PersistentMixin):
             return item in instance
 
         # Test DNE
-        self.helper_dne_args(contains, None)
+        self.helper_dne(contains, None)
 
         # Test In
         def contains_in(instance, index):
             item = instance[index]
             return contains(instance, item)
         for i in range(10):
-            self.helper_test_args_immutable(10, contains_in,  i    )
-            self.helper_test_args_immutable(10, contains_in, (i-10))
+            self.helper_cmp_immutable(10, contains_in,  i    )
+            self.helper_cmp_immutable(10, contains_in, (i-10))
 
         # Test Out
         def contains_out(instance):
             item = self.generate_val_single(exclude=instance)
             return contains(instance, item)
-        self.helper_test_args_immutable(10, contains_out)
+        self.helper_cmp_immutable(10, contains_out)
 
     def test_index(self):
 
@@ -379,21 +379,21 @@ class SequenceMixin(PersistentMixin):
             return instance.index(item)
 
         # Test DNE
-        self.helper_dne_args(index, None)
+        self.helper_dne(index, None)
 
         # Test In
         def index_in(instance, idx):
             item = instance[idx]
             return index(instance, item)
         for i in range(10):
-            self.helper_test_args_immutable(10, index_in,  i    )
-            self.helper_test_args_immutable(10, index_in, (i-10))
+            self.helper_cmp_immutable(10, index_in,  i    )
+            self.helper_cmp_immutable(10, index_in, (i-10))
 
         # Test Out
         def index_out(instance):
             item = self.generate_val_single(exclude=instance)
             return index(instance, item)
-        self.helper_raises_args(10, ValueError, index_out)
+        self.helper_raises(10, ValueError, index_out)
 
     def test_count(self):
 
@@ -401,21 +401,21 @@ class SequenceMixin(PersistentMixin):
             return instance.count(item)
 
         # Test DNE
-        self.helper_dne_args(count, None)
+        self.helper_dne(count, None)
 
         # Test In
         def count_in(instance, index):
             item = instance[index]
             return count(instance, item)
         for i in range(10):
-            self.helper_test_args_immutable(10, count_in,  i)
-            self.helper_test_args_immutable(10, count_in, (i-10))
+            self.helper_cmp_immutable(10, count_in,  i)
+            self.helper_cmp_immutable(10, count_in, (i-10))
 
         # Test Out
         def count_out(instance):
             item = self.generate_val_single(exclude=instance)
             return count(instance, item)
-        self.helper_test_args_immutable(10, count_out)
+        self.helper_cmp_immutable(10, count_out)
 
     def test_iter(self):
 
@@ -462,23 +462,23 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test DNE
         item = self.generate_val_single()
-        self.helper_dne_args(setitem, None, item)
+        self.helper_dne(setitem, None, item)
 
         # Test Good
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, setitem,  i,     item)
+            self.helper_cmp_mutable(10, setitem,  i,     item)
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, setitem, (i-10), item)
+            self.helper_cmp_mutable(10, setitem, (i-10), item)
 
         # Test OOB
         item = self.generate_val_single()
-        self.helper_raises_args( 1, IndexError, setitem,   1, item)
-        self.helper_raises_args( 1, IndexError, setitem,  -2, item)
-        self.helper_raises_args(10, IndexError, setitem,  10, item)
-        self.helper_raises_args(10, IndexError, setitem,  11, item)
-        self.helper_raises_args(10, IndexError, setitem, -11, item)
-        self.helper_raises_args(10, IndexError, setitem, -12, item)
+        self.helper_raises( 1, IndexError, setitem,   1, item)
+        self.helper_raises( 1, IndexError, setitem,  -2, item)
+        self.helper_raises(10, IndexError, setitem,  10, item)
+        self.helper_raises(10, IndexError, setitem,  11, item)
+        self.helper_raises(10, IndexError, setitem, -11, item)
+        self.helper_raises(10, IndexError, setitem, -12, item)
 
     def test_delitem(self):
 
@@ -487,21 +487,21 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test DNE
         item = self.generate_val_single()
-        self.helper_dne_args(delitem, None, item)
+        self.helper_dne(delitem, None, item)
 
         # Test Good
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, delitem,  i,     item)
+            self.helper_cmp_mutable(10, delitem,  i,     item)
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, delitem, (i-10), item)
+            self.helper_cmp_mutable(10, delitem, (i-10), item)
 
         # Test OOB
         item = self.generate_val_single()
-        self.helper_raises_args(10, IndexError, delitem,  10, item)
-        self.helper_raises_args(10, IndexError, delitem,  11, item)
-        self.helper_raises_args(10, IndexError, delitem, -11, item)
-        self.helper_raises_args(10, IndexError, delitem, -12, item)
+        self.helper_raises(10, IndexError, delitem,  10, item)
+        self.helper_raises(10, IndexError, delitem,  11, item)
+        self.helper_raises(10, IndexError, delitem, -11, item)
+        self.helper_raises(10, IndexError, delitem, -12, item)
 
     def test_insert(self):
 
@@ -510,24 +510,24 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test DNE
         item = self.generate_val_single()
-        self.helper_dne_args(insert, None, item)
+        self.helper_dne(insert, None, item)
 
         # Test Inside
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, insert,  i,     item)
+            self.helper_cmp_mutable(10, insert,  i,     item)
             item = self.generate_val_single()
-            self.helper_test_args_mutable(10, insert, (i-10), item)
+            self.helper_cmp_mutable(10, insert, (i-10), item)
 
         # Test Before
         item = self.generate_val_single()
-        self.helper_test_args_mutable(10, insert, -11, item)
-        self.helper_test_args_mutable(10, insert, -12, item)
+        self.helper_cmp_mutable(10, insert, -11, item)
+        self.helper_cmp_mutable(10, insert, -12, item)
 
         # Test After
         item = self.generate_val_single()
-        self.helper_test_args_mutable(10, insert, 10, item)
-        self.helper_test_args_mutable(10, insert, 11, item)
+        self.helper_cmp_mutable(10, insert, 10, item)
+        self.helper_cmp_mutable(10, insert, 11, item)
 
 
 ### Object Mixins ###
@@ -560,17 +560,17 @@ class StringMixin(SequenceMixin):
     def test_empty(self):
 
         # Test Len
-        self.helper_test_args_immutable( 0, len)
+        self.helper_cmp_immutable( 0, len)
 
         # Test Bool
-        self.helper_test_args_immutable( 0, bool)
+        self.helper_cmp_immutable( 0, bool)
 
         # Test getitem
         def getitem(instance, index):
             return instance[index]
-        self.helper_raises_args( 0, IndexError, getitem,  0)
-        self.helper_raises_args( 0, IndexError, getitem,  1)
-        self.helper_raises_args( 0, IndexError, getitem, -1)
+        self.helper_raises( 0, IndexError, getitem,  0)
+        self.helper_raises( 0, IndexError, getitem,  1)
+        self.helper_raises( 0, IndexError, getitem, -1)
 
 class ListMixin(SequenceMixin):
 
