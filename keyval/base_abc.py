@@ -106,7 +106,7 @@ class Persistent(object):
 
     def __nonzero__(self):
         """Test Bool"""
-        return self.exists()
+        return bool(self.get_val())
 
     def __eq__(self, other):
         """Test Equality"""
@@ -190,23 +190,20 @@ class Sequence(collections.Sequence, Persistent):
 
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
+    @abc.abstractmethod
     def __setitem__(self, i, v):
         """Set Seq Item"""
-        val = self.get_val()
-        val[i] = v
-        self.set_val(val)
+        pass
 
+    @abc.abstractmethod
     def __delitem__(self, i):
         """Del Seq Item"""
-        val = self.get_val()
-        del(val[i])
-        self.set_val(val)
+        pass
 
+    @abc.abstractmethod
     def insert(self, i, v):
         """Insert Seq Item"""
-        val = self.get_val()
-        val.insert(i, v)
-        self.set_val(val)
+        pass
 
 ### Abstract Objects ###
 

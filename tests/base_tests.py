@@ -59,9 +59,6 @@ class BaseTestCase(unittest.TestCase):
 
 class PersistentMixin(object):
 
-    def __init__(self, *args, **kwargs):
-        super(PersistentMixin, self).__init__(*args, **kwargs)
-
     def helper_raises_args(self, size, error, test_func, *args):
 
         key = self.generate_key()
@@ -189,33 +186,44 @@ class PersistentMixin(object):
         instance.rem()
         self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
 
-        # No Cleanup
+    def test_key(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create New Instance
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(key, instance.key())
+
+        # Rem Instance
+        instance.rem()
+        self.assertEqual(key, instance.key())
 
     def test_unicode(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
+        # Test DNE
+        self.helper_dne_args(unicode)
 
-        # Create New Instance
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(unicode(val), unicode(instance))
-
-        # Cleanup
-        instance.rem()
+        # Test Good
+        self.helper_test_args_immutable(10, unicode)
 
     def test_string(self):
 
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
+        # Test DNE
+        self.helper_dne_args(str)
 
-        # Create New Instance
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(str(val), str(instance))
+        # Test Good
+        self.helper_test_args_immutable(10, str)
 
-        # Cleanup
-        instance.rem()
+    def test_bool(self):
+
+        # Test DNE
+        self.helper_dne_args(bool)
+
+        # Test Good
+        self.helper_test_args_immutable( 0, bool)
+        self.helper_test_args_immutable(10, bool)
 
     def test_repr(self):
 
@@ -239,23 +247,6 @@ class PersistentMixin(object):
         # Create New Instance
         instance = self.factory.from_new(key, val)
         self.assertEqual(hash(key), hash(instance))
-
-        # Cleanup
-        instance.rem()
-
-    def test_bool(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Test Non-existent Instance
-        instance = self.factory.from_raw(key)
-        self.assertFalse(instance)
-
-        # Test New Instance
-        instance = self.factory.from_new(key, val)
-        self.assertTrue(instance)
 
         # Cleanup
         instance.rem()
@@ -298,9 +289,6 @@ class PersistentMixin(object):
 
 class MutableMixin(PersistentMixin):
 
-    def __init__(self, *args, **kwargs):
-        super(MutableMixin, self).__init__(*args, **kwargs)
-
     def helper_test_args_mutable(self, size, test_func, ref_func=None, *args):
 
         if ref_func is None:
@@ -335,16 +323,14 @@ class MutableMixin(PersistentMixin):
 
 class SequenceMixin(PersistentMixin):
 
-    def __init__(self, *args, **kwargs):
-        super(SequenceMixin, self).__init__(*args, **kwargs)
+    def test_len(self):
 
         # Test DNE
         self.helper_dne_args(len)
 
         # Test Good
-        for i in range(10):
-            self.helper_test_args_immutable( 0, len)
-            self.helper_test_args_immutable(10, len)
+        self.helper_test_args_immutable( 0, len)
+        self.helper_test_args_immutable(10, len)
 
     def test_getitem(self):
 
@@ -471,9 +457,6 @@ class SequenceMixin(PersistentMixin):
         instance.rem()
 
 class MutableSequenceMixin(SequenceMixin, MutableMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(MutableSequenceMixin, self).__init__(*args, **kwargs)
 
     def helper_test_index_item(self, test_func, index, item, size, ref_func):
 
