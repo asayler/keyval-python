@@ -78,6 +78,9 @@ class RedisBaseTestCase(base_tests.BaseTestCase):
 class StringTestCase(base_tests.StringMixin, RedisBaseTestCase):
     pass
 
+class MutableStringTestCase(base_tests.MutableStringMixin, RedisBaseTestCase):
+    pass
+
 class ListTestCase(base_tests.ListMixin, RedisBaseTestCase):
     pass
 

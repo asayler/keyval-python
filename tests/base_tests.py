@@ -606,7 +606,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
         def __init__(self, val):
 
             # Call Parent
-            super(MutableStringRef, self).__init__()
+            super(MutableStringMixin.MutableStringRef, self).__init__()
 
             # Save Val
             self._val = val
@@ -617,15 +617,11 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
         def __str__(self):
             """Return String Representation"""
-            return unicode(self).encode(base._ENCODING)
+            return unicode(self).encode(keyval.base._ENCODING)
 
         def __repr__(self):
             """Return Unique Representation"""
             return repr(self._val)
-
-        def __hash__(self):
-            """Return Hash"""
-            return hash(self._val)
 
         def __nonzero__(self):
             """Test Bool"""
@@ -647,9 +643,9 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             """Get Seq Item"""
             return self._val[i]
 
-        def __contains__(self, v):
+        def __contains__(self, c):
             """Contains Seq Item"""
-            return v in self._val
+            return c in self._val
 
         def __iter__(self):
             """Iterate Across Seq"""
@@ -661,37 +657,64 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             for c in reversed(self._val):
                 yield c
 
-        def index(self, v):
+        def index(self, c):
             """Return index of first occurance of v"""
-            return self._val.index(v)
+            return self._val.index(c)
 
-        def count(self, v):
+        def count(self, c):
             """Return number os occurances of v"""
-            return self._val.count(v)
+            return self._val.count(c)
 
         def __setitem__(self, idx, item):
             """Set Seq Item"""
+
             val_in = self._val
             val_out = ""
-            if (index != 0) and (index != -len(val_in)):
-                val_out += val_in[:index]
+            if (idx != 0) and (idx != -len(val_in)):
+                val_out += val_in[:idx]
             val_out += item
-            if (index != (len(val_in)-1)) and (index != -1):
-                val_out += val_in[index+1:]
-            return out
+            if (idx != (len(val_in)-1)) and (idx != -1):
+                val_out += val_in[idx+1:]
+            self._val = val_out
 
-        def __delitem__(self, i):
+        def __delitem__(self, idx):
             """Del Seq Item"""
-            pass
 
-        def insert(self, i, v):
+            val_in = self._val
+            val_out = ""
+            if (idx != 0) and (idx != -len(val_in)):
+                val_out += val_in[:idx]
+            if (idx != (len(val_in)-1)) and (idx != -1):
+                val_out += val_in[idx+1:]
+            self._val = val_out
+
+        def insert(self, idx, item):
             """Insert Seq Item"""
-            pass
+            val_in = self._val
+            self._val = val_in[:idx] + item + val_in[idx:]
 
     def __init__(self, *args, **kwargs):
         super(MutableStringMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableString)
 
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = ""
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return val
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = ""
+        for i in range(size):
+            val += self.generate_val_single(exclude=exclude)
+        return self.MutableStringRef(val)
 
 class ListMixin(SequenceMixin):
 
