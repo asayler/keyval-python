@@ -556,6 +556,21 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         self.helper_cmp_mutable(10, insert, 10, item)
         self.helper_cmp_mutable(10, insert, 11, item)
 
+    def test_append(self):
+
+        def append(instance, itm):
+            return instance.append(itm)
+
+        # Test DNE
+        itm = self.generate_val_single()
+        self.helper_dne(append, itm)
+
+        # Test After
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, append, itm)
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, append, itm)
+
 
 ### Object Mixins ###
 
