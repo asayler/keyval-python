@@ -223,6 +223,49 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_insert, self._redis_key)
 
+    def append(self, itm):
+        """Append Seq Item"""
+
+        v = str(itm)
+        if len(itm) != 1:
+            raise ValueError("{:s} must be a single charecter".format(itm))
+
+        # Transaction
+        def automic_append(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Append
+            pipe.multi()
+            pipe.append(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_append, self._redis_key)
+
+    def extend(self, seq):
+        """Append Seq wuth another Seq"""
+
+        seq = str(seq)
+
+        # Transaction
+        def automic_extend(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Extend
+            pipe.multi()
+            pipe.append(self._redis_key, seq)
+
+        # Execute Transaction
+        self._driver.transaction(automic_extend, self._redis_key)
+
+
 class List(base_abc.List, Sequence):
 
     def __init__(self, driver, key):
