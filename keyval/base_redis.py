@@ -263,8 +263,10 @@ class MutableString(base_abc.MutableString, String):
             pipe.append(self._redis_key, seq)
 
         # Execute Transaction
-        self._driver.transaction(automic_extend, self._redis_key)
-
+        if len(seq):
+            self._driver.transaction(automic_extend, self._redis_key)
+        else:
+            pass
 
 class List(base_abc.List, Sequence):
 
@@ -452,4 +454,7 @@ class MutableList(base_abc.MutableList, List):
             pipe.rpush(self._redis_key, *seq)
 
         # Execute Transaction
-        self._driver.transaction(automic_extend, self._redis_key)
+        if len(seq):
+            self._driver.transaction(automic_extend, self._redis_key)
+        else:
+            pass
