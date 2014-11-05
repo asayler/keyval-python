@@ -215,10 +215,10 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         """Extend Seq with another Seq"""
         pass
 
-    # @abc.abstractmethod
-    # def reverse(self):
-    #     """Reverse Seq"""
-    #     pass
+    @abc.abstractmethod
+    def reverse(self):
+        """Reverse Seq"""
+        pass
 
 
 ### Abstract Objects ###

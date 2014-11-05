@@ -587,6 +587,18 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             seq = self.generate_val_multi(cnt)
             self.helper_cmp_mutable(10, extend, seq)
 
+    def test_reverse(self):
+
+        def reverse(instance):
+            return instance.reverse()
+
+        # Test DNE
+        self.helper_dne(reverse)
+
+        # Test Reverse
+        for cnt in range(1, 5):
+            self.helper_cmp_mutable(cnt, reverse)
+
 
 ### Object Mixins ###
 

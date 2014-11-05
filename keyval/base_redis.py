@@ -268,6 +268,30 @@ class MutableString(base_abc.MutableString, String):
         else:
             pass
 
+    def reverse(self):
+        """Reverse Seq"""
+
+        # Transaction
+        def automic_reverse(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Read
+            seq = pipe.get(self._redis_key)
+
+            # Reverse
+            rev = seq[::-1]
+
+            # Write
+            pipe.multi()
+            pipe.set(self._redis_key, rev)
+
+        # Execute Transaction
+        self._driver.transaction(automic_reverse, self._redis_key)
+
 class List(base_abc.List, Sequence):
 
     def __init__(self, driver, key):
@@ -458,3 +482,28 @@ class MutableList(base_abc.MutableList, List):
             self._driver.transaction(automic_extend, self._redis_key)
         else:
             pass
+
+    def reverse(self):
+        """Reverse Seq"""
+
+        # Transaction
+        def automic_reverse(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Read
+            seq = pipe.lrange(self._redis_key, 0, -1)
+
+            # Reverse
+            rev = seq[::-1]
+
+            # Write
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.rpush(self._redis_key, *rev)
+
+        # Execute Transaction
+        self._driver.transaction(automic_reverse, self._redis_key)
