@@ -196,11 +196,6 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         pass
 
     @abc.abstractmethod
-    def __delitem__(self, idx):
-        """Del Seq Item"""
-        pass
-
-    @abc.abstractmethod
     def insert(self, idx, itm):
         """Insert Seq Item"""
         pass
@@ -219,6 +214,15 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
     def reverse(self):
         """Reverse Seq"""
         pass
+
+    @abc.abstractmethod
+    def pop(self, pop_idx=None):
+        """Remove and return item"""
+        pass
+
+    def __delitem__(self, idx):
+        """Del Seq Item"""
+        self.pop(idx)
 
 
 ### Abstract Objects ###

@@ -599,6 +599,24 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         for cnt in range(1, 5):
             self.helper_cmp_mutable(cnt, reverse)
 
+    def test_pop(self):
+
+        def pop(instance, idx=None):
+            if idx is None:
+                ret = instance.pop()
+            else:
+                ret = instance.pop(idx)
+            return ret
+
+        # Test DNE
+        self.helper_dne(pop)
+        self.helper_dne(pop, 0)
+
+        # Test Pop
+        self.helper_cmp_mutable(10, pop)
+        for idx in range(10):
+            self.helper_cmp_mutable(10, pop, idx)
+
 
 ### Object Mixins ###
 

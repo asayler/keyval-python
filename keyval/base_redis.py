@@ -154,40 +154,6 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_setitem, self._redis_key)
 
-    def __delitem__(self, idx):
-        """Del Seq Item"""
-
-        # Transaction
-        def automic_delitem(pipe):
-
-            # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
-                raise base.ObjectDNE(self)
-
-            # Check Index
-            length = pipe.strlen(self._redis_key)
-            if (idx >= length) or (idx < -length):
-                raise IndexError("{:d} out of range".format(idx))
-
-            # Get Ranges
-            if (idx == 0) or (idx == -length):
-                start = ""
-            else:
-                start = pipe.getrange(self._redis_key, 0, (idx-1))
-            if (idx == (length-1)) or (idx == -1):
-                end = ""
-            else:
-                end = pipe.getrange(self._redis_key, (idx+1), length)
-
-            # Set New Val
-            new = start + end
-            pipe.multi()
-            pipe.set(self._redis_key, new)
-
-        # Execute Transaction
-        self._driver.transaction(automic_delitem, self._redis_key)
-
     def insert(self, idx, itm):
         """Insert Seq Item"""
 
@@ -292,6 +258,46 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_reverse, self._redis_key)
 
+    def pop(self, pop_idx=None):
+        """Pop Seq Item"""
+
+        # Transaction
+        def automic_pop(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Check Index
+            length = pipe.strlen(self._redis_key)
+            if pop_idx is None:
+                idx = (length-1)
+            else:
+                idx = pop_idx
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
+
+            # Get Ranges
+            if (idx == 0) or (idx == -length):
+                start = ""
+            else:
+                start = pipe.getrange(self._redis_key, 0, (idx-1))
+            if (idx == (length-1)) or (idx == -1):
+                end = ""
+            else:
+                end = pipe.getrange(self._redis_key, (idx+1), length)
+
+            # Set New Val
+            new = start + end
+            pipe.multi()
+            pipe.getrange(self._redis_key, idx, idx)
+            pipe.set(self._redis_key, new)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_pop, self._redis_key)
+        return ret[0]
+
 class List(base_abc.List, Sequence):
 
     def __init__(self, driver, key):
@@ -377,41 +383,6 @@ class MutableList(base_abc.MutableList, List):
 
         # Execute Transaction
         self._driver.transaction(automic_setitem, self._redis_key)
-
-    def __delitem__(self, idx):
-        """Del Seq Item"""
-
-        # Transaction
-        def automic_delitem(pipe):
-
-            # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
-                raise base.ObjectDNE(self)
-
-            # Check Index
-            length = pipe.llen(self._redis_key)
-            if (idx >= length) or (idx < -length):
-                raise IndexError("{:d} out of range".format(idx))
-
-            # Get Ranges
-            if (idx == 0) or (idx == -length):
-                start = []
-            else:
-                start = pipe.lrange(self._redis_key, 0, (idx-1))
-            if (idx == (length-1)) or (idx == -1):
-                end = []
-            else:
-                end = pipe.lrange(self._redis_key, (idx+1), length)
-
-            # Set New Val
-            new = start + end
-            pipe.multi()
-            pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *new)
-
-        # Execute Transaction
-        self._driver.transaction(automic_delitem, self._redis_key)
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
@@ -507,3 +478,44 @@ class MutableList(base_abc.MutableList, List):
 
         # Execute Transaction
         self._driver.transaction(automic_reverse, self._redis_key)
+
+    def pop(self, pop_idx=None):
+        """Pop Seq Item"""
+
+        # Transaction
+        def automic_pop(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Check Index
+            length = pipe.llen(self._redis_key)
+            if pop_idx is None:
+                idx = (length-1)
+            else:
+                idx = pop_idx
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
+
+            # Get Ranges
+            if (idx == 0) or (idx == -length):
+                start = []
+            else:
+                start = pipe.lrange(self._redis_key, 0, (idx-1))
+            if (idx == (length-1)) or (idx == -1):
+                end = []
+            else:
+                end = pipe.lrange(self._redis_key, (idx+1), length)
+
+            # Set New Val
+            new = start + end
+            pipe.multi()
+            pipe.lrange(self._redis_key, idx, idx)
+            pipe.delete(self._redis_key)
+            pipe.rpush(self._redis_key, *new)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_pop, self._redis_key)
+        return ret[0][0]
