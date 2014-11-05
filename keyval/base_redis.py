@@ -120,12 +120,12 @@ class String(base_abc.String, Sequence):
 
 class MutableString(base_abc.MutableString, String):
 
-    def __setitem__(self, i, v):
+    def __setitem__(self, idx, itm):
         """Set Seq Item"""
 
         # Check Input
-        v = str(v)
-        if len(v) != 1:
+        itm = str(itm)
+        if len(itm) != 1:
             raise ValueError("{:s} must be a single charecter".format(v))
 
         # Transaction
@@ -138,23 +138,23 @@ class MutableString(base_abc.MutableString, String):
 
             # Check Index
             length = pipe.strlen(self._redis_key)
-            if (i >= length) or (i < -length):
-                raise IndexError("{:d} out of range".format(i))
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
 
             # Normalize Index
-            if (i >= 0):
-                norm_i = i
+            if (idx >= 0):
+                idx_norm = idx
             else:
-                norm_i = length + i
+                idx_norm = length + idx
 
             # Set Item
             pipe.multi()
-            pipe.setrange(self._redis_key, norm_i, v)
+            pipe.setrange(self._redis_key, idx_norm, itm)
 
         # Execute Transaction
         self._driver.transaction(automic_setitem, self._redis_key)
 
-    def __delitem__(self, i):
+    def __delitem__(self, idx):
         """Del Seq Item"""
 
         # Transaction
@@ -167,18 +167,18 @@ class MutableString(base_abc.MutableString, String):
 
             # Check Index
             length = pipe.strlen(self._redis_key)
-            if (i >= length) or (i < -length):
-                raise IndexError("{:d} out of range".format(i))
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
 
             # Get Ranges
-            if (i == 0) or (i == -length):
+            if (idx == 0) or (idx == -length):
                 start = ""
             else:
-                start = pipe.getrange(self._redis_key, 0, (i-1))
-            if (i == (length-1)) or (i == -1):
+                start = pipe.getrange(self._redis_key, 0, (idx-1))
+            if (idx == (length-1)) or (idx == -1):
                 end = ""
             else:
-                end = pipe.getrange(self._redis_key, (i+1), length)
+                end = pipe.getrange(self._redis_key, (idx+1), length)
 
             # Set New Val
             new = start + end
@@ -188,13 +188,13 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_delitem, self._redis_key)
 
-    def insert(self, i, v):
+    def insert(self, idx, itm):
         """Insert Seq Item"""
 
         # Check Input
-        v = str(v)
-        if len(v) != 1:
-            raise ValueError("{:s} must be a single charecter".format(v))
+        itm = str(itm)
+        if len(itm) != 1:
+            raise ValueError("{:s} must be a single charecter".format(itm))
 
         # Transaction
         def automic_insert(pipe):
@@ -206,17 +206,17 @@ class MutableString(base_abc.MutableString, String):
 
             # Get Ranges
             length = pipe.strlen(self._redis_key)
-            if (i == 0) or (i <= -length):
+            if (idx == 0) or (idx <= -length):
                 start = ""
             else:
-                start = pipe.getrange(self._redis_key, 0, (i-1))
-            if (i >= length):
+                start = pipe.getrange(self._redis_key, 0, (idx-1))
+            if (idx >= length):
                 end = ""
             else:
-                end = pipe.getrange(self._redis_key, i, length)
+                end = pipe.getrange(self._redis_key, idx, length)
 
             # Set New Val
-            new = start + v + end
+            new = start + itm + end
             pipe.multi()
             pipe.set(self._redis_key, new)
 
@@ -300,7 +300,8 @@ class List(base_abc.List, Sequence):
         # Check Input
         if val is None:
             raise ValueError("val must not be None")
-        val = list(val)
+        if type(val) != list:
+            raise ValueError("val must be a list")
         if len(val) == 0:
             raise ValueError("list must have non-zero length")
 
@@ -322,7 +323,7 @@ class List(base_abc.List, Sequence):
 
 class MutableList(base_abc.MutableList, List):
 
-    def __setitem__(self, i, v):
+    def __setitem__(self, idx, itm):
         """Set Seq Item"""
 
         # Transaction
@@ -335,23 +336,23 @@ class MutableList(base_abc.MutableList, List):
 
             # Check Index
             length = pipe.llen(self._redis_key)
-            if (i >= length) or (i < -length):
-                raise IndexError("{:d} out of range".format(i))
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
 
             # Normalize Index
-            if (i >= 0):
-                norm_i = i
+            if (idx >= 0):
+                idx_norm = idx
             else:
-                norm_i = length + i
+                idx_norm = length + idx
 
             # Set Item
             pipe.multi()
-            pipe.lset(self._redis_key, norm_i, v)
+            pipe.lset(self._redis_key, idx_norm, itm)
 
         # Execute Transaction
         self._driver.transaction(automic_setitem, self._redis_key)
 
-    def __delitem__(self, i):
+    def __delitem__(self, idx):
         """Del Seq Item"""
 
         # Transaction
@@ -364,18 +365,18 @@ class MutableList(base_abc.MutableList, List):
 
             # Check Index
             length = pipe.llen(self._redis_key)
-            if (i >= length) or (i < -length):
-                raise IndexError("{:d} out of range".format(i))
+            if (idx >= length) or (idx < -length):
+                raise IndexError("{:d} out of range".format(idx))
 
             # Get Ranges
-            if (i == 0) or (i == -length):
+            if (idx == 0) or (idx == -length):
                 start = []
             else:
-                start = pipe.lrange(self._redis_key, 0, (i-1))
-            if (i == (length-1)) or (i == -1):
+                start = pipe.lrange(self._redis_key, 0, (idx-1))
+            if (idx == (length-1)) or (idx == -1):
                 end = []
             else:
-                end = pipe.lrange(self._redis_key, (i+1), length)
+                end = pipe.lrange(self._redis_key, (idx+1), length)
 
             # Set New Val
             new = start + end
@@ -386,7 +387,7 @@ class MutableList(base_abc.MutableList, List):
         # Execute Transaction
         self._driver.transaction(automic_delitem, self._redis_key)
 
-    def insert(self, i, v):
+    def insert(self, idx, itm):
         """Insert Seq Item"""
 
         # Transaction
@@ -399,17 +400,17 @@ class MutableList(base_abc.MutableList, List):
 
             # Get Ranges
             length = pipe.llen(self._redis_key)
-            if (i == 0) or (i <= -length):
+            if (idx == 0) or (idx <= -length):
                 start = []
             else:
-                start = pipe.lrange(self._redis_key, 0, (i-1))
-            if (i >= length):
+                start = pipe.lrange(self._redis_key, 0, (idx-1))
+            if (idx >= length):
                 end = []
             else:
-                end = pipe.lrange(self._redis_key, i, length)
+                end = pipe.lrange(self._redis_key, idx, length)
 
             # Set New Val
-            new = start + [v] + end
+            new = start + [itm] + end
             pipe.multi()
             pipe.delete(self._redis_key)
             pipe.rpush(self._redis_key, *new)
