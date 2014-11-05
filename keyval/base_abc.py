@@ -98,11 +98,11 @@ class Persistent(object):
 
     def __repr__(self):
         """Return Unique Representation"""
-        return self.key()
+        return self.get_key()
 
     def __hash__(self):
         """Return Hash"""
-        return hash(self.key())
+        return hash(self.get_key())
 
     def __nonzero__(self):
         """Test Bool"""
@@ -111,14 +111,14 @@ class Persistent(object):
     def __eq__(self, other):
         """Test Equality"""
         if (type(self) == type(other)):
-            return (self.key() == other.key())
+            return (self.get_key() == other.get_key())
         else:
             return False
 
     def __ne__(self, other):
         """Test Unequality"""
         if (type(self) == type(other)):
-            return (self.key() != other.key())
+            return (self.get_key() != other.get_key())
         else:
             return True
 
@@ -132,7 +132,7 @@ class Persistent(object):
         """Set Value"""
         pass
 
-    def key(self):
+    def get_key(self):
         """Get Key"""
         return self._key
 

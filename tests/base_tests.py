@@ -118,7 +118,7 @@ class PersistentMixin(object):
         # Create Valid Instance
         instance = self.factory.from_new(key, val)
         self.assertTrue(instance.exists())
-        self.assertEqual(key, instance.key())
+        self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
 
         # Recreate Instance
@@ -146,7 +146,7 @@ class PersistentMixin(object):
         # Get Existing Instance
         instance = self.factory.from_existing(key)
         self.assertTrue(instance.exists())
-        self.assertEqual(key, instance.key())
+        self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
 
         # Cleanup
@@ -163,7 +163,7 @@ class PersistentMixin(object):
         # Get Raw Instance
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
-        self.assertEqual(key, instance.key())
+        self.assertEqual(key, instance.get_key())
         self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
 
     def test_rem(self):
@@ -209,11 +209,11 @@ class PersistentMixin(object):
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
-        self.assertEqual(key, instance.key())
+        self.assertEqual(key, instance.get_key())
 
         # Rem Instance
         instance.rem()
-        self.assertEqual(key, instance.key())
+        self.assertEqual(key, instance.get_key())
 
     def test_unicode(self):
 
