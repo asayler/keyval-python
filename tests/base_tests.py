@@ -658,28 +658,6 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             """Get Seq Item"""
             return self._val[i]
 
-        def __contains__(self, c):
-            """Contains Seq Item"""
-            return c in self._val
-
-        def __iter__(self):
-            """Iterate Across Seq"""
-            for c in self._val:
-                yield c
-
-        def __reversed__(self):
-            """Iterate Backwards Across Seq"""
-            for c in reversed(self._val):
-                yield c
-
-        def index(self, c):
-            """Return index of first occurance of v"""
-            return self._val.index(c)
-
-        def count(self, c):
-            """Return number os occurances of v"""
-            return self._val.count(c)
-
         def __setitem__(self, idx, item):
             """Set Seq Item"""
 
