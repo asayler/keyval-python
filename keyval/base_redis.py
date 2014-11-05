@@ -298,6 +298,42 @@ class MutableString(base_abc.MutableString, String):
         ret = self._driver.transaction(automic_pop, self._redis_key)
         return ret[0]
 
+    def remove(self, itm):
+        """Remove itm from Seq"""
+
+        # Transaction
+        def automic_remove(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Get idx
+            seq = pipe.get(self._redis_key)
+            idx = seq.index(itm)
+
+            # Get Ranges
+            if (idx == 0):
+                start = ""
+            else:
+                start = pipe.getrange(self._redis_key, 0, (idx-1))
+            if (idx == (length-1)):
+                end = ""
+            else:
+                end = pipe.getrange(self._redis_key, (idx+1), length)
+
+            # Set New Val
+            new = start + end
+
+            # Write
+            pipe.multi()
+            pipe.set(self._redis_key, new)
+
+        # Execute Transaction
+        self._driver.transaction(automic_remove, self._redis_key)
+
+
 class List(base_abc.List, Sequence):
 
     def __init__(self, driver, key):

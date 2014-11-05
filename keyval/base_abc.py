@@ -224,6 +224,10 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         """Del Seq Item"""
         self.pop(idx)
 
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
 
 ### Abstract Objects ###
 
