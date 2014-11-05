@@ -162,31 +162,31 @@ class Sequence(collections.Sequence, Persistent):
         """Get Len of Set"""
         return len(self.get_val())
 
-    def __getitem__(self, i):
+    def __getitem__(self, idx):
         """Get Seq Item"""
-        return self.get_val()[i]
+        return self.get_val()[idx]
 
-    def __contains__(self, v):
+    def __contains__(self, itm):
         """Contains Seq Item"""
-        return v in self.get_val()
+        return itm in self.get_val()
 
     def __iter__(self):
         """Iterate Across Seq"""
-        for i in self.get_val():
-            yield i
+        for itm in self.get_val():
+            yield itm
 
     def __reversed__(self):
         """Iterate Backwards Across Seq"""
-        for i in reversed(self.get_val()):
-            yield i
+        for itm in reversed(self.get_val()):
+            yield itm
 
-    def index(self, v):
+    def index(self, itm):
         """Return index of first occurance of v"""
-        return self.get_val().index(v)
+        return self.get_val().index(itm)
 
-    def count(self, v):
+    def count(self, itm):
         """Return number os occurances of v"""
-        return self.get_val().count(v)
+        return self.get_val().count(itm)
 
 class MutableSequence(collections.MutableSequence, Sequence, Mutable):
 
