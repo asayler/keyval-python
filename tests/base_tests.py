@@ -111,9 +111,9 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Create Invalid Instance
-        self.assertRaises(ValueError, self.factory.from_new, None, None)
-        self.assertRaises(ValueError, self.factory.from_new, key, None)
-        self.assertRaises(ValueError, self.factory.from_new, None, val)
+        self.assertRaises(TypeError, self.factory.from_new, None, None)
+        self.assertRaises(TypeError, self.factory.from_new, None, val)
+        self.assertRaises(TypeError, self.factory.from_new, key,  None)
 
         # Create Valid Instance
         instance = self.factory.from_new(key, val)
@@ -134,7 +134,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Get Invalid Instance
-        self.assertRaises(ValueError, self.factory.from_existing, None)
+        self.assertRaises(TypeError, self.factory.from_existing, None)
 
         # Get Nonexistant Instance
         self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
@@ -158,7 +158,7 @@ class PersistentMixin(object):
         key = self.generate_key()
 
         # Get Invalid Instance
-        self.assertRaises(ValueError, self.factory.from_raw, None)
+        self.assertRaises(TypeError, self.factory.from_raw, None)
 
         # Get Raw Instance
         instance = self.factory.from_raw(key)
@@ -344,7 +344,7 @@ class MutableMixin(PersistentMixin):
         self.helper_exp_mutable(10, None, new_val, test_func, new_val)
 
         # Test Bad
-        self.helper_raises(10, ValueError, test_func, None)
+        self.helper_raises(10, TypeError, test_func, None)
 
 class SequenceMixin(PersistentMixin):
 
@@ -625,7 +625,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             return instance.remove(itm)
 
         # Test DNE
-        self.helper_dne(remove, None)
+        itm = self.generate_val_single()
+        self.helper_dne(remove, itm)
 
         # Test In
         def remove_in(instance, idx):

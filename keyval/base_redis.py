@@ -99,9 +99,9 @@ class String(base_abc.String, Sequence):
 
     def _set_val(self, val, create=True, overwrite=True):
 
-        # Check Input
+        # Validate Input
         if val is None:
-            raise ValueError("val must not be None")
+            raise TypeError("val must not be None")
         val = str(val)
 
         # Set Transaction
@@ -157,7 +157,7 @@ class MutableString(base_abc.MutableString, String):
     def insert(self, idx, itm):
         """Insert Seq Item"""
 
-        # Check Input
+        # Validate Input
         itm = str(itm)
         if len(itm) != 1:
             raise ValueError("{:s} must be a single charecter".format(itm))
@@ -192,6 +192,7 @@ class MutableString(base_abc.MutableString, String):
     def append(self, itm):
         """Append Seq Item"""
 
+        # Validate Input
         v = str(itm)
         if len(itm) != 1:
             raise ValueError("{:s} must be a single charecter".format(itm))
@@ -302,6 +303,11 @@ class MutableString(base_abc.MutableString, String):
     def remove(self, itm):
         """Remove itm from Seq"""
 
+        # Validate Input
+        itm = str(itm)
+        if len(itm) != 1:
+            raise ValueError("{:s} must be a single charecter".format(itm))
+
         # Transaction
         def automic_remove(pipe):
 
@@ -366,11 +372,14 @@ class List(base_abc.List, Sequence):
 
     def _set_val(self, val, create=True, overwrite=True):
 
-        # Check Input
-        if val is None:
-            raise ValueError("val must not be None")
-        if type(val) != list:
-            raise ValueError("val must be a list")
+        # Validate Input
+        val = list(val)
+        types = set([type(v) for v in val])
+        for typ in types:
+            if (typ is str):
+                pass
+            else:
+                raise TypeError("{} not supported in seq".format(typ))
         if len(val) == 0:
             raise ValueError("list must have non-zero length")
 
@@ -394,6 +403,12 @@ class MutableList(base_abc.MutableList, List):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
         def automic_setitem(pipe):
@@ -423,6 +438,12 @@ class MutableList(base_abc.MutableList, List):
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
         def automic_insert(pipe):
@@ -454,6 +475,12 @@ class MutableList(base_abc.MutableList, List):
 
     def append(self, itm):
         """Append Seq Item"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
         def automic_append(pipe):
@@ -568,6 +595,12 @@ class MutableList(base_abc.MutableList, List):
 
     def remove(self, itm):
         """Remove itm from Seq"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
         def automic_remove(pipe):

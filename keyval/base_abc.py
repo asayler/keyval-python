@@ -43,9 +43,9 @@ class Persistent(object):
 
         # Check Input
         if driver is None:
-            raise ValueError("driver must not be None")
+            raise TypeError("driver must not be None")
         if key is None:
-            raise ValueError("key must not be None")
+            raise TypeError("key must not be None")
         key = str(key)
 
         # Call Parent
