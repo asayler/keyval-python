@@ -95,7 +95,7 @@ class String(base_abc.String, Sequence):
         ret = self._driver.transaction(automic_get, self._redis_key)
 
         # Return Object
-        return ret[0]
+        return str(ret[0])
 
     def _set_val(self, val, create=True, overwrite=True):
 
@@ -298,7 +298,7 @@ class MutableString(base_abc.MutableString, String):
 
         # Execute Transaction
         ret = self._driver.transaction(automic_pop, self._redis_key)
-        return ret[0]
+        return str(ret[0])
 
     def remove(self, itm):
         """Remove itm from Seq"""
@@ -368,7 +368,7 @@ class List(base_abc.List, Sequence):
         ret = self._driver.transaction(automic_get, self._redis_key)
 
         # Return Object
-        return ret[0]
+        return list(ret[0])
 
     def _set_val(self, val, create=True, overwrite=True):
 
@@ -394,7 +394,6 @@ class List(base_abc.List, Sequence):
             pipe.multi()
             pipe.delete(self._redis_key)
             pipe.rpush(self._redis_key, *val)
-            pipe.lrange(self._redis_key, 0, -1)
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
@@ -591,7 +590,7 @@ class MutableList(base_abc.MutableList, List):
 
         # Execute Transaction
         ret = self._driver.transaction(automic_pop, self._redis_key)
-        return ret[0][0]
+        return str(ret[0][0])
 
     def remove(self, itm):
         """Remove itm from Seq"""
