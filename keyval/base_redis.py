@@ -334,7 +334,6 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_remove, self._redis_key)
 
-
 class List(base_abc.List, Sequence):
 
     def __init__(self, driver, key):
@@ -556,3 +555,25 @@ class MutableList(base_abc.MutableList, List):
         # Execute Transaction
         ret = self._driver.transaction(automic_pop, self._redis_key)
         return ret[0][0]
+
+    def remove(self, itm):
+        """Remove itm from Seq"""
+
+        # Transaction
+        def automic_remove(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Write
+            pipe.multi()
+            pipe.lrem(self._redis_key, 1, itm)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_remove, self._redis_key)
+
+        # Check result
+        if (ret[0] != 1):
+            raise ValueError("'{}' is not in list".format(itm))
