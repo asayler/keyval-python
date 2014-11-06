@@ -577,13 +577,11 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             return instance.extend(seq)
 
         # Test DNE
-        seq = self.generate_val_multi(5)
+        seq = self.generate_val_multi(1)
         self.helper_dne(extend, seq)
 
-        # Test Extend
-        itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, extend, itm)
-        for cnt in range(10):
+        # Test Seq
+        for cnt in range(5):
             seq = self.generate_val_multi(cnt)
             self.helper_cmp_mutable(10, extend, seq)
 
@@ -646,10 +644,6 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Test DNE
         seq = self.generate_val_multi(1)
         self.helper_dne(iadd, seq)
-
-        # Test Single Item
-        itm = self.generate_val_single()
-        self.helper_raises(10, TypeError, iadd, itm)
 
         # Test Seq
         for cnt in range(5):
@@ -793,6 +787,22 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             val += self.generate_val_single(exclude=exclude)
         return self.MutableStringRef(val)
 
+    def test_single(self):
+
+        def extend(instance, seq):
+            return instance.extend(seq)
+
+        def iadd(instance, other):
+            instance += other
+
+        # Test Single extend
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, extend, itm)
+
+        # Test Single iadd
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, iadd, itm)
+
 class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
@@ -830,3 +840,19 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+
+    def test_single(self):
+
+        def extend(instance, seq):
+            return instance.extend(seq)
+
+        def iadd(instance, other):
+            instance += other
+
+        # Test Single extend
+        itm = self.generate_val_single()
+        self.helper_raises(10, TypeError, extend, itm)
+
+        # Test Single iadd
+        itm = self.generate_val_single()
+        self.helper_raises(10, TypeError, iadd, itm)

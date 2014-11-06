@@ -214,6 +214,7 @@ class MutableString(base_abc.MutableString, String):
     def extend(self, seq):
         """Append Seq wuth another Seq"""
 
+        # Validate Input
         seq = str(seq)
 
         # Transaction
