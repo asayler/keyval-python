@@ -210,6 +210,10 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
         """Extend Seq with another Seq"""
         pass
 
+    def __iadd__(self, other):
+        """+="""
+        self.extend(other)
+
     @abc.abstractmethod
     def reverse(self):
         """Reverse Seq"""
@@ -223,6 +227,11 @@ class MutableSequence(collections.MutableSequence, Sequence, Mutable):
     def __delitem__(self, idx):
         """Del Seq Item"""
         self.pop(idx)
+
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
 
     @abc.abstractmethod
     def remove(self, itm):
