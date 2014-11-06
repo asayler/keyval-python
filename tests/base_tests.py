@@ -647,11 +647,14 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         seq = self.generate_val_multi(1)
         self.helper_dne(iadd, seq)
 
-        # Test Add
+        # Test Single Item
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, iadd, itm)
-        seq = self.generate_val_multi(5)
-        self.helper_cmp_mutable(10, iadd, seq)
+        self.helper_raises(10, TypeError, iadd, itm)
+
+        # Test Seq
+        for cnt in range(5):
+            seq = self.generate_val_multi(cnt)
+            self.helper_cmp_mutable(10, iadd, seq)
 
 ### Object Mixins ###
 
