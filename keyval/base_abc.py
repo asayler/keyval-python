@@ -251,3 +251,18 @@ class List(Sequence):
 
 class MutableList(MutableSequence, List):
     pass
+
+class Set(collections.Set, Persistent):
+
+    def __len__(self):
+        """Get Len of Set"""
+        return len(self.get_val())
+
+    def __contains__(self, itm):
+        """Contains Seq Item"""
+        return itm in self.get_val()
+
+    def __iter__(self):
+        """Iterate Across Seq"""
+        for itm in self.get_val():
+            yield itm

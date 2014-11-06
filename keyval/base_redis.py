@@ -619,3 +619,60 @@ class MutableList(base_abc.MutableList, List):
         # Check result
         if (ret[0] != 1):
             raise ValueError("'{}' is not in list".format(itm))
+
+class Set(base_abc.Set, Persistent):
+
+    def __init__(self, driver, key):
+        """Set Constructor"""
+
+        # Call Parent
+        super(Set, self).__init__(driver, key)
+
+        # Save Extra Attrs
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_SET, base._SEP_FIELD, self._key)
+        self._redis_key = redis_key
+
+    def _get_val(self):
+
+        # Get Transaction
+        def automic_get(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.smemebers(self._redis_key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_get, self._redis_key)
+
+        # Return Object
+        return set(ret[0])
+
+    def _set_val(self, val, create=True, overwrite=True):
+
+        # Validate Input
+        val = set(val)
+        types = set([type(v) for v in val])
+        for typ in types:
+            if (typ is str):
+                pass
+            else:
+                raise TypeError("{} not supported in set".format(typ))
+        if len(val) == 0:
+            raise ValueError("set must have non-zero length")
+
+        # Set Transaction
+        def automic_set(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not overwrite and exists:
+                raise base.ObjectExists(self)
+            if not create and not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.sadd(self._redis_key, *val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_set, self._redis_key)
