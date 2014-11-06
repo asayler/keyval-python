@@ -474,18 +474,13 @@ class MutableList(base_abc.MutableList, List):
         """Append Seq wuth another Seq"""
 
         # Validate Input
-        seq_typ = type(seq)
-        if seq_typ is list:
-            types = set([type(v) for v in seq])
-            for typ in types:
-                if (typ is str) or (typ is int) or (typ is type(self)):
-                    pass
-                else:
-                    raise TypeError("{} not supported in seq".format(typ))
-        elif seq_typ is type(self):
-            pass
-        else:
-            raise TypeError("seq can not be of {}".format(seq_typ))
+        seq = list(seq)
+        types = set([type(v) for v in seq])
+        for typ in types:
+            if (typ is str):
+                pass
+            else:
+                raise TypeError("{} not supported in seq".format(typ))
 
         # Transaction
         def automic_extend(pipe):

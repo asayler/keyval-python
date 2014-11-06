@@ -580,6 +580,10 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         seq = self.generate_val_multi(1)
         self.helper_dne(extend, seq)
 
+        # Test Single
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, extend, itm)
+
         # Test Seq
         for cnt in range(5):
             seq = self.generate_val_multi(cnt)
@@ -644,6 +648,10 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Test DNE
         seq = self.generate_val_multi(1)
         self.helper_dne(iadd, seq)
+
+        # Test Single
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, iadd, itm)
 
         # Test Seq
         for cnt in range(5):
@@ -787,22 +795,6 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             val += self.generate_val_single(exclude=exclude)
         return self.MutableStringRef(val)
 
-    def test_single(self):
-
-        def extend(instance, seq):
-            return instance.extend(seq)
-
-        def iadd(instance, other):
-            instance += other
-
-        # Test Single extend
-        itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, extend, itm)
-
-        # Test Single iadd
-        itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, iadd, itm)
-
 class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
@@ -814,12 +806,11 @@ class ListMixin(SequenceMixin):
         if exclude is None:
             exclude = []
         while True:
-            cnt = self.val_cnt % 26
-            val = chr(ord('A') + cnt)
+            val = self.val_cnt
             if val not in exclude:
                 self.val_cnt += 1
                 break
-        return val
+        return str(val)
 
     def generate_val_multi(self, size, exclude=None):
 
@@ -840,19 +831,3 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
-
-    def test_single(self):
-
-        def extend(instance, seq):
-            return instance.extend(seq)
-
-        def iadd(instance, other):
-            instance += other
-
-        # Test Single extend
-        itm = self.generate_val_single()
-        self.helper_raises(10, TypeError, extend, itm)
-
-        # Test Single iadd
-        itm = self.generate_val_single()
-        self.helper_raises(10, TypeError, iadd, itm)
