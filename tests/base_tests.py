@@ -617,6 +617,27 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         for idx in range(10):
             self.helper_cmp_mutable(10, pop, idx)
 
+    def test_remove(self):
+
+        def remove(instance, itm):
+            return instance.remove(itm)
+
+        # Test DNE
+        self.helper_dne(remove, None)
+
+        # Test In
+        def remove_in(instance, idx):
+            itm = instance[idx]
+            return remove(instance, itm)
+        for i in range(10):
+            self.helper_cmp_mutable(10, remove_in,  i    )
+
+        # Test Out
+        def remove_out(instance):
+            itm = self.generate_val_single(exclude=instance)
+            return remove(instance, itm)
+        self.helper_raises(10, ValueError, remove_out)
+
 
 ### Object Mixins ###
 

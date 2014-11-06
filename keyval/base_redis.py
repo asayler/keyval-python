@@ -314,6 +314,7 @@ class MutableString(base_abc.MutableString, String):
             idx = seq.index(itm)
 
             # Get Ranges
+            length = pipe.strlen(self._redis_key)
             if (idx == 0):
                 start = ""
             else:
