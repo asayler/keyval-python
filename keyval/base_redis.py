@@ -13,6 +13,7 @@ import base_abc
 
 _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
+_PREFIX_SET = "set"
 
 
 ### Driver ###
