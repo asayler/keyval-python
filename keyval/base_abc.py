@@ -292,35 +292,35 @@ class Set(collections.Set, Persistent):
             return False
 
     def __gt__(self, other):
-        """Test Less Than Equal"""
+        """Test Greater Than"""
         if (type(other) == type(self)):
             return (self.get_val() > other.get_val())
         else:
             return False
 
     def __ge__(self, other):
-        """Test Less Than Equal"""
+        """Test Greater Than Equal"""
         if (type(other) == type(self)):
             return (self.get_val() >= other.get_val())
         else:
             return False
 
     def __and__(self, other):
-        """Test Less Than Equal"""
+        """Test Intersection"""
         if (type(other) == type(self)):
             return (self.get_val() & other.get_val())
         else:
             return set([])
 
     def __or__(self, other):
-        """Test Less Than Equal"""
+        """Test Union"""
         if (type(other) == type(self)):
             return (self.get_val() | other.get_val())
         else:
             return set([])
 
     def __sub__(self, other):
-        """Test Less Than Equal"""
+        """Test Difference"""
         if (type(other) == type(self)):
             return (self.get_val() - other.get_val())
         else:
