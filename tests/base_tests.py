@@ -677,14 +677,14 @@ class StringMixin(SequenceMixin):
             if val not in exclude:
                 self.val_cnt += 1
                 break
-        return val
+        return str(val)
 
     def generate_val_multi(self, size, exclude=None):
 
         val = ""
         for i in range(size):
             val += self.generate_val_single(exclude=exclude)
-        return val
+        return str(val)
 
     def test_empty(self):
 
@@ -787,7 +787,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             if val not in exclude:
                 self.val_cnt += 1
                 break
-        return val
+        return str(val)
 
     def generate_val_multi(self, size, exclude=None):
 
@@ -818,7 +818,7 @@ class ListMixin(SequenceMixin):
         val = []
         for i in range(size):
             val.append(self.generate_val_single(exclude=exclude))
-        return val
+        return list(val)
 
     def test_empty(self):
 
@@ -832,3 +832,81 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+
+class SetMixin(PersistentMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(SetMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Set)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = []
+        while True:
+            val = self.val_cnt
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = []
+        for i in range(size):
+            val.append(self.generate_val_single(exclude=exclude))
+        return set(val)
+
+    def test_empty(self):
+
+        # Create Empty Instance
+        key = self.generate_key()
+        val = self.generate_val_multi(0)
+        self.assertRaises(ValueError, self.factory.from_new, key, val)
+
+    def test_len(self):
+
+        # Test DNE
+        self.helper_dne(len)
+
+        # Test Good
+        self.helper_cmp_immutable( 1, len)
+        self.helper_cmp_immutable(10, len)
+
+    def test_contains(self):
+
+        def contains(instance, item):
+            return item in instance
+
+        # Test DNE
+        self.helper_dne(contains, None)
+
+        # Test In
+        def contains_in(instance, index):
+            item = next(iter(instance))
+            return contains(instance, item)
+        for i in range(10):
+            self.helper_cmp_immutable(10, contains_in,  i    )
+            self.helper_cmp_immutable(10, contains_in, (i-10))
+
+        # Test Out
+        def contains_out(instance):
+            item = self.generate_val_single(exclude=instance)
+            return contains(instance, item)
+        self.helper_cmp_immutable(10, contains_out)
+
+    def test_iter(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in instance:
+            self.assertTrue(i in instance)
+
+        # Cleanup
+        instance.rem()

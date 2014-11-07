@@ -642,7 +642,7 @@ class Set(base_abc.Set, Persistent):
             if not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
-            pipe.smemebers(self._redis_key)
+            pipe.smembers(self._redis_key)
 
         # Execute Transaction
         ret = self._driver.transaction(automic_get, self._redis_key)
