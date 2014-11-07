@@ -334,7 +334,13 @@ class Set(collections.Set, Persistent):
             return set([])
 
     def issubset(self, other):
-        return self <= other
+        if (type(other) == type(self)):
+            return (self.get_val().issubset(other.get_val()))
+        else:
+            return False
 
     def isdisjoint(self, other):
-        return not bool(self & other)
+        if (type(other) == type(self)):
+            return (self.get_val().isdisjoint(other.get_val()))
+        else:
+            return True
