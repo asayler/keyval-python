@@ -1190,7 +1190,7 @@ class SetMixin(PersistentMixin):
 
         self.helper_or(func_union)
 
-    def test_sub(self):
+    def helper_sub(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -1208,17 +1208,36 @@ class SetMixin(PersistentMixin):
         instance_a = self.factory.from_new(key_a, val_a)
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
-        self.assertEqual(set_a, (instance_a - instance_b))
-        self.assertEqual(set_c, (instance_b - instance_a))
-        self.assertEqual(set_x, (instance_a - instance_c))
-        self.assertEqual(set_x, (instance_b - instance_c))
+        self.assertEqual(set_a, func(instance_a, instance_b))
+        self.assertEqual(set_c, func(instance_b, instance_a))
+        self.assertEqual(set_x, func(instance_a, instance_c))
+        self.assertEqual(set_c, func(instance_c, instance_a))
+        self.assertEqual(set_x, func(instance_b, instance_c))
+        self.assertEqual(set_a, func(instance_c, instance_b))
+        self.assertEqual(set_x, func(instance_a, instance_a))
+        self.assertEqual(set_x, func(instance_b, instance_b))
+        self.assertEqual(set_x, func(instance_c, instance_c))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
 
-    def test_xor(self):
+    def test_sub(self):
+
+        def func_sub(a, b):
+            return a - b
+
+        self.helper_sub(func_sub)
+
+    def test_difference(self):
+
+        def func_difference(a, b):
+            return a.difference(b)
+
+        self.helper_sub(func_difference)
+
+    def helper_xor(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -1237,20 +1256,34 @@ class SetMixin(PersistentMixin):
         instance_a = self.factory.from_new(key_a, val_a)
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
-        self.assertEqual(set_a, (instance_a ^ instance_b))
-        self.assertEqual(set_a, (instance_b ^ instance_a))
-        self.assertEqual(set_b, (instance_b ^ instance_c))
-        self.assertEqual(set_b, (instance_c ^ instance_b))
-        self.assertEqual(set_c, (instance_a ^ instance_c))
-        self.assertEqual(set_c, (instance_c ^ instance_a))
-        self.assertEqual(set_x, (instance_a ^ instance_a))
-        self.assertEqual(set_x, (instance_b ^ instance_b))
-        self.assertEqual(set_x, (instance_c ^ instance_c))
+        self.assertEqual(set_a, func(instance_a, instance_b))
+        self.assertEqual(set_a, func(instance_b, instance_a))
+        self.assertEqual(set_b, func(instance_b, instance_c))
+        self.assertEqual(set_b, func(instance_c, instance_b))
+        self.assertEqual(set_c, func(instance_a, instance_c))
+        self.assertEqual(set_c, func(instance_c, instance_a))
+        self.assertEqual(set_x, func(instance_a, instance_a))
+        self.assertEqual(set_x, func(instance_b, instance_b))
+        self.assertEqual(set_x, func(instance_c, instance_c))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
+
+    def test_xor(self):
+
+        def func_xor(a, b):
+            return a ^ b
+
+        self.helper_xor(func_xor)
+
+    def test_symmetric_difference(self):
+
+        def func_symmetric_difference(a, b):
+            return a.symmetric_difference(b)
+
+        self.helper_xor(func_symmetric_difference)
 
     def testisdisjoint(self):
 
