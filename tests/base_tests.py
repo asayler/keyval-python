@@ -943,3 +943,59 @@ class SetMixin(PersistentMixin):
         # Cleanup
         instance_a.rem()
         instance_b.rem()
+
+    def test_lt(self):
+
+        # Setup Test Vals
+        key_a = self.generate_key()
+        key_b = self.generate_key()
+        key_c = self.generate_key()
+        key_d = self.generate_key()
+        val_a = set(['a', 'b'])
+        val_b = set(['a', 'b', 'c'])
+        val_c = set(['a', 'b', 'c'])
+        val_d = set(['a', 'b', 'c', 'd'])
+
+        # Create Instance
+        instance_a = self.factory.from_new(key_a, val_a)
+        instance_b = self.factory.from_new(key_b, val_b)
+        instance_c = self.factory.from_new(key_c, val_c)
+        instance_d = self.factory.from_new(key_d, val_d)
+        self.assertTrue(instance_a < instance_b)
+        self.assertFalse(instance_b < instance_c)
+        self.assertTrue(instance_c < instance_d)
+        self.assertFalse(instance_d < instance_a)
+
+        # Cleanup
+        instance_a.rem()
+        instance_b.rem()
+        instance_c.rem()
+        instance_d.rem()
+
+    def test_le(self):
+
+        # Setup Test Vals
+        key_a = self.generate_key()
+        key_b = self.generate_key()
+        key_c = self.generate_key()
+        key_d = self.generate_key()
+        val_a = set(['a', 'b'])
+        val_b = set(['a', 'b', 'c'])
+        val_c = set(['a', 'b', 'c'])
+        val_d = set(['a', 'b', 'c', 'd'])
+
+        # Create Instance
+        instance_a = self.factory.from_new(key_a, val_a)
+        instance_b = self.factory.from_new(key_b, val_b)
+        instance_c = self.factory.from_new(key_c, val_c)
+        instance_d = self.factory.from_new(key_d, val_d)
+        self.assertTrue(instance_a <= instance_b)
+        self.assertTrue(instance_b <= instance_c)
+        self.assertTrue(instance_c <= instance_d)
+        self.assertFalse(instance_d <= instance_a)
+
+        # Cleanup
+        instance_a.rem()
+        instance_b.rem()
+        instance_c.rem()
+        instance_d.rem()
