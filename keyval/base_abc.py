@@ -262,3 +262,17 @@ class Set(collections.Set, Persistent):
         """Iterate Across Seq"""
         for itm in self.get_val():
             yield itm
+
+    def __eq__(self, other):
+        """Test Equality"""
+        if (type(other) == type(self)):
+            return (other.get_val() == self.get_val())
+        else:
+            return False
+
+    def __ne__(self, other):
+        """Test Unequality"""
+        if (type(other) == type(self)):
+            return (other.get_val() != self.get_val())
+        else:
+            return True
