@@ -132,49 +132,83 @@ class Persistent(object):
         """Check if Object Exists"""
         pass
 
+    def __eq__(self, other):
+        """Test Equality"""
+        if (type(other) == type(self)):
+            return (self.get_val() == other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
+    def __ne__(self, other):
+        """Test Unequality"""
+        if (type(other) == type(self)):
+            return (self.get_val() != other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
+    def __lt__(self, other):
+        """Test Less Than"""
+        if (type(other) == type(self)):
+            return (self.get_val() < other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
+    def __le__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() <= other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
+    def __gt__(self, other):
+        """Test Greater Than"""
+        if (type(other) == type(self)):
+            return (self.get_val() > other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
+    def __ge__(self, other):
+        """Test Greater Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() >= other.get_val())
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
 class Mutable(Persistent):
 
     def set_val(self, val):
         """Set Value of Persistent Object"""
         return self._set_val(val, create=False, overwrite=True)
 
-class Sequence(collections.Sequence, Persistent):
-
-    def __len__(self):
-        """Get Len of Set"""
-        return len(self.get_val())
-
-    def __getitem__(self, idx):
-        """Get Seq Item"""
-        return self.get_val()[idx]
+class Container(Persistent, collections.Container):
 
     def __contains__(self, itm):
         """Contains Seq Item"""
         return itm in self.get_val()
+
+class Iterable(Persistent, collections.Iterable):
 
     def __iter__(self):
         """Iterate Across Seq"""
         for itm in self.get_val():
             yield itm
 
+class Sized(Persistent, collections.Sized):
+
+    def __len__(self):
+        """Get Len of Set"""
+        return len(self.get_val())
+
+class Sequence(Container, Iterable, Sized, collections.Sequence):
+
+    def __getitem__(self, idx):
+        """Get Seq Item"""
+        return self.get_val()[idx]
+
     def __reversed__(self):
         """Iterate Backwards Across Seq"""
         for itm in reversed(self.get_val()):
             yield itm
-
-    def __eq__(self, other):
-        """Test Equality"""
-        if (type(other) == type(self)):
-            return (other.get_val() == self.get_val())
-        else:
-            return (other == self.get_val())
-
-    def __ne__(self, other):
-        """Test Unequality"""
-        if (type(other) == type(self)):
-            return (other.get_val() != self.get_val())
-        else:
-            return (other != self.get_val())
 
     def index(self, itm):
         """Return index of first occurance of v"""
@@ -184,7 +218,7 @@ class Sequence(collections.Sequence, Persistent):
         """Return number os occurances of v"""
         return self.get_val().count(itm)
 
-class MutableSequence(collections.MutableSequence, Sequence, Mutable):
+class MutableSequence(Mutable, Sequence, collections.MutableSequence):
 
     @abc.abstractmethod
     def __setitem__(self, idx, itm):
@@ -248,67 +282,12 @@ class List(Sequence):
 class MutableList(MutableSequence, List):
     pass
 
-class Set(collections.Set, Persistent):
-
-    def __len__(self):
-        """Get Len of Set"""
-        return len(self.get_val())
-
-    def __contains__(self, itm):
-        """Contains Seq Item"""
-        return itm in self.get_val()
-
-    def __iter__(self):
-        """Iterate Across Seq"""
-        for itm in self.get_val():
-            yield itm
-
-    def __eq__(self, other):
-        """Test Equality"""
-        if (type(other) == type(self)):
-            return (other.get_val() == self.get_val())
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
-
-    def __ne__(self, other):
-        """Test Unequality"""
-        if (type(other) == type(self)):
-            return (other.get_val() != self.get_val())
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
-
-    def __lt__(self, other):
-        """Test Less Than"""
-        if (type(other) == type(self)):
-            return (self.get_val() < other.get_val())
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
-
-    def __le__(self, other):
-        """Test Less Than Equal"""
-        if (type(other) == type(self)):
-            return (self.get_val() <= other.get_val())
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
+class Set(Container, Iterable, Sized, collections.Set):
 
     def issubset(self, other):
         """Test Subset"""
         if (type(other) == type(self)):
             return (self.get_val().issubset(other.get_val()))
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
-
-    def __gt__(self, other):
-        """Test Greater Than"""
-        if (type(other) == type(self)):
-            return (self.get_val() > other.get_val())
-        else:
-            raise TypeError("Can only compare {}".format(type(self)))
-
-    def __ge__(self, other):
-        """Test Greater Than Equal"""
-        if (type(other) == type(self)):
-            return (self.get_val() >= other.get_val())
         else:
             raise TypeError("Can only compare {}".format(type(self)))
 

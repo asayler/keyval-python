@@ -54,22 +54,28 @@ class Persistent(base_abc.Persistent):
         # Check Existence
         return self._driver.exists(self._redis_key)
 
-class Mutable(base_abc.Mutable, Persistent):
-
+class Mutable(Persistent, base_abc.Mutable):
     pass
 
-class Sequence(base_abc.Sequence, Persistent):
-
+class Container(Persistent, base_abc.Container):
     pass
 
-class MutableSequence(base_abc.MutableSequence, Sequence, Mutable):
+class Iterable(Persistent, base_abc.Iterable):
+    pass
 
+class Sized(Persistent, base_abc.Sized):
+    pass
+
+class Sequence(Container, Iterable, Sized, base_abc.Sequence):
+    pass
+
+class MutableSequence(Mutable, Sequence, base_abc.MutableSequence):
     pass
 
 
 ### Objects ###
 
-class String(base_abc.String, Sequence):
+class String(Sequence, base_abc.String):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -119,7 +125,7 @@ class String(base_abc.String, Sequence):
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
 
-class MutableString(base_abc.MutableString, String):
+class MutableString(String, base_abc.MutableString):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -342,7 +348,7 @@ class MutableString(base_abc.MutableString, String):
         # Execute Transaction
         self._driver.transaction(automic_remove, self._redis_key)
 
-class List(base_abc.List, Sequence):
+class List(Sequence, base_abc.List):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -399,7 +405,7 @@ class List(base_abc.List, Sequence):
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
 
-class MutableList(base_abc.MutableList, List):
+class MutableList(List, base_abc.MutableList):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -621,7 +627,7 @@ class MutableList(base_abc.MutableList, List):
         if (ret[0] != 1):
             raise ValueError("'{}' is not in list".format(itm))
 
-class Set(base_abc.Set, Persistent):
+class Set(Container, Iterable, Sized, base_abc.Set):
 
     def __init__(self, driver, key):
         """Set Constructor"""

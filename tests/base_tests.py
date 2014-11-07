@@ -332,32 +332,7 @@ class MutableMixin(PersistentMixin):
         # Test Bad
         self.helper_raises(10, TypeError, test_func, None)
 
-class IterableMixin(PersistentMixin):
-
-    def test_len(self):
-
-        # Test DNE
-        self.helper_dne(len)
-
-        # Test Good
-        self.helper_cmp_immutable( 1, len)
-        self.helper_cmp_immutable(10, len)
-
-    def test_iter(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        for i in instance:
-            self.assertTrue(i in val)
-
-        # Cleanup
-        instance.rem()
+class ContainerMixin(PersistentMixin):
 
     def test_contains(self):
 
@@ -381,8 +356,36 @@ class IterableMixin(PersistentMixin):
             return contains(instance, item)
         self.helper_cmp_immutable(10, contains_out)
 
+class IterableMixin(PersistentMixin):
 
-class SequenceMixin(IterableMixin):
+    def test_iter(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in instance:
+            self.assertTrue(i in val)
+
+        # Cleanup
+        instance.rem()
+
+class SizedMixin(PersistentMixin):
+
+    def test_len(self):
+
+        # Test DNE
+        self.helper_dne(len)
+
+        # Test Good
+        self.helper_cmp_immutable( 1, len)
+        self.helper_cmp_immutable(10, len)
+
+class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def test_getitem(self):
 
@@ -820,7 +823,7 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
 
-class SetMixin(IterableMixin):
+class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def __init__(self, *args, **kwargs):
         super(SetMixin, self).__init__(*args, **kwargs)
