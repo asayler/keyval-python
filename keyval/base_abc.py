@@ -100,10 +100,6 @@ class Persistent(object):
         """Return Unique Representation"""
         return self.get_key()
 
-    def __hash__(self):
-        """Return Hash"""
-        return hash(self.get_key())
-
     def __nonzero__(self):
         """Test Bool"""
         return bool(self.get_val())

@@ -253,19 +253,6 @@ class PersistentMixin(object):
         # Cleanup
         instance.rem()
 
-    def test_hash(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create New Instance
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(hash(key), hash(instance))
-
-        # Cleanup
-        instance.rem()
-
     def test_eq(self):
 
         # Setup Test Vals
