@@ -851,7 +851,7 @@ class SetMixin(IterableMixin):
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
 
-    def test_lt(self):
+    def helper_lt(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -868,16 +868,31 @@ class SetMixin(IterableMixin):
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
         instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(instance_a < instance_b)
-        self.assertFalse(instance_b < instance_c)
-        self.assertTrue(instance_c < instance_d)
-        self.assertFalse(instance_d < instance_a)
+        self.assertTrue(func(instance_a, instance_b))
+        self.assertFalse(func(instance_b, instance_a))
+        self.assertFalse(func(instance_b, instance_c))
+        self.assertFalse(func(instance_c, instance_b))
+        self.assertTrue(func(instance_c, instance_d))
+        self.assertFalse(func(instance_d, instance_c))
+        self.assertFalse(func(instance_d, instance_a))
+        self.assertTrue(func(instance_a, instance_d))
+        self.assertFalse(func(instance_a, instance_a))
+        self.assertFalse(func(instance_b, instance_b))
+        self.assertFalse(func(instance_c, instance_c))
+        self.assertFalse(func(instance_d, instance_d))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
         instance_d.rem()
+
+    def test_lt(self):
+
+        def func_lt(a, b):
+            return a < b
+
+        self.helper_lt(func_lt)
 
     def helper_le(self, func):
 
@@ -929,7 +944,7 @@ class SetMixin(IterableMixin):
 
         self.helper_le(func_issubset)
 
-    def test_gt(self):
+    def helper_gt(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -946,16 +961,31 @@ class SetMixin(IterableMixin):
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
         instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(instance_d > instance_c)
-        self.assertFalse(instance_c > instance_b)
-        self.assertTrue(instance_b > instance_a)
-        self.assertFalse(instance_a > instance_d)
+        self.assertTrue(func(instance_d, instance_c))
+        self.assertFalse(func(instance_c, instance_d))
+        self.assertFalse(func(instance_c, instance_b))
+        self.assertFalse(func(instance_b, instance_c))
+        self.assertTrue(func(instance_b, instance_a))
+        self.assertFalse(func(instance_a, instance_b))
+        self.assertFalse(func(instance_a, instance_d))
+        self.assertTrue(func(instance_d, instance_a))
+        self.assertFalse(func(instance_a, instance_a))
+        self.assertFalse(func(instance_b, instance_b))
+        self.assertFalse(func(instance_c, instance_c))
+        self.assertFalse(func(instance_d, instance_d))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
         instance_d.rem()
+
+    def test_gt(self):
+
+        def func_gt(a, b):
+            return a > b
+
+        self.helper_gt(func_gt)
 
     def helper_ge(self, func):
 
