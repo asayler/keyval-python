@@ -968,7 +968,7 @@ class SetMixin(PersistentMixin):
         instance_c.rem()
         instance_d.rem()
 
-    def test_le(self):
+    def helper_le(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -985,16 +985,38 @@ class SetMixin(PersistentMixin):
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
         instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(instance_a <= instance_b)
-        self.assertTrue(instance_b <= instance_c)
-        self.assertTrue(instance_c <= instance_d)
-        self.assertFalse(instance_d <= instance_a)
+        self.assertTrue(func(instance_a, instance_b))
+        self.assertFalse(func(instance_b, instance_a))
+        self.assertTrue(func(instance_b, instance_c))
+        self.assertTrue(func(instance_c, instance_b))
+        self.assertTrue(func(instance_c, instance_d))
+        self.assertFalse(func(instance_d, instance_c))
+        self.assertFalse(func(instance_d, instance_a))
+        self.assertTrue(func(instance_a, instance_d))
+        self.assertTrue(func(instance_a, instance_a))
+        self.assertTrue(func(instance_b, instance_b))
+        self.assertTrue(func(instance_c, instance_c))
+        self.assertTrue(func(instance_d, instance_d))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
         instance_d.rem()
+
+    def test_le(self):
+
+        def func_le(a, b):
+            return a <= b
+
+        self.helper_le(func_le)
+
+    def testissubset(self):
+
+        def func_issubset(a, b):
+            return a.issubset(b)
+
+        self.helper_le(func_issubset)
 
     def test_gt(self):
 
@@ -1024,7 +1046,7 @@ class SetMixin(PersistentMixin):
         instance_c.rem()
         instance_d.rem()
 
-    def test_ge(self):
+    def helper_ge(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -1041,10 +1063,18 @@ class SetMixin(PersistentMixin):
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
         instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(instance_d >= instance_c)
-        self.assertTrue(instance_c >= instance_b)
-        self.assertTrue(instance_b >= instance_a)
-        self.assertFalse(instance_a >= instance_d)
+        self.assertTrue(func(instance_d, instance_c))
+        self.assertFalse(func(instance_c, instance_d))
+        self.assertTrue(func(instance_c, instance_b))
+        self.assertTrue(func(instance_b, instance_c))
+        self.assertTrue(func(instance_b, instance_a))
+        self.assertFalse(func(instance_a, instance_b))
+        self.assertFalse(func(instance_a, instance_d))
+        self.assertTrue(func(instance_d, instance_a))
+        self.assertTrue(func(instance_a, instance_a))
+        self.assertTrue(func(instance_b, instance_b))
+        self.assertTrue(func(instance_c, instance_c))
+        self.assertTrue(func(instance_d, instance_d))
 
         # Cleanup
         instance_a.rem()
@@ -1052,7 +1082,21 @@ class SetMixin(PersistentMixin):
         instance_c.rem()
         instance_d.rem()
 
-    def test_and(self):
+    def test_ge(self):
+
+        def func_ge(a, b):
+            return a >= b
+
+        self.helper_ge(func_ge)
+
+    def testissuperset(self):
+
+        def func_issuperset(a, b):
+            return a.issuperset(b)
+
+        self.helper_ge(func_issuperset)
+
+    def helper_and(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -1070,16 +1114,36 @@ class SetMixin(PersistentMixin):
         instance_a = self.factory.from_new(key_a, val_a)
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
-        self.assertEqual(set_b, (instance_a & instance_b))
-        self.assertEqual(set_c, (instance_b & instance_c))
-        self.assertEqual(set_x, (instance_a & instance_c))
+        self.assertEqual(set_b, func(instance_a, instance_b))
+        self.assertEqual(set_b, func(instance_b, instance_a))
+        self.assertEqual(set_c, func(instance_b, instance_c))
+        self.assertEqual(set_c, func(instance_c, instance_b))
+        self.assertEqual(set_x, func(instance_a, instance_c))
+        self.assertEqual(set_x, func(instance_c, instance_a))
+        self.assertEqual(val_a, func(instance_a, instance_a))
+        self.assertEqual(val_b, func(instance_b, instance_b))
+        self.assertEqual(val_c, func(instance_c, instance_c))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
 
-    def test_or(self):
+    def test_and(self):
+
+        def func_and(a, b):
+            return a & b
+
+        self.helper_and(func_and)
+
+    def test_intersection(self):
+
+        def func_intersection(a, b):
+            return a.intersection(b)
+
+        self.helper_and(func_intersection)
+
+    def helper_or(self, func):
 
         # Setup Test Vals
         key_a = self.generate_key()
@@ -1097,14 +1161,34 @@ class SetMixin(PersistentMixin):
         instance_a = self.factory.from_new(key_a, val_a)
         instance_b = self.factory.from_new(key_b, val_b)
         instance_c = self.factory.from_new(key_c, val_c)
-        self.assertEqual(set_a, (instance_a | instance_b))
-        self.assertEqual(set_b, (instance_b | instance_c))
-        self.assertEqual(set_c, (instance_a | instance_c))
+        self.assertEqual(set_a, func(instance_a, instance_b))
+        self.assertEqual(set_a, func(instance_b, instance_a))
+        self.assertEqual(set_b, func(instance_b, instance_c))
+        self.assertEqual(set_b, func(instance_c, instance_b))
+        self.assertEqual(set_c, func(instance_a, instance_c))
+        self.assertEqual(set_c, func(instance_c, instance_a))
+        self.assertEqual(val_a, func(instance_a, instance_a))
+        self.assertEqual(val_b, func(instance_b, instance_b))
+        self.assertEqual(val_c, func(instance_c, instance_c))
 
         # Cleanup
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
+
+    def test_or(self):
+
+        def func_or(a, b):
+            return a | b
+
+        self.helper_or(func_or)
+
+    def test_union(self):
+
+        def func_union(a, b):
+            return a.union(b)
+
+        self.helper_or(func_union)
 
     def test_sub(self):
 
@@ -1167,42 +1251,6 @@ class SetMixin(PersistentMixin):
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
-
-    def testissubset(self):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = set(['a', 'b'])
-        val_b = set(['a', 'b', 'c'])
-        val_c = set(['a', 'b', 'c'])
-        val_d = set(['a', 'b', 'c', 'd'])
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(instance_a.issubset(instance_b))
-        self.assertFalse(instance_b.issubset(instance_a))
-        self.assertTrue(instance_b.issubset(instance_c))
-        self.assertTrue(instance_c.issubset(instance_b))
-        self.assertTrue(instance_c.issubset(instance_d))
-        self.assertFalse(instance_d.issubset(instance_c))
-        self.assertFalse(instance_d.issubset(instance_a))
-        self.assertTrue(instance_a.issubset(instance_d))
-        self.assertTrue(instance_a.issubset(instance_a))
-        self.assertTrue(instance_b.issubset(instance_b))
-        self.assertTrue(instance_c.issubset(instance_c))
-        self.assertTrue(instance_d.issubset(instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
 
     def testisdisjoint(self):
 

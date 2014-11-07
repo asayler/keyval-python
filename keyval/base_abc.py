@@ -291,6 +291,13 @@ class Set(collections.Set, Persistent):
         else:
             raise TypeError("Can only compare {}".format(type(self)))
 
+    def issubset(self, other):
+        """Test Subset"""
+        if (type(other) == type(self)):
+            return (self.get_val().issubset(other.get_val()))
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
     def __gt__(self, other):
         """Test Greater Than"""
         if (type(other) == type(self)):
@@ -305,41 +312,71 @@ class Set(collections.Set, Persistent):
         else:
             raise TypeError("Can only compare {}".format(type(self)))
 
+    def issuperset(self, other):
+        """Test Superset"""
+        if (type(other) == type(self)):
+            return (self.get_val().issuperset(other.get_val()))
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
+
     def __and__(self, other):
-        """Test Intersection"""
+        """Return Intersection"""
         if (type(other) == type(self)):
             return (self.get_val() & other.get_val())
         else:
             raise TypeError("Can only and {}".format(type(self)))
 
+    def intersection(self, other):
+        """Return Intersection"""
+        if (type(other) == type(self)):
+            return (self.get_val().intersection(other.get_val()))
+        else:
+            raise TypeError("Can only intersect {}".format(type(self)))
+
     def __or__(self, other):
-        """Test Union"""
+        """Return Union"""
         if (type(other) == type(self)):
             return (self.get_val() | other.get_val())
         else:
             raise TypeError("Can only or {}".format(type(self)))
 
+    def union(self, other):
+        """Return Union"""
+        if (type(other) == type(self)):
+            return (self.get_val().union(other.get_val()))
+        else:
+            raise TypeError("Can only union {}".format(type(self)))
+
     def __sub__(self, other):
-        """Test Difference"""
+        """Return Difference"""
         if (type(other) == type(self)):
             return (self.get_val() - other.get_val())
         else:
             raise TypeError("Can only sub {}".format(type(self)))
 
+    def difference(self, other):
+        """Return Difference"""
+        if (type(other) == type(self)):
+            return (self.get_val().difference(other.get_val()))
+        else:
+            raise TypeError("Can only difference {}".format(type(self)))
+
     def __xor__(self, other):
-        """Test Symmetric Difference"""
+        """Return Symmetric Difference"""
         if (type(other) == type(self)):
             return (self.get_val() ^ other.get_val())
         else:
             raise TypeError("Can only xor {}".format(type(self)))
 
-    def issubset(self, other):
+    def symmetric_difference(self, other):
+        """Return Symmetric Difference"""
         if (type(other) == type(self)):
-            return (self.get_val().issubset(other.get_val()))
+            return (self.get_val().symmetric_difference(other.get_val()))
         else:
-            raise TypeError("Can only compare {}".format(type(self)))
+            raise TypeError("Can only symmetric_difference {}".format(type(self)))
 
     def isdisjoint(self, other):
+        """Test Disjoint"""
         if (type(other) == type(self)):
             return (self.get_val().isdisjoint(other.get_val()))
         else:
