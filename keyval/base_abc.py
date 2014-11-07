@@ -268,79 +268,79 @@ class Set(collections.Set, Persistent):
         if (type(other) == type(self)):
             return (other.get_val() == self.get_val())
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __ne__(self, other):
         """Test Unequality"""
         if (type(other) == type(self)):
             return (other.get_val() != self.get_val())
         else:
-            return True
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __lt__(self, other):
         """Test Less Than"""
         if (type(other) == type(self)):
             return (self.get_val() < other.get_val())
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __le__(self, other):
         """Test Less Than Equal"""
         if (type(other) == type(self)):
             return (self.get_val() <= other.get_val())
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __gt__(self, other):
         """Test Greater Than"""
         if (type(other) == type(self)):
             return (self.get_val() > other.get_val())
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __ge__(self, other):
         """Test Greater Than Equal"""
         if (type(other) == type(self)):
             return (self.get_val() >= other.get_val())
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def __and__(self, other):
         """Test Intersection"""
         if (type(other) == type(self)):
             return (self.get_val() & other.get_val())
         else:
-            return set([])
+            raise TypeError("Can only and {}".format(type(self)))
 
     def __or__(self, other):
         """Test Union"""
         if (type(other) == type(self)):
             return (self.get_val() | other.get_val())
         else:
-            return set([])
+            raise TypeError("Can only or {}".format(type(self)))
 
     def __sub__(self, other):
         """Test Difference"""
         if (type(other) == type(self)):
             return (self.get_val() - other.get_val())
         else:
-            return set([])
+            raise TypeError("Can only sub {}".format(type(self)))
 
     def __xor__(self, other):
         """Test Symmetric Difference"""
         if (type(other) == type(self)):
             return (self.get_val() ^ other.get_val())
         else:
-            return set([])
+            raise TypeError("Can only xor {}".format(type(self)))
 
     def issubset(self, other):
         if (type(other) == type(self)):
             return (self.get_val().issubset(other.get_val()))
         else:
-            return False
+            raise TypeError("Can only compare {}".format(type(self)))
 
     def isdisjoint(self, other):
         if (type(other) == type(self)):
             return (self.get_val().isdisjoint(other.get_val()))
         else:
-            return True
+            raise TypeError("Can only compare {}".format(type(self)))

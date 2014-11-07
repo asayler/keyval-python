@@ -934,10 +934,6 @@ class SetMixin(PersistentMixin):
         # Create Instance
         instance_a = self.factory.from_new(key_a, val_a)
         instance_b = self.factory.from_new(key_b, val_b)
-        self.assertNotEqual(val_b, instance_b)
-        self.assertNotEqual(instance_a, val_a)
-        self.assertNotEqual(val_a, instance_a)
-        self.assertNotEqual(instance_b, val_b)
         self.assertNotEqual(instance_a, instance_b)
 
         # Cleanup
