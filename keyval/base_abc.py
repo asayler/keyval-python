@@ -304,3 +304,17 @@ class Set(collections.Set, Persistent):
             return (self.get_val() >= other.get_val())
         else:
             return False
+
+    def __and__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() & other.get_val())
+        else:
+            return set([])
+
+    def __or__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() | other.get_val())
+        else:
+            return set([])
