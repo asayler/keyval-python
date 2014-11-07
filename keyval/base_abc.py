@@ -104,20 +104,6 @@ class Persistent(object):
         """Test Bool"""
         return bool(self.get_val())
 
-    def __eq__(self, other):
-        """Test Equality"""
-        if (type(self) == type(other)):
-            return (self.get_key() == other.get_key())
-        else:
-            return False
-
-    def __ne__(self, other):
-        """Test Unequality"""
-        if (type(self) == type(other)):
-            return (self.get_key() != other.get_key())
-        else:
-            return True
-
     @abc.abstractmethod
     def _get_val(self):
         """Get Value"""
@@ -175,6 +161,20 @@ class Sequence(collections.Sequence, Persistent):
         """Iterate Backwards Across Seq"""
         for itm in reversed(self.get_val()):
             yield itm
+
+    def __eq__(self, other):
+        """Test Equality"""
+        if (type(other) == type(self)):
+            return (other.get_val() == self.get_val())
+        else:
+            return (other == self.get_val())
+
+    def __ne__(self, other):
+        """Test Unequality"""
+        if (type(other) == type(self)):
+            return (other.get_val() != self.get_val())
+        else:
+            return (other != self.get_val())
 
     def index(self, itm):
         """Return index of first occurance of v"""
