@@ -201,7 +201,7 @@ class PersistentMixin(object):
         instance.rem()
         self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
 
-    def test_key(self):
+    def test_get_key(self):
 
         # Setup Test Vals
         key = self.generate_key()
@@ -297,7 +297,7 @@ class MutableMixin(PersistentMixin):
         # Test Bad
         self.helper_raises(10, TypeError, test_func, None)
 
-class SequenceMixin(PersistentMixin):
+class IterableMixin(PersistentMixin):
 
     def test_len(self):
 
@@ -307,6 +307,47 @@ class SequenceMixin(PersistentMixin):
         # Test Good
         self.helper_cmp_immutable( 1, len)
         self.helper_cmp_immutable(10, len)
+
+    def test_iter(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create Instance
+        instance = self.factory.from_new(key, val)
+
+        # Test Instance
+        for i in instance:
+            self.assertTrue(i in val)
+
+        # Cleanup
+        instance.rem()
+
+    def test_contains(self):
+
+        def contains(instance, item):
+            return item in instance
+
+        # Test DNE
+        self.helper_dne(contains, None)
+
+        # Test In
+        def contains_in(instance, index):
+            item = next(iter(instance))
+            return contains(instance, item)
+        for i in range(10):
+            self.helper_cmp_immutable(10, contains_in,  i    )
+            self.helper_cmp_immutable(10, contains_in, (i-10))
+
+        # Test Out
+        def contains_out(instance):
+            item = self.generate_val_single(exclude=instance)
+            return contains(instance, item)
+        self.helper_cmp_immutable(10, contains_out)
+
+
+class SequenceMixin(IterableMixin):
 
     def test_getitem(self):
 
@@ -328,28 +369,6 @@ class SequenceMixin(PersistentMixin):
         self.helper_raises(10, IndexError, getitem,  11)
         self.helper_raises(10, IndexError, getitem, -11)
         self.helper_raises(10, IndexError, getitem, -12)
-
-    def test_contains(self):
-
-        def contains(instance, item):
-            return item in instance
-
-        # Test DNE
-        self.helper_dne(contains, None)
-
-        # Test In
-        def contains_in(instance, index):
-            item = instance[index]
-            return contains(instance, item)
-        for i in range(10):
-            self.helper_cmp_immutable(10, contains_in,  i    )
-            self.helper_cmp_immutable(10, contains_in, (i-10))
-
-        # Test Out
-        def contains_out(instance):
-            item = self.generate_val_single(exclude=instance)
-            return contains(instance, item)
-        self.helper_cmp_immutable(10, contains_out)
 
     def test_index(self):
 
@@ -394,24 +413,6 @@ class SequenceMixin(PersistentMixin):
             item = self.generate_val_single(exclude=instance)
             return count(instance, item)
         self.helper_cmp_immutable(10, count_out)
-
-    def test_iter(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        cnt = 0
-        for i in instance:
-            self.assertEqual(val[cnt], i)
-            cnt += 1
-
-        # Cleanup
-        instance.rem()
 
     def test_reversed(self):
 
@@ -827,7 +828,7 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
 
-class SetMixin(PersistentMixin):
+class SetMixin(IterableMixin):
 
     def __init__(self, *args, **kwargs):
         super(SetMixin, self).__init__(*args, **kwargs)
@@ -857,53 +858,6 @@ class SetMixin(PersistentMixin):
         key = self.generate_key()
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
-
-    def test_len(self):
-
-        # Test DNE
-        self.helper_dne(len)
-
-        # Test Good
-        self.helper_cmp_immutable( 1, len)
-        self.helper_cmp_immutable(10, len)
-
-    def test_contains(self):
-
-        def contains(instance, item):
-            return item in instance
-
-        # Test DNE
-        self.helper_dne(contains, None)
-
-        # Test In
-        def contains_in(instance, index):
-            item = next(iter(instance))
-            return contains(instance, item)
-        for i in range(10):
-            self.helper_cmp_immutable(10, contains_in,  i    )
-            self.helper_cmp_immutable(10, contains_in, (i-10))
-
-        # Test Out
-        def contains_out(instance):
-            item = self.generate_val_single(exclude=instance)
-            return contains(instance, item)
-        self.helper_cmp_immutable(10, contains_out)
-
-    def test_iter(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance = self.factory.from_new(key, val)
-
-        # Test Instance
-        for i in instance:
-            self.assertTrue(i in instance)
-
-        # Cleanup
-        instance.rem()
 
     def test_eq(self):
 
