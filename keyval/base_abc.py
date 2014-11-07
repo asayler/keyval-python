@@ -276,3 +276,31 @@ class Set(collections.Set, Persistent):
             return (other.get_val() != self.get_val())
         else:
             return True
+
+    def __lt__(self, other):
+        """Test Less Than"""
+        if (type(other) == type(self)):
+            return (self.get_val() < other.get_val())
+        else:
+            return False
+
+    def __le__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() <= other.get_val())
+        else:
+            return False
+
+    def __gt__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() > other.get_val())
+        else:
+            return False
+
+    def __ge__(self, other):
+        """Test Less Than Equal"""
+        if (type(other) == type(self)):
+            return (self.get_val() >= other.get_val())
+        else:
+            return False
