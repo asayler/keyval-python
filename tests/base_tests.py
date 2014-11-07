@@ -1137,3 +1137,37 @@ class SetMixin(PersistentMixin):
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
+
+    def test_xor(self):
+
+        # Setup Test Vals
+        key_a = self.generate_key()
+        key_b = self.generate_key()
+        key_c = self.generate_key()
+        key_d = self.generate_key()
+        val_a = set(['a', 'b'])
+        val_b = set(['b', 'c'])
+        val_c = set(['c', 'd'])
+        set_a = set(['a', 'c'])
+        set_b = set(['b', 'd'])
+        set_c = set(['a', 'b', 'c', 'd'])
+        set_x = set([])
+
+        # Create Instance
+        instance_a = self.factory.from_new(key_a, val_a)
+        instance_b = self.factory.from_new(key_b, val_b)
+        instance_c = self.factory.from_new(key_c, val_c)
+        self.assertEqual(set_a, (instance_a ^ instance_b))
+        self.assertEqual(set_a, (instance_b ^ instance_a))
+        self.assertEqual(set_b, (instance_b ^ instance_c))
+        self.assertEqual(set_b, (instance_c ^ instance_b))
+        self.assertEqual(set_c, (instance_a ^ instance_c))
+        self.assertEqual(set_c, (instance_c ^ instance_a))
+        self.assertEqual(set_x, (instance_a ^ instance_a))
+        self.assertEqual(set_x, (instance_b ^ instance_b))
+        self.assertEqual(set_x, (instance_c ^ instance_c))
+
+        # Cleanup
+        instance_a.rem()
+        instance_b.rem()
+        instance_c.rem()

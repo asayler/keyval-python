@@ -325,3 +325,10 @@ class Set(collections.Set, Persistent):
             return (self.get_val() - other.get_val())
         else:
             return set([])
+
+    def __xor__(self, other):
+        """Test Symmetric Difference"""
+        if (type(other) == type(self)):
+            return (self.get_val() ^ other.get_val())
+        else:
+            return set([])
