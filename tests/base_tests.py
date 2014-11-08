@@ -880,10 +880,7 @@ class ListMixin(SequenceMixin):
         for instance in instances:
             instance.rem()
 
-    def test_lt(self):
-
-        def func_lt(a, b):
-            return a < b
+    def helper_cmp_vals(self):
 
         vals = []
         vals.append(['a'])
@@ -925,6 +922,14 @@ class ListMixin(SequenceMixin):
         vals.append(['c', 'c', 'a'])
         vals.append(['c', 'c', 'b'])
         vals.append(['c', 'c', 'c'])
+        return vals
+
+    def test_lt(self):
+
+        def func_lt(a, b):
+            return a < b
+
+        vals = self.helper_cmp_vals()
 
         self.helper_cmp("lt", func_lt, *vals)
 
@@ -933,73 +938,27 @@ class ListMixin(SequenceMixin):
         def func_le(a, b):
             return a <= b
 
-        self.helper_less(True, func_le)
+        vals = self.helper_cmp_vals()
 
-    def helper_greater(self, equal, func):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = ['a', 'a', 'a']
-        val_b = ['b', 'b']
-        val_c = ['c']
-        val_d = ['a', 'b', 'c']
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-
-        # Test Linear
-        self.assertFalse(func(instance_a, instance_b))
-        self.assertTrue(func(instance_b, instance_a))
-        self.assertFalse(func(instance_b, instance_c))
-        self.assertTrue(func(instance_c, instance_b))
-        self.assertFalse(func(instance_a, instance_c))
-        self.assertTrue(func(instance_c, instance_a))
-
-        # Test Mixed
-        self.assertFalse(func(instance_a, instance_d))
-        self.assertTrue(func(instance_d, instance_a))
-        self.assertTrue(func(instance_b, instance_d))
-        self.assertFalse(func(instance_d, instance_b))
-        self.assertTrue(func(instance_c, instance_d))
-        self.assertFalse(func(instance_d, instance_c))
-
-        # Test Identity
-        if equal:
-            self.assertTrue(func(instance_a, instance_a))
-            self.assertTrue(func(instance_b, instance_b))
-            self.assertTrue(func(instance_c, instance_c))
-            self.assertTrue(func(instance_d, instance_d))
-        else:
-            self.assertFalse(func(instance_a, instance_a))
-            self.assertFalse(func(instance_b, instance_b))
-            self.assertFalse(func(instance_c, instance_c))
-            self.assertFalse(func(instance_d, instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
+        self.helper_cmp("le", func_le, *vals)
 
     def test_gt(self):
 
         def func_gt(a, b):
             return a > b
 
-        self.helper_greater(False, func_gt)
+        vals = self.helper_cmp_vals()
+
+        self.helper_cmp("gt", func_gt, *vals)
 
     def test_ge(self):
 
         def func_ge(a, b):
             return a >= b
 
-        self.helper_greater(True, func_ge)
+        vals = self.helper_cmp_vals()
+
+        self.helper_cmp("ge", func_ge, *vals)
 
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
