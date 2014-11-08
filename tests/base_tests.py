@@ -940,7 +940,7 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         self.helper_le(func_le)
 
-    def testissubset(self):
+    def test_issubset(self):
 
         def func_issubset(a, b):
             return a.issubset(b)
@@ -1033,7 +1033,7 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         self.helper_ge(func_ge)
 
-    def testissuperset(self):
+    def test_issuperset(self):
 
         def func_issuperset(a, b):
             return a.issuperset(b)
@@ -1229,7 +1229,7 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         self.helper_xor(func_symmetric_difference)
 
-    def testisdisjoint(self):
+    def test_isdisjoint(self):
 
         # Setup Test Vals
         key_a = self.generate_key()
