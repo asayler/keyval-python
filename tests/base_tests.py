@@ -817,7 +817,7 @@ class ListMixin(SequenceMixin):
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
 
-    def helper_cmp(self, mode, func, *vals):
+    def helper_cmp(self, mode, func, sorted_vals):
 
         # Process Args
         if (mode[0] == "l"):
@@ -836,12 +836,12 @@ class ListMixin(SequenceMixin):
         else:
             raise Exception("Unknown Mode: {}".format(mode))
 
-        if len(vals) < 2:
+        if len(sorted_vals) < 2:
             raise Exception("Need at least two vals")
 
         # Setup Test Vals
         instances = []
-        for val in vals:
+        for val in sorted_vals:
             key = self.generate_key()
             instance = self.factory.from_new(key, val)
             instances.append(instance)
@@ -931,7 +931,7 @@ class ListMixin(SequenceMixin):
 
         vals = self.helper_cmp_vals()
 
-        self.helper_cmp("lt", func_lt, *vals)
+        self.helper_cmp("lt", func_lt, vals)
 
     def test_le(self):
 
@@ -940,7 +940,7 @@ class ListMixin(SequenceMixin):
 
         vals = self.helper_cmp_vals()
 
-        self.helper_cmp("le", func_le, *vals)
+        self.helper_cmp("le", func_le, vals)
 
     def test_gt(self):
 
@@ -949,7 +949,7 @@ class ListMixin(SequenceMixin):
 
         vals = self.helper_cmp_vals()
 
-        self.helper_cmp("gt", func_gt, *vals)
+        self.helper_cmp("gt", func_gt, vals)
 
     def test_ge(self):
 
@@ -958,7 +958,7 @@ class ListMixin(SequenceMixin):
 
         vals = self.helper_cmp_vals()
 
-        self.helper_cmp("ge", func_ge, *vals)
+        self.helper_cmp("ge", func_ge, vals)
 
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
