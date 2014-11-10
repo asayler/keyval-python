@@ -104,6 +104,69 @@ class PersistentMixin(object):
         self.assertEqual(orig_val, instance.get_val())
         instance.rem()
 
+    def helper_cmp(self, mode, func, sorted_vals):
+
+        # Process Args
+        if (mode[0] == "l"):
+            less = True
+            greater = False
+        elif (mode[0] == "g"):
+            less = False
+            greater = True
+        else:
+            raise Exception("Unknown Mode: {}".format(mode))
+
+        if (mode[1] == "e"):
+            equal = True
+        elif (mode[1] == "t"):
+            equal = False
+        else:
+            raise Exception("Unknown Mode: {}".format(mode))
+
+        if len(sorted_vals) < 2:
+            raise Exception("Need at least two non-dup vals")
+
+        # Setup Test Vals
+        instances = []
+        for val in sorted_vals:
+            key = self.generate_key()
+            instance = self.factory.from_new(key, val)
+            instances.append(instance)
+
+        # Test Inequality
+        for idx_a in range(len(instances)):
+            a = instances[idx_a]
+            for idx_b in range(len(instances)):
+                b = instances[idx_b]
+                try:
+                    if (idx_a == idx_b):
+                        # Test Equilty
+                        self.assertEqual(a, b)
+                        self.assertEqual(equal, func(a, b))
+                        self.assertEqual(equal, func(b, a))
+                    else:
+                        # Test Inequality
+                        self.assertNotEqual(a, b)
+                        if (idx_a < idx_b):
+                            # Test Less
+                            self.assertEqual(less, func(a, b))
+                        else:
+                            # Test Greater
+                            self.assertEqual(greater, func(a, b))
+                except AssertionError:
+                    print("")
+                    print("idx_a = {:d}".format(idx_a))
+                    print("idx_b = {:d}".format(idx_b))
+                    print("a key = {}".format(a.get_key()))
+                    print("a val = {}".format(a.get_val()))
+                    print("b key = {}".format(b.get_key()))
+                    print("b val = {}".format(b.get_val()))
+                    raise
+
+        # Cleanup
+        for instance in instances:
+            instance.rem()
+
     def test_from_new(self):
 
         # Setup Test Vals
@@ -287,6 +350,38 @@ class PersistentMixin(object):
         # Cleanup
         instance_a.rem()
         instance_b.rem()
+
+    def test_lt(self):
+
+        def func_lt(a, b):
+            return a < b
+
+        vals = self.generate_vals_sorted(10, 10)
+        self.helper_cmp("lt", func_lt, vals)
+
+    def test_le(self):
+
+        def func_le(a, b):
+            return a <= b
+
+        vals = self.generate_vals_sorted(10, 10)
+        self.helper_cmp("le", func_le, vals)
+
+    def test_gt(self):
+
+        def func_gt(a, b):
+            return a > b
+
+        vals = self.generate_vals_sorted(10, 10)
+        self.helper_cmp("gt", func_gt, vals)
+
+    def test_ge(self):
+
+        def func_ge(a, b):
+            return a >= b
+
+        vals = self.generate_vals_sorted(10, 10)
+        self.helper_cmp("ge", func_ge, vals)
 
 class MutableMixin(PersistentMixin):
 
@@ -676,6 +771,14 @@ class StringMixin(SequenceMixin):
             val += self.generate_val_single(exclude=exclude)
         return str(val)
 
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        for c in range(cnt):
+            val = self.generate_val_multi(size)
+            vals.append(val)
+        return sorted(vals)
+
     def test_empty(self):
 
         # Test Len
@@ -726,6 +829,22 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
         def __ne__(self, other):
             """Test Unequality"""
             return self._val != other
+
+        def __lt__(self, other):
+            """Test Less Than"""
+            return self._val < other
+
+        def __le__(self, other):
+            """Test Less Than or Equal"""
+            return self._val <= other
+
+        def __gt__(self, other):
+            """Test Greater Than"""
+            return self._val > other
+
+        def __ge__(self, other):
+            """Test Greater Than or Equal"""
+            return self._val >= other
 
         def __len__(self):
             """Get Len of Set"""
@@ -786,6 +905,14 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             val += self.generate_val_single(exclude=exclude)
         return self.MutableStringRef(val)
 
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        for c in range(cnt):
+            val = self.generate_val_multi(size)
+            vals.append(val)
+        return sorted(vals)
+
 class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
@@ -810,155 +937,20 @@ class ListMixin(SequenceMixin):
             val.append(self.generate_val_single(exclude=exclude))
         return list(val)
 
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        for c in range(cnt):
+            val = self.generate_val_multi(size)
+            vals.append(val)
+        return sorted(vals)
+
     def test_empty(self):
 
         # Create Empty Instance
         key = self.generate_key()
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
-
-    def helper_cmp(self, mode, func, sorted_vals):
-
-        # Process Args
-        if (mode[0] == "l"):
-            less = True
-            greater = False
-        elif (mode[0] == "g"):
-            less = False
-            greater = True
-        else:
-            raise Exception("Unknown Mode: {}".format(mode))
-
-        if (mode[1] == "e"):
-            equal = True
-        elif (mode[1] == "t"):
-            equal = False
-        else:
-            raise Exception("Unknown Mode: {}".format(mode))
-
-        if len(sorted_vals) < 2:
-            raise Exception("Need at least two vals")
-
-        # Setup Test Vals
-        instances = []
-        for val in sorted_vals:
-            key = self.generate_key()
-            instance = self.factory.from_new(key, val)
-            instances.append(instance)
-
-        # Test Inequality
-        for idx_a in range(len(instances)):
-            a = instances[idx_a]
-            for idx_b in range(len(instances)):
-                b = instances[idx_b]
-                try:
-                    if (idx_a == idx_b):
-                        # Test Equilty
-                        self.assertEqual(a, b)
-                        self.assertEqual(equal, func(a, b))
-                        self.assertEqual(equal, func(b, a))
-                    else:
-                        # Test Inequality
-                        self.assertNotEqual(a, b)
-                        if (idx_a < idx_b):
-                            # Test Less
-                            self.assertEqual(less, func(a, b))
-                        else:
-                            # Test Greater
-                            self.assertEqual(greater, func(a, b))
-                except AssertionError:
-                    print("")
-                    print("idx_a = {:d}".format(idx_a))
-                    print("idx_b = {:d}".format(idx_b))
-                    print("a key = {}".format(a.get_key()))
-                    print("a val = {}".format(a.get_val()))
-                    print("b key = {}".format(b.get_key()))
-                    print("b val = {}".format(b.get_val()))
-                    raise
-
-        # Cleanup
-        for instance in instances:
-            instance.rem()
-
-    def helper_cmp_vals(self):
-
-        vals = []
-        vals.append(['a'])
-        vals.append(['a', 'a'])
-        vals.append(['a', 'a', 'a'])
-        vals.append(['a', 'a', 'b'])
-        vals.append(['a', 'a', 'c'])
-        vals.append(['a', 'b'])
-        vals.append(['a', 'b', 'a'])
-        vals.append(['a', 'b', 'b'])
-        vals.append(['a', 'b', 'c'])
-        vals.append(['a', 'c'])
-        vals.append(['a', 'c', 'a'])
-        vals.append(['a', 'c', 'b'])
-        vals.append(['a', 'c', 'c'])
-        vals.append(['b'])
-        vals.append(['b', 'a'])
-        vals.append(['b', 'a', 'a'])
-        vals.append(['b', 'a', 'b'])
-        vals.append(['b', 'a', 'c'])
-        vals.append(['b', 'b'])
-        vals.append(['b', 'b', 'a'])
-        vals.append(['b', 'b', 'b'])
-        vals.append(['b', 'b', 'c'])
-        vals.append(['b', 'c'])
-        vals.append(['b', 'c', 'a'])
-        vals.append(['b', 'c', 'b'])
-        vals.append(['b', 'c', 'c'])
-        vals.append(['c'])
-        vals.append(['c', 'a'])
-        vals.append(['c', 'a', 'a'])
-        vals.append(['c', 'a', 'b'])
-        vals.append(['c', 'a', 'c'])
-        vals.append(['c', 'b'])
-        vals.append(['c', 'b', 'a'])
-        vals.append(['c', 'b', 'b'])
-        vals.append(['c', 'b', 'c'])
-        vals.append(['c', 'c'])
-        vals.append(['c', 'c', 'a'])
-        vals.append(['c', 'c', 'b'])
-        vals.append(['c', 'c', 'c'])
-        return vals
-
-    def test_lt(self):
-
-        def func_lt(a, b):
-            return a < b
-
-        vals = self.helper_cmp_vals()
-
-        self.helper_cmp("lt", func_lt, vals)
-
-    def test_le(self):
-
-        def func_le(a, b):
-            return a <= b
-
-        vals = self.helper_cmp_vals()
-
-        self.helper_cmp("le", func_le, vals)
-
-    def test_gt(self):
-
-        def func_gt(a, b):
-            return a > b
-
-        vals = self.helper_cmp_vals()
-
-        self.helper_cmp("gt", func_gt, vals)
-
-    def test_ge(self):
-
-        def func_ge(a, b):
-            return a >= b
-
-        vals = self.helper_cmp_vals()
-
-        self.helper_cmp("ge", func_ge, vals)
 
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
@@ -990,6 +982,16 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
             val.append(self.generate_val_single(exclude=exclude))
         return set(val)
 
+    def generate_vals_sorted(self, size, cnt):
+
+        size = None
+        vals = []
+        base = []
+        for c in range(cnt):
+            base.append(self.generate_val_single())
+            vals.append(set(base))
+        return vals
+
     def test_empty(self):
 
         # Create Empty Instance
@@ -997,191 +999,21 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
 
-    def helper_lt(self, func):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = set(['a', 'b'])
-        val_b = set(['a', 'b', 'c'])
-        val_c = set(['a', 'b', 'c'])
-        val_d = set(['a', 'b', 'c', 'd'])
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(func(instance_a, instance_b))
-        self.assertFalse(func(instance_b, instance_a))
-        self.assertFalse(func(instance_b, instance_c))
-        self.assertFalse(func(instance_c, instance_b))
-        self.assertTrue(func(instance_c, instance_d))
-        self.assertFalse(func(instance_d, instance_c))
-        self.assertFalse(func(instance_d, instance_a))
-        self.assertTrue(func(instance_a, instance_d))
-        self.assertFalse(func(instance_a, instance_a))
-        self.assertFalse(func(instance_b, instance_b))
-        self.assertFalse(func(instance_c, instance_c))
-        self.assertFalse(func(instance_d, instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
-
-    def test_lt(self):
-
-        def func_lt(a, b):
-            return a < b
-
-        self.helper_lt(func_lt)
-
-    def helper_le(self, func):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = set(['a', 'b'])
-        val_b = set(['a', 'b', 'c'])
-        val_c = set(['a', 'b', 'c'])
-        val_d = set(['a', 'b', 'c', 'd'])
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(func(instance_a, instance_b))
-        self.assertFalse(func(instance_b, instance_a))
-        self.assertTrue(func(instance_b, instance_c))
-        self.assertTrue(func(instance_c, instance_b))
-        self.assertTrue(func(instance_c, instance_d))
-        self.assertFalse(func(instance_d, instance_c))
-        self.assertFalse(func(instance_d, instance_a))
-        self.assertTrue(func(instance_a, instance_d))
-        self.assertTrue(func(instance_a, instance_a))
-        self.assertTrue(func(instance_b, instance_b))
-        self.assertTrue(func(instance_c, instance_c))
-        self.assertTrue(func(instance_d, instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
-
-    def test_le(self):
-
-        def func_le(a, b):
-            return a <= b
-
-        self.helper_le(func_le)
-
     def test_issubset(self):
 
         def func_issubset(a, b):
             return a.issubset(b)
 
-        self.helper_le(func_issubset)
-
-    def helper_gt(self, func):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = set(['a', 'b'])
-        val_b = set(['a', 'b', 'c'])
-        val_c = set(['a', 'b', 'c'])
-        val_d = set(['a', 'b', 'c', 'd'])
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(func(instance_d, instance_c))
-        self.assertFalse(func(instance_c, instance_d))
-        self.assertFalse(func(instance_c, instance_b))
-        self.assertFalse(func(instance_b, instance_c))
-        self.assertTrue(func(instance_b, instance_a))
-        self.assertFalse(func(instance_a, instance_b))
-        self.assertFalse(func(instance_a, instance_d))
-        self.assertTrue(func(instance_d, instance_a))
-        self.assertFalse(func(instance_a, instance_a))
-        self.assertFalse(func(instance_b, instance_b))
-        self.assertFalse(func(instance_c, instance_c))
-        self.assertFalse(func(instance_d, instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
-
-    def test_gt(self):
-
-        def func_gt(a, b):
-            return a > b
-
-        self.helper_gt(func_gt)
-
-    def helper_ge(self, func):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        key_c = self.generate_key()
-        key_d = self.generate_key()
-        val_a = set(['a', 'b'])
-        val_b = set(['a', 'b', 'c'])
-        val_c = set(['a', 'b', 'c'])
-        val_d = set(['a', 'b', 'c', 'd'])
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
-        instance_d = self.factory.from_new(key_d, val_d)
-        self.assertTrue(func(instance_d, instance_c))
-        self.assertFalse(func(instance_c, instance_d))
-        self.assertTrue(func(instance_c, instance_b))
-        self.assertTrue(func(instance_b, instance_c))
-        self.assertTrue(func(instance_b, instance_a))
-        self.assertFalse(func(instance_a, instance_b))
-        self.assertFalse(func(instance_a, instance_d))
-        self.assertTrue(func(instance_d, instance_a))
-        self.assertTrue(func(instance_a, instance_a))
-        self.assertTrue(func(instance_b, instance_b))
-        self.assertTrue(func(instance_c, instance_c))
-        self.assertTrue(func(instance_d, instance_d))
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-        instance_c.rem()
-        instance_d.rem()
-
-    def test_ge(self):
-
-        def func_ge(a, b):
-            return a >= b
-
-        self.helper_ge(func_ge)
+        vals = self.generate_vals_sorted(None, 10)
+        self.helper_cmp("le", func_issubset, vals)
 
     def test_issuperset(self):
 
         def func_issuperset(a, b):
             return a.issuperset(b)
 
-        self.helper_ge(func_issuperset)
+        vals = self.generate_vals_sorted(None, 10)
+        self.helper_cmp("ge", func_issuperset, vals)
 
     def helper_and(self, func):
 
