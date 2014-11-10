@@ -438,12 +438,10 @@ class ContainerMixin(PersistentMixin):
         self.helper_dne(contains, None)
 
         # Test In
-        def contains_in(instance, index):
+        def contains_in(instance):
             item = next(iter(instance))
             return contains(instance, item)
-        for i in range(10):
-            self.helper_cmp_immutable(10, contains_in,  i    )
-            self.helper_cmp_immutable(10, contains_in, (i-10))
+        self.helper_cmp_immutable(10, contains_in)
 
         # Test Out
         def contains_out(instance):
@@ -1239,3 +1237,54 @@ class MutableSetMixin(MutableMixin, SetMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSetMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableSet)
+
+    def test_add(self):
+
+        def add(instance, itm):
+            return instance.add(itm)
+
+        # Test DNE
+        itm = self.generate_val_single()
+        self.helper_dne(add, itm)
+
+        # Test Bad Itm
+        itm = None
+        self.helper_raises(10, TypeError, add, itm)
+
+        # Test Add New
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, add, itm)
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, add, itm)
+
+        # Test Add Same
+        itm = self.generate_val_single()
+        self.helper_cmp_mutable(10, add, itm)
+        self.helper_cmp_mutable(10, add, itm)
+
+    def test_discard(self):
+
+        def discard(instance, itm):
+            return instance.discard(itm)
+
+        # Test DNE
+        itm = self.generate_val_single()
+        self.helper_dne(discard, itm)
+
+        # Test Bad Itm
+        itm = None
+        self.helper_raises(10, TypeError, discard, itm)
+
+        # Test In
+        def discard_in(instance):
+            itm = next(iter(instance))
+            return discard(instance, itm)
+        self.helper_cmp_mutable(2, discard_in)
+        self.helper_cmp_mutable(10, discard_in)
+
+        # Test Out
+        def discard_out(instance):
+            itm = self.generate_val_single(exclude=instance)
+            return discard(instance, itm)
+        self.helper_cmp_mutable(2, discard_in)
+        self.helper_cmp_mutable(10, discard_in)

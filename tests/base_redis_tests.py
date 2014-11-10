@@ -90,6 +90,9 @@ class MutableListTestCase(base_tests.MutableListMixin, RedisBaseTestCase):
 class SetTestCase(base_tests.SetMixin, RedisBaseTestCase):
     pass
 
+class MutableSetTestCase(base_tests.MutableSetMixin, RedisBaseTestCase):
+    pass
+
 
 ### Main ###
 
