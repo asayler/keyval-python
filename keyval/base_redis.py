@@ -683,3 +683,53 @@ class Set(Container, Iterable, Sized, base_abc.Set):
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
+
+class MutableSet(Mutable, Set, base_abc.MutableSet):
+
+    def add(self, itm):
+        """Add Item to Set"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # Set Transaction
+        def automic_add(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Add Item
+            pipe.multi()
+            pipe.sadd(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_add, self._redis_key)
+
+    def discard(self, itm):
+        """Remove Item from Set if Present"""
+
+        # Validate Input
+        if (type(itm) is str):
+            pass
+        else:
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # Set Transaction
+        def automic_discard(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Remove Item
+            pipe.multi()
+            pipe.srem(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_discard, self._redis_key)

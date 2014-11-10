@@ -361,3 +361,15 @@ class Set(Container, Iterable, Sized, collections.Set):
             return (self.get_val().isdisjoint(other.get_val()))
         else:
             raise TypeError("Can only compare {}".format(type(self)))
+
+class MutableSet(Mutable, Set, collections.MutableSet):
+
+    @abc.abstractmethod
+    def add(self, itm):
+        """Add Item to Set"""
+        pass
+
+    @abc.abstractmethod
+    def discard(self, itm):
+        """Remove Item from Set if Present"""
+        pass

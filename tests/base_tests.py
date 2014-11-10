@@ -1233,3 +1233,9 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         instance_a.rem()
         instance_b.rem()
         instance_c.rem()
+
+class MutableSetMixin(MutableMixin, SetMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableSetMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableSet)
