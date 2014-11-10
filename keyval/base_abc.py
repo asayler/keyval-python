@@ -39,7 +39,7 @@ class Persistent(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, driver, key):
-        """ Constructor"""
+        """Object Constructor"""
 
         # Check Input
         if driver is None:
@@ -88,6 +88,26 @@ class Persistent(object):
 
         return cls(driver, key, *args, **kwargs)
 
+    @abc.abstractmethod
+    def _get_val(self):
+        """Get Value"""
+        pass
+
+    @abc.abstractmethod
+    def _set_val(self, val, create=False, overwrite=True):
+        """Set Value"""
+        pass
+
+    @abc.abstractmethod
+    def exists(self):
+        """Check if Object Exists"""
+        pass
+
+    @abc.abstractmethod
+    def rem(self, force=False):
+        """Delete Object"""
+        pass
+
     def __unicode__(self):
         """Return Unicode Representation"""
         return unicode(self.get_val())
@@ -104,16 +124,6 @@ class Persistent(object):
         """Test Bool"""
         return bool(self.get_val())
 
-    @abc.abstractmethod
-    def _get_val(self):
-        """Get Value"""
-        pass
-
-    @abc.abstractmethod
-    def _set_val(self, val, create=False, overwrite=True):
-        """Set Value"""
-        pass
-
     def get_key(self):
         """Get Key"""
         return self._key
@@ -121,16 +131,6 @@ class Persistent(object):
     def get_val(self):
         """Get Value as Corresponding Python Object"""
         return self._get_val()
-
-    @abc.abstractmethod
-    def rem(self, force=False):
-        """Delete Object"""
-        pass
-
-    @abc.abstractmethod
-    def exists(self):
-        """Check if Object Exists"""
-        pass
 
     def __eq__(self, other):
         """Test Equality"""
@@ -240,10 +240,6 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
         """Extend Seq with another Seq"""
         pass
 
-    def __iadd__(self, other):
-        """+="""
-        self.extend(other)
-
     @abc.abstractmethod
     def reverse(self):
         """Reverse Seq"""
@@ -254,19 +250,24 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
         """Remove and return item"""
         pass
 
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
+
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
+
+    def __iadd__(self, other):
+        """+="""
+        self.extend(other)
+
     def __delitem__(self, idx):
         """Del Seq Item"""
         self.pop(idx)
 
-    @abc.abstractmethod
-    def remove(self, itm):
-        """Remove itm from seq"""
-        pass
-
-    @abc.abstractmethod
-    def remove(self, itm):
-        """Remove itm from seq"""
-        pass
 
 ### Abstract Objects ###
 
