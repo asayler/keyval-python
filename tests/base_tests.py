@@ -76,7 +76,7 @@ class PersistentMixin(object):
         self.assertFalse(instance.exists())
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
-    def helper_cmp_immutable(self, size, test_func, *args):
+    def helper_ab_immutable(self, size, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -284,7 +284,7 @@ class PersistentMixin(object):
         self.helper_dne(unicode)
 
         # Test Good
-        self.helper_cmp_immutable(10, unicode)
+        self.helper_ab_immutable(10, unicode)
 
     def test_string(self):
 
@@ -292,7 +292,7 @@ class PersistentMixin(object):
         self.helper_dne(str)
 
         # Test Good
-        self.helper_cmp_immutable(10, str)
+        self.helper_ab_immutable(10, str)
 
     def test_bool(self):
 
@@ -300,8 +300,8 @@ class PersistentMixin(object):
         self.helper_dne(bool)
 
         # Test Good
-        self.helper_cmp_immutable( 1, bool)
-        self.helper_cmp_immutable(10, bool)
+        self.helper_ab_immutable( 1, bool)
+        self.helper_ab_immutable(10, bool)
 
     def test_repr(self):
 
@@ -385,7 +385,7 @@ class PersistentMixin(object):
 
 class MutableMixin(PersistentMixin):
 
-    def helper_cmp_mutable(self, size, test_func, *args):
+    def helper_ab_mutable(self, size, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
@@ -441,13 +441,13 @@ class ContainerMixin(PersistentMixin):
         def contains_in(instance):
             item = next(iter(instance))
             return contains(instance, item)
-        self.helper_cmp_immutable(10, contains_in)
+        self.helper_ab_immutable(10, contains_in)
 
         # Test Out
         def contains_out(instance):
             item = self.generate_val_single(exclude=instance)
             return contains(instance, item)
-        self.helper_cmp_immutable(10, contains_out)
+        self.helper_ab_immutable(10, contains_out)
 
 class IterableMixin(PersistentMixin):
 
@@ -475,8 +475,8 @@ class SizedMixin(PersistentMixin):
         self.helper_dne(len)
 
         # Test Good
-        self.helper_cmp_immutable( 1, len)
-        self.helper_cmp_immutable(10, len)
+        self.helper_ab_immutable( 1, len)
+        self.helper_ab_immutable(10, len)
 
 class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
@@ -490,8 +490,8 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         # Test Good
         for i in range(10):
-            self.helper_cmp_immutable(10, getitem,  i    )
-            self.helper_cmp_immutable(10, getitem, (i-10))
+            self.helper_ab_immutable(10, getitem,  i    )
+            self.helper_ab_immutable(10, getitem, (i-10))
 
         # Test OOB
         self.helper_raises( 1, IndexError, getitem,   1)
@@ -514,8 +514,8 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
             item = instance[idx]
             return index(instance, item)
         for i in range(10):
-            self.helper_cmp_immutable(10, index_in,  i    )
-            self.helper_cmp_immutable(10, index_in, (i-10))
+            self.helper_ab_immutable(10, index_in,  i    )
+            self.helper_ab_immutable(10, index_in, (i-10))
 
         # Test Out
         def index_out(instance):
@@ -536,14 +536,14 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
             item = instance[index]
             return count(instance, item)
         for i in range(10):
-            self.helper_cmp_immutable(10, count_in,  i)
-            self.helper_cmp_immutable(10, count_in, (i-10))
+            self.helper_ab_immutable(10, count_in,  i)
+            self.helper_ab_immutable(10, count_in, (i-10))
 
         # Test Out
         def count_out(instance):
             item = self.generate_val_single(exclude=instance)
             return count(instance, item)
-        self.helper_cmp_immutable(10, count_out)
+        self.helper_ab_immutable(10, count_out)
 
     def test_reversed(self):
 
@@ -577,9 +577,9 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Test Good
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, setitem,  i,     item)
+            self.helper_ab_mutable(10, setitem,  i,     item)
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, setitem, (i-10), item)
+            self.helper_ab_mutable(10, setitem, (i-10), item)
 
         # Test OOB
         item = self.generate_val_single()
@@ -602,9 +602,9 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Test Good
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, delitem,  i,     item)
+            self.helper_ab_mutable(10, delitem,  i,     item)
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, delitem, (i-10), item)
+            self.helper_ab_mutable(10, delitem, (i-10), item)
 
         # Test OOB
         item = self.generate_val_single()
@@ -625,19 +625,19 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         # Test Inside
         for i in range(10):
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, insert,  i,     item)
+            self.helper_ab_mutable(10, insert,  i,     item)
             item = self.generate_val_single()
-            self.helper_cmp_mutable(10, insert, (i-10), item)
+            self.helper_ab_mutable(10, insert, (i-10), item)
 
         # Test Before
         item = self.generate_val_single()
-        self.helper_cmp_mutable(10, insert, -11, item)
-        self.helper_cmp_mutable(10, insert, -12, item)
+        self.helper_ab_mutable(10, insert, -11, item)
+        self.helper_ab_mutable(10, insert, -12, item)
 
         # Test After
         item = self.generate_val_single()
-        self.helper_cmp_mutable(10, insert, 10, item)
-        self.helper_cmp_mutable(10, insert, 11, item)
+        self.helper_ab_mutable(10, insert, 10, item)
+        self.helper_ab_mutable(10, insert, 11, item)
 
     def test_append(self):
 
@@ -650,9 +650,9 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test Append
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, append, itm)
+        self.helper_ab_mutable(10, append, itm)
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, append, itm)
+        self.helper_ab_mutable(10, append, itm)
 
     def test_extend(self):
 
@@ -665,12 +665,12 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test Single
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, extend, itm)
+        self.helper_ab_mutable(10, extend, itm)
 
         # Test Seq
         for cnt in range(5):
             seq = self.generate_val_multi(cnt)
-            self.helper_cmp_mutable(10, extend, seq)
+            self.helper_ab_mutable(10, extend, seq)
 
     def test_reverse(self):
 
@@ -682,7 +682,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test Reverse
         for cnt in range(1, 5):
-            self.helper_cmp_mutable(cnt, reverse)
+            self.helper_ab_mutable(cnt, reverse)
 
     def test_pop(self):
 
@@ -698,9 +698,9 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         self.helper_dne(pop, 0)
 
         # Test Pop
-        self.helper_cmp_mutable(10, pop)
+        self.helper_ab_mutable(10, pop)
         for idx in range(10):
-            self.helper_cmp_mutable(10, pop, idx)
+            self.helper_ab_mutable(10, pop, idx)
 
     def test_remove(self):
 
@@ -716,7 +716,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             itm = instance[idx]
             return remove(instance, itm)
         for i in range(10):
-            self.helper_cmp_mutable(10, remove_in,  i    )
+            self.helper_ab_mutable(10, remove_in,  i    )
 
         # Test Out
         def remove_out(instance):
@@ -735,12 +735,12 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         # Test Single
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, iadd, itm)
+        self.helper_ab_mutable(10, iadd, itm)
 
         # Test Seq
         for cnt in range(5):
             seq = self.generate_val_multi(cnt)
-            self.helper_cmp_mutable(10, iadd, seq)
+            self.helper_ab_mutable(10, iadd, seq)
 
 ### Object Mixins ###
 
@@ -780,10 +780,10 @@ class StringMixin(SequenceMixin):
     def test_empty(self):
 
         # Test Len
-        self.helper_cmp_immutable( 0, len)
+        self.helper_ab_immutable( 0, len)
 
         # Test Bool
-        self.helper_cmp_immutable( 0, bool)
+        self.helper_ab_immutable( 0, bool)
 
         # Test getitem
         def getitem(instance, index):
@@ -1253,14 +1253,14 @@ class MutableSetMixin(MutableMixin, SetMixin):
 
         # Test Add New
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, add, itm)
+        self.helper_ab_mutable(10, add, itm)
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, add, itm)
+        self.helper_ab_mutable(10, add, itm)
 
         # Test Add Same
         itm = self.generate_val_single()
-        self.helper_cmp_mutable(10, add, itm)
-        self.helper_cmp_mutable(10, add, itm)
+        self.helper_ab_mutable(10, add, itm)
+        self.helper_ab_mutable(10, add, itm)
 
     def test_discard(self):
 
@@ -1279,12 +1279,12 @@ class MutableSetMixin(MutableMixin, SetMixin):
         def discard_in(instance):
             itm = next(iter(instance))
             return discard(instance, itm)
-        self.helper_cmp_mutable(2, discard_in)
-        self.helper_cmp_mutable(10, discard_in)
+        self.helper_ab_mutable(2, discard_in)
+        self.helper_ab_mutable(10, discard_in)
 
         # Test Out
         def discard_out(instance):
             itm = self.generate_val_single(exclude=instance)
             return discard(instance, itm)
-        self.helper_cmp_mutable(2, discard_in)
-        self.helper_cmp_mutable(10, discard_in)
+        self.helper_ab_mutable(2, discard_in)
+        self.helper_ab_mutable(10, discard_in)
