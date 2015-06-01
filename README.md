@@ -4,21 +4,36 @@ Python KeyVal Container Interface
 By [Andy Sayler](https://www.andysayler.com)
 University of Colorado, Boulder
 
+About
+-----
+
+A persistent implementation of the [Python Collections Abstract Base
+Classes](https://docs.python.org/2/library/collections.html#collections-abstract-base-classes),
+plus a few others.
+
 Status
 ------
-
-Under development.
 
 [![Build Status](https://drone.io/github.com/asayler/keyval-python/status.png)](https://drone.io/github.com/asayler/keyval-python/latest)
 
 ### Completed Data Structures ###
 + String
 + MutableString
-+ List
-+ MutableList
++ List (Sequence)
++ MutableList (MutableSequence)
 + Set
 + MutableSet
 
+### Planned Data Structures ###
++ Mapping
++ MutableMapping
+
+### Completed Backends ###
++ Redis
+
+### Planned Backends ###
++ In Memory (?)
++ SQL (?)
 
 Providence
 ----------
