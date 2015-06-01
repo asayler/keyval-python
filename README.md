@@ -1,13 +1,15 @@
 Python KeyVal Container Interface
 ================================
 
-By [Andy Sayler](https://www.andysayler.com)  
+By [Andy Sayler](https://www.andysayler.com)
 University of Colorado, Boulder
 
 Status
 ------
 
 Under development.
+
+[![Build Status](https://drone.io/github.com/asayler/keyval-python/status.png)](https://drone.io/github.com/asayler/keyval-python/latest)
 
 Providence
 ----------
@@ -21,7 +23,7 @@ Licensing
 Copyright 2014 by Andy Sayler
 
 This file is part of Python KeyVal.
- 
+
 Python KeyVal is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation, either version 3 of the
