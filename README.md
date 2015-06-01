@@ -1,7 +1,7 @@
 Python KeyVal Container Interface
 ================================
 
-By [Andy Sayler](https://www.andysayler.com)
+By [Andy Sayler](https://www.andysayler.com)  
 University of Colorado, Boulder
 
 About
