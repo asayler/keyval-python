@@ -11,6 +11,15 @@ Under development.
 
 [![Build Status](https://drone.io/github.com/asayler/keyval-python/status.png)](https://drone.io/github.com/asayler/keyval-python/latest)
 
+### Completed Data Structures ###
++ String
++ MutableString
++ List
++ MutableList
++ Set
++ MutableSet
+
+
 Providence
 ----------
 
