@@ -51,7 +51,7 @@ class RedisBaseTestCase(base_tests.BaseTestCase):
     def __init__(self, *args, **kwargs):
         super(RedisBaseTestCase, self).__init__(*args, **kwargs)
         self.module = keyval.base_redis
-        self.driver = keyval.base_redis.Driver(db=_REDIS_DB)
+        self.driver = self.module.Driver(db=_REDIS_DB)
 
     def setUp(self):
 
