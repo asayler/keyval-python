@@ -14,6 +14,7 @@ import base_abc
 _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
 _PREFIX_SET = "set"
+_PREFIX_MAPPING = "hash"
 
 
 ### Driver ###
@@ -733,3 +734,60 @@ class MutableSet(Mutable, Set, base_abc.MutableSet):
 
         # Execute Transaction
         self._driver.transaction(automic_discard, self._redis_key)
+
+class Mapping(Container, Iterable, Sized, base_abc.Mapping):
+
+    def __init__(self, driver, key):
+        """ Constructor"""
+
+        # Call Parent
+        super(Mapping, self).__init__(driver, key)
+
+        # Save Extra Attrs
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_MAPPING, base._SEP_FIELD, self._key)
+        self._redis_key = redis_key
+
+    def _get_val(self):
+
+        # Get Transaction
+        def automic_get(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.hgetall(self._redis_key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_get, self._redis_key)
+
+        # Return Object
+        return list(ret[0])
+
+    def _set_val(self, val, create=True, overwrite=True):
+
+        # Validate Input
+        val = dict(val)
+        types = set([type(v) for v in val.values()])
+        for typ in types:
+            if (typ is str):
+                pass
+            else:
+                raise TypeError("{} not supported in seq".format(typ))
+        if len(val) == 0:
+            raise ValueError("mapping must have non-zero length")
+
+        # Set Transaction
+        def automic_set(pipe):
+
+            exists = pipe.exists(self._redis_key)
+            if not overwrite and exists:
+                raise base.ObjectExists(self)
+            if not create and not exists:
+                raise base.ObjectDNE(self)
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.hmset(self._redis_key, val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_set, self._redis_key)
