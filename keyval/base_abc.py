@@ -373,3 +373,9 @@ class MutableSet(Mutable, Set, collections.MutableSet):
     def discard(self, itm):
         """Remove Item from Set if Present"""
         pass
+
+class Mapping(Container, Iterable, Sized, collections.Mapping):
+
+    def __getitem__(self, key):
+        """Get Mapping Item"""
+        return self.get_val()[key]
