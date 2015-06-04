@@ -1288,3 +1288,63 @@ class MutableSetMixin(MutableMixin, SetMixin):
             return discard(instance, itm)
         self.helper_ab_mutable(2, discard_in)
         self.helper_ab_mutable(10, discard_in)
+
+class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MappingMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Mapping)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = []
+        while True:
+            val = self.val_cnt
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    # def generate_val_multi(self, size, exclude=None):
+
+    #     val = {}
+    #     for i in range(size):
+    #         val.append(self.generate_val_single(exclude=exclude))
+    #     return list(val)
+
+    # def generate_vals_sorted(self, size, cnt):
+
+    #     vals = []
+    #     for c in range(cnt):
+    #         val = self.generate_val_multi(size)
+    #         vals.append(val)
+    #     return sorted(vals)
+
+    # def test_empty(self):
+
+    #     # Create Empty Instance
+    #     key = self.generate_key()
+    #     val = self.generate_val_multi(0)
+    #     self.assertRaises(ValueError, self.factory.from_new, key, val)
+
+    # def test_getitem(self):
+
+    #     def getitem(instance, key):
+    #         return instance[key]
+
+    #     # Test DNE
+    #     self.helper_dne(getitem, None)
+
+    #     # Test Good
+    #     for i in range(10):
+    #         self.helper_ab_immutable(10, getitem,  i    )
+    #         self.helper_ab_immutable(10, getitem, (i-10))
+
+    #     # Test OOB
+    #     self.helper_raises( 1, IndexError, getitem,   1)
+    #     self.helper_raises( 1, IndexError, getitem,  -2)
+    #     self.helper_raises(10, IndexError, getitem,  10)
+    #     self.helper_raises(10, IndexError, getitem,  11)
+    #     self.helper_raises(10, IndexError, getitem, -11)
+    #     self.helper_raises(10, IndexError, getitem, -12)
