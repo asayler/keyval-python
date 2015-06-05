@@ -1317,6 +1317,14 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
             multi[map_key] = map_val
         return dict(multi)
 
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        for c in range(cnt):
+            val = self.generate_val_multi(size)
+            vals.append(val)
+        return sorted(vals)
+
     # def test_empty(self):
 
     #     # Create Empty Instance
