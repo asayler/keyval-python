@@ -762,7 +762,7 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
         ret = self._driver.transaction(automic_get, self._redis_key)
 
         # Return Object
-        return list(ret[0])
+        return dict(ret[0])
 
     def _set_val(self, val, create=True, overwrite=True):
 
