@@ -21,7 +21,6 @@ import keyval.base
 ### Globals ###
 
 _TEST_KEY_PRE = "TESTKEY"
-_TEST_VAL_PRE_STRING = "TESTVAL"
 
 ### Initialization ###
 
@@ -1297,21 +1296,26 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def generate_val_single(self, exclude=None):
 
+        TEST_MAP_KEY_PRE_STRING = "TESTMAPKEY"
+        TEST_MAP_VAL_PRE_STRING = "TESTMAPVAL"
+
         if exclude is None:
             exclude = []
         while True:
-            val = self.val_cnt
-            if val not in exclude:
+            map_key = TEST_MAP_KEY_PRE_STRING + str(self.val_cnt)
+            map_val = TEST_MAP_VAL_PRE_STRING + str(self.val_cnt)
+            if map_key not in exclude:
                 self.val_cnt += 1
                 break
-        return str(val)
+        return (map_key, map_val)
 
-    # def generate_val_multi(self, size, exclude=None):
+    def generate_val_multi(self, size, exclude=None):
 
-    #     val = {}
-    #     for i in range(size):
-    #         val.append(self.generate_val_single(exclude=exclude))
-    #     return list(val)
+        multi = {}
+        for i in range(size):
+            map_key, map_val = self.generate_val_single(exclude=exclude)
+            multi[map_key] = map_val
+        return dict(multi)
 
     # def generate_vals_sorted(self, size, cnt):
 
