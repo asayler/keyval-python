@@ -1349,23 +1349,25 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         val = self.generate_val_multi(0)
         self.assertRaises(ValueError, self.factory.from_new, key, val)
 
-    # def test_getitem(self):
+    def test_getitem(self):
 
-    #     def getitem(instance, key):
-    #         return instance[key]
+        def getitem(instance, key):
+            return instance[key]
 
-    #     # Test DNE
-    #     self.helper_dne(getitem, None)
+        # Test DNE
+        self.helper_dne(getitem, None)
 
-    #     # Test Good
-    #     for i in range(10):
-    #         self.helper_ab_immutable(10, getitem,  i    )
-    #         self.helper_ab_immutable(10, getitem, (i-10))
+        # Create Instance
+        key = self.generate_key()
+        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(key, val)
 
-    #     # Test OOB
-    #     self.helper_raises( 1, IndexError, getitem,   1)
-    #     self.helper_raises( 1, IndexError, getitem,  -2)
-    #     self.helper_raises(10, IndexError, getitem,  10)
-    #     self.helper_raises(10, IndexError, getitem,  11)
-    #     self.helper_raises(10, IndexError, getitem, -11)
-    #     self.helper_raises(10, IndexError, getitem, -12)
+        # Test Good Keys
+        for k in val:
+            self.helper_ab_immutable_core(instance, val, getitem, k)
+
+        # Test Bad Key
+        self.helper_raises_core(instance, val, KeyError, getitem, "key_d")
+
+        # Cleanup
+        instance.rem()
