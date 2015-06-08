@@ -1390,3 +1390,22 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_values(self):
+
+        def values(instance):
+            return instance.values()
+
+        # Test DNE
+        self.helper_dne(values)
+
+        # Create Instance
+        key = self.generate_key()
+        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(key, val)
+
+        # AB Test Keys
+        self.helper_ab_immutable_core(instance, val, values)
+
+        # Cleanup
+        instance.rem()
