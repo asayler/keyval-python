@@ -1325,12 +1325,12 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
             vals.append(val)
         return sorted(vals)
 
-    # def test_empty(self):
+    def test_empty(self):
 
-    #     # Create Empty Instance
-    #     key = self.generate_key()
-    #     val = self.generate_val_multi(0)
-    #     self.assertRaises(ValueError, self.factory.from_new, key, val)
+        # Create Empty Instance
+        key = self.generate_key()
+        val = self.generate_val_multi(0)
+        self.assertRaises(ValueError, self.factory.from_new, key, val)
 
     # def test_getitem(self):
 
