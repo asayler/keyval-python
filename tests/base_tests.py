@@ -1380,16 +1380,8 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         # Test DNE
         self.helper_dne(keys)
 
-        # Create Instance
-        key = self.generate_key()
-        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(key, val)
-
-        # AB Test Keys
-        self.helper_ab_immutable_core(instance, val, keys)
-
-        # Cleanup
-        instance.rem()
+        # Test Keys
+        self.helper_ab_immutable(10, keys)
 
     def test_values(self):
 
@@ -1399,16 +1391,8 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         # Test DNE
         self.helper_dne(values)
 
-        # Create Instance
-        key = self.generate_key()
-        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(key, val)
-
-        # AB Test Keys
-        self.helper_ab_immutable_core(instance, val, values)
-
-        # Cleanup
-        instance.rem()
+        # Test Values
+        self.helper_ab_immutable(10, values)
 
     def test_items(self):
 
@@ -1418,13 +1402,5 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         # Test DNE
         self.helper_dne(items)
 
-        # Create Instance
-        key = self.generate_key()
-        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(key, val)
-
-        # AB Test Keys
-        self.helper_ab_immutable_core(instance, val, items)
-
-        # Cleanup
-        instance.rem()
+        # Test Items
+        self.helper_ab_immutable(10, items)
