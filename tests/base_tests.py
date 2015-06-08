@@ -64,14 +64,22 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
-        self.assertEqual(val, instance.get_val())
-        self.assertRaises(error, test_func, instance, *args)
+        self.helper_raises_core(instance, val, error, test_func, *args)
         instance.rem()
+
+    def helper_raises_core(self, instance, ref, error, test_func, *args):
+
+        self.assertEqual(ref, instance.get_val())
+        self.assertRaises(error, test_func, instance, *args)
 
     def helper_dne(self, test_func, *args):
 
         key = self.generate_key()
         instance = self.factory.from_raw(key)
+        self.helper_dne_core(instance, test_func, *args)
+
+    def helper_dne_core(self, instance, test_func, *args):
+
         self.assertFalse(instance.exists())
         self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
 
@@ -80,28 +88,37 @@ class PersistentMixin(object):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
-        self.assertTrue(instance.exists())
-        self.assertEqual(val, instance.get_val())
-        orig_val = copy.copy(val)
-        ret = test_func(instance, *args)
-        ref = test_func(val, *args)
-        self.assertEqual(ret, ref)
-        self.assertEqual(orig_val, instance.get_val())
-        self.assertEqual(orig_val, val)
+        self.helper_ab_immutable_core(instance, val, test_func, *args)
         instance.rem()
+
+    def helper_ab_immutable_core(self, instance, ref, test_func, *args):
+
+        self.assertTrue(instance.exists())
+        self.assertEqual(ref, instance.get_val())
+        orig_ref = copy.copy(ref)
+        instance_ret = test_func(instance, *args)
+        ref_ret = test_func(ref, *args)
+        self.assertEqual(instance_ret, ref_ret)
+        self.assertEqual(orig_ref, instance.get_val())
+        self.assertEqual(orig_ref, ref)
 
     def helper_exp_immutable(self, size, exp_ret, test_func, *args):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
+        self.helper_exp_immutable_core(instance, val, exp_ret, test_func, *args)
+        instance.rem()
+
+    def helper_exp_immutable_core(self, instance, ref, exp_ret, test_func, *args):
+
         self.assertTrue(instance.exists())
-        self.assertEqual(val, instance.get_val())
-        orig_val = copy.copy(val)
+        self.assertEqual(ref, instance.get_val())
+        orig_ref = copy.copy(ref)
         ret = test_func(instance, *args)
         self.assertEqual(exp_ret, ret)
-        self.assertEqual(orig_val, instance.get_val())
-        instance.rem()
+        self.assertEqual(orig_ref, instance.get_val())
+        self.assertEqual(orig_ref, ref)
 
     def helper_cmp(self, mode, func, sorted_vals):
 
