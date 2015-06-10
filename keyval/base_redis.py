@@ -813,3 +813,59 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
+
+class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
+
+    @abc.abstractmethod
+    def __setitem__(self, key, val):
+        """Set Mapping Item"""
+
+        # Validate Input
+        if (type(key) is not str):
+            raise TypeError("{} not supported as mapping key".format(type(key)))
+        if (type(val) is not str):
+            raise TypeError("{} not supported as mapping val".format(type(val)))
+
+        # Transaction
+        def automic_setitem(pipe):
+
+            # Check Exists
+            exists = pipe.exists(self._redis_key)
+            if not exists:
+                raise base.ObjectDNE(self)
+
+            # Set Item
+            pipe.multi()
+            pipe.hset(self._redis_key, key, val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_setitem, self._redis_key)
+
+
+    @abc.abstractmethod
+    def __delitem__(self, key):
+        """Delete Mapping Item"""
+
+        # Validate Input
+        if (type(key) is not str):
+            raise TypeError("{} not supported as mapping key".format(type(key)))
+
+        # Transaction
+        def automic_delitem(pipe):
+
+            # Check Exists
+            obj_exists = pipe.exists(self._redis_key)
+            if not obj_exists:
+                raise base.ObjectDNE(self)
+
+            # Check Key
+            key_exists = pipe.hexists(self._redis_key, key)
+            if not key_exists:
+                raise KeyError("KeyError: '{}'".format(key))
+
+            # Set Item
+            pipe.multi()
+            pipe.hdel(self._redis_key, key)
+
+        # Execute Transaction
+        self._driver.transaction(automic_delitem, self._redis_key)
