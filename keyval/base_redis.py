@@ -794,7 +794,7 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
             if (typ is str):
                 pass
             else:
-                raise TypeError("{} not supported in seq".format(typ))
+                raise TypeError("{} not supported in mapping".format(typ))
 
         # Set Transaction
         def automic_set(pipe):
