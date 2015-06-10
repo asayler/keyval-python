@@ -376,3 +376,15 @@ class Mapping(Container, Iterable, Sized, collections.Mapping):
     def __getitem__(self, key):
         """Get Mapping Item"""
         return self.get_val()[key]
+
+class MutableMapping(Mutable, Mapping, collections.MutableMapping):
+
+    @abc.abstractmethod
+    def __setitem__(self, key, val):
+        """Set Mapping Item"""
+        pass
+
+    @abc.abstractmethod
+    def __delitem__(self, key):
+        """Delete Mapping Item"""
+        pass
