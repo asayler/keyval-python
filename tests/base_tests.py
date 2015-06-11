@@ -96,9 +96,9 @@ class PersistentMixin(object):
         self.assertTrue(instance.exists())
         self.assertEqual(ref, instance.get_val())
         orig_ref = copy.copy(ref)
-        instance_ret = test_func(instance, *args)
         ref_ret = test_func(ref, *args)
-        self.assertEqual(instance_ret, ref_ret)
+        instance_ret = test_func(instance, *args)
+        self.assertEqual(ref_ret, instance_ret)
         self.assertEqual(orig_ref, instance.get_val())
         self.assertEqual(orig_ref, ref)
 
