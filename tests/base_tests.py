@@ -1419,16 +1419,16 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         self.helper_dne(getitem, None)
 
         # Create Instance
-        key = self.generate_key()
-        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(key, val)
+        i_key = self.generate_key()
+        i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(i_key, i_val)
 
         # Test Good Keys
-        for k in val:
-            self.helper_ab_immutable_core(instance, val, getitem, k)
+        for k in i_val:
+            self.helper_ab_immutable_core(instance, i_val, getitem, k)
 
         # Test Bad Key
-        self.helper_raises_core(instance, val, KeyError, getitem, "key_d")
+        self.helper_raises_core(instance, i_val, KeyError, getitem, "key_d")
 
         # Cleanup
         instance.rem()
@@ -1442,16 +1442,16 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         self.helper_dne(get, None)
 
         # Create Instance
-        key = self.generate_key()
-        val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(key, val)
+        i_key = self.generate_key()
+        i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(i_key, i_val)
 
         # Test Good Keys
-        for k in val:
-            self.helper_ab_immutable_core(instance, val, get, k)
+        for k in i_val:
+            self.helper_ab_immutable_core(instance, i_val, get, k)
 
         # Test Bad Key
-        self.helper_exp_immutable_core(instance, val, None, get, "key_d")
+        self.helper_exp_immutable_core(instance, i_val, None, get, "key_d")
 
         # Cleanup
         instance.rem()
