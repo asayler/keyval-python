@@ -40,7 +40,7 @@ class RedisBaseTestError(base_tests.BaseTestError):
 class RedisDatabaseNotEmpty(RedisBaseTestError):
 
     def __init__(self, driver):
-        msg = "Redis DB not empty: {:d} keys".fromat(driver.dbsize())
+        msg = "Redis DB not empty: {:d} keys".format(driver.dbsize())
         super(RedisDatabaseNotEmpty, self).__init__(msg)
 
 
@@ -60,7 +60,7 @@ class RedisBaseTestCase(base_tests.BaseTestCase):
 
         # Confirm Empty DB
         if (self.driver.dbsize() != 0):
-            raise RedisDatabaseNotEmpty
+            raise RedisDatabaseNotEmpty(self.driver)
 
     def tearDown(self):
 
