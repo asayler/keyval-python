@@ -459,7 +459,7 @@ class MutableMixin(PersistentMixin):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
-        helper_ab_mutable_core(instance, val, test_func, *args)
+        self.helper_ab_mutable_core(instance, val, test_func, *args)
         instance.rem()
 
     def helper_ab_mutable_core(self, instance, ref, test_func, *args):
