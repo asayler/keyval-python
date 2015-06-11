@@ -96,6 +96,9 @@ class MutableSetTestCase(base_tests.MutableSetMixin, RedisBaseTestCase):
 class MappingTestCase(base_tests.MappingMixin, RedisBaseTestCase):
     pass
 
+class MutableMappingTestCase(base_tests.MutableMappingMixin, RedisBaseTestCase):
+    pass
+
 
 ### Main ###
 

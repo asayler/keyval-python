@@ -1484,3 +1484,9 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         # Test Items
         self.helper_ab_immutable(10, items)
+
+class MutableMappingMixin(MutableMixin, MappingMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableMappingMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableMapping)
