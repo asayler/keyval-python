@@ -1520,3 +1520,27 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_delitem(self):
+
+        def delitem(instance, key):
+            del(instance[key])
+
+        # Test DNE
+        self.helper_dne(delitem, "key_a")
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(i_key, i_val)
+
+        # Test Existing Keys
+        for k in i_val.keys():
+            self.helper_ab_mutable_core(instance, i_val, delitem, k)
+        self.assert_zero(len(instance))
+
+        # Test Bad Key
+        self.helper_raises_core(instance, i_val, KeyError, delitem, "key_d")
+
+        # Cleanup
+        instance.rem()
