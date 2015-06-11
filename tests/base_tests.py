@@ -1494,3 +1494,29 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
     def __init__(self, *args, **kwargs):
         super(MutableMappingMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableMapping)
+
+    def test_setitem(self):
+
+        def setitem(instance, key, val):
+            instance[key] = val
+
+        # Test DNE
+        self.helper_dne(setitem, "key_a", "val_a")
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val_1 = {"key_a": "val_a_1", "key_b": "val_b_1", "key_c": "val_c_1"}
+        i_val_2 = {"key_a": "val_a_2", "key_b": "val_b_2", "key_c": "val_c_2"}
+        i_val_3 = {"key_d": "val_d", "key_e": "val_e", "key_f": "val_f"}
+        instance = self.factory.from_new(i_key, i_val_1)
+
+        # Test Existing Keys
+        for k, v in i_val_2.iteritems():
+            self.helper_ab_mutable_core(instance, i_val_1, setitem, k, v)
+
+        # Test New Keys
+        for k, v in i_val_3.iteritems():
+            self.helper_ab_mutable_core(instance, i_val_1, setitem, k, v)
+
+        # Cleanup
+        instance.rem()
