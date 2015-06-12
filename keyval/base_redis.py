@@ -64,26 +64,17 @@ class Persistent(base_abc.Persistent):
         # Delete Transaction
         def automic_rem(pipe):
 
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 if force:
                     return
                 else:
                     raise base.ObjectDNE(self)
             pipe.multi()
             pipe.delete(self._redis_key)
+            self._unregister(pipe)
 
         # Delete Object
         self._driver.transaction(automic_rem, self._redis_key)
-
-        # Call Parent
-        super(Persistent, self).rem(force=force)
-
-    def exists(self):
-        """Check if Object Exists"""
-
-        # Check Existence
-        return self._driver.exists(self._redis_key)
 
 class Mutable(Persistent, base_abc.Mutable):
     pass
@@ -123,8 +114,7 @@ class String(Sequence, base_abc.String):
         # Get Transaction
         def automic_get(pipe):
 
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
             pipe.multi()
             pipe.get(self._redis_key)
@@ -145,12 +135,13 @@ class String(Sequence, base_abc.String):
         # Set Transaction
         def automic_set(pipe):
 
-            exists = pipe.exists(self._redis_key)
+            exists = self._exists(pipe)
             if not overwrite and exists:
                 raise base.ObjectExists(self)
             if not create and not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
+            self._register(pipe)
             pipe.set(self._redis_key, val)
 
         # Execute Transaction
