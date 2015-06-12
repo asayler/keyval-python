@@ -15,7 +15,7 @@ _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
 _PREFIX_SET = "set"
 _PREFIX_MAPPING = "hash"
-
+_INDEX_KEY = "_obj_index"
 
 ### Driver ###
 
@@ -27,6 +27,36 @@ class Driver(redis.StrictRedis):
 ### Base Objects ###
 
 class Persistent(base_abc.Persistent):
+
+    def _register(self, pipe):
+        """Register Object as Existing"""
+
+        pipe.sadd(_INDEX_KEY, self._redis_key)
+
+    def _unregister(self, pipe):
+        """Unregister Object as Existing"""
+
+        pipe.srem(_INDEX_KEY, self._redis_key)
+
+    def _exists(self, pipe):
+        """Check if Object Exists (Immediate)"""
+
+        return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
+
+    def exists(self):
+        """Check if Object Exists (Transaction)"""
+
+        # Exists Transaction
+        def automic_exists(pipe):
+
+            pipe.multi()
+            pipe.sismember(_INDEX_KEY, self._redis_key)
+
+        # Check if Object Exists
+        ret = self._driver.transaction(automic_exists, self._redis_key)
+
+        # Return Bool
+        return bool(ret[0])
 
     def rem(self, force=False):
         """Delete Object"""
