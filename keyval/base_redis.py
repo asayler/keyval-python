@@ -388,8 +388,7 @@ class List(Sequence, base_abc.List):
         # Get Transaction
         def automic_get(pipe):
 
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
             pipe.multi()
             pipe.lrange(self._redis_key, 0, -1)
@@ -416,12 +415,14 @@ class List(Sequence, base_abc.List):
         # Set Transaction
         def automic_set(pipe):
 
-            exists = pipe.exists(self._redis_key)
+            exists = self._exists(pipe)
             if not overwrite and exists:
                 raise base.ObjectExists(self)
             if not create and not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
+            if create:
+                self._register(pipe)
             pipe.delete(self._redis_key)
             pipe.rpush(self._redis_key, *val)
 
