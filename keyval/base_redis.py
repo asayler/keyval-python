@@ -141,7 +141,8 @@ class String(Sequence, base_abc.String):
             if not create and not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
-            self._register(pipe)
+            if create:
+                self._register(pipe)
             pipe.set(self._redis_key, val)
 
         # Execute Transaction
