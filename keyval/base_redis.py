@@ -668,8 +668,7 @@ class Set(Container, Iterable, Sized, base_abc.Set):
         # Get Transaction
         def automic_get(pipe):
 
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
             pipe.multi()
             pipe.smembers(self._redis_key)
@@ -696,12 +695,14 @@ class Set(Container, Iterable, Sized, base_abc.Set):
         # Set Transaction
         def automic_set(pipe):
 
-            exists = pipe.exists(self._redis_key)
+            exists = self._exists(pipe)
             if not overwrite and exists:
                 raise base.ObjectExists(self)
             if not create and not exists:
                 raise base.ObjectDNE(self)
             pipe.multi()
+            if create:
+                self._register(pipe)
             pipe.delete(self._redis_key)
             pipe.sadd(self._redis_key, *val)
 
