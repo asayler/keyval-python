@@ -183,11 +183,12 @@ class PersistentMixin(object):
         for instance in instances:
             instance.rem()
 
-    def test_from_new(self):
+    def test_from_new_empty(self):
 
         # Setup Test Vals
         key = self.generate_key()
-        val = self.generate_val_multi(10)
+        val = self.generate_val_multi(0)
+        self.assertEqual(len(val), 0)
 
         # Create Invalid Instance
         self.assertRaises(TypeError, self.factory.from_new, None, None)
@@ -206,11 +207,62 @@ class PersistentMixin(object):
         # Cleanup
         instance.rem()
 
-    def test_from_existing(self):
+    def test_from_new_nonempty(self):
 
         # Setup Test Vals
         key = self.generate_key()
         val = self.generate_val_multi(10)
+        self.assertGreater(len(val), 0)
+
+        # Create Invalid Instance
+        self.assertRaises(TypeError, self.factory.from_new, None, None)
+        self.assertRaises(TypeError, self.factory.from_new, None, val)
+        self.assertRaises(TypeError, self.factory.from_new, key,  None)
+
+        # Create Valid Instance
+        instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
+        self.assertEqual(key, instance.get_key())
+        self.assertEqual(val, instance.get_val())
+
+        # Recreate Instance
+        self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
+
+        # Cleanup
+        instance.rem()
+
+    def test_from_existing_empty(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(0)
+        self.assertEqual(len(val), 0)
+
+        # Get Invalid Instance
+        self.assertRaises(TypeError, self.factory.from_existing, None)
+
+        # Get Nonexistant Instance
+        self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
+
+        # Create New Instance
+        instance = self.factory.from_new(key, val)
+        self.assertTrue(instance.exists())
+
+        # Get Existing Instance
+        instance = self.factory.from_existing(key)
+        self.assertTrue(instance.exists())
+        self.assertEqual(key, instance.get_key())
+        self.assertEqual(val, instance.get_val())
+
+        # Cleanup
+        instance.rem()
+
+    def test_from_existing_nonempty(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+        self.assertGreater(len(val), 0)
 
         # Get Invalid Instance
         self.assertRaises(TypeError, self.factory.from_existing, None)
@@ -316,6 +368,7 @@ class PersistentMixin(object):
         self.helper_dne(bool)
 
         # Test Good
+        self.helper_ab_immutable( 0, bool)
         self.helper_ab_immutable( 1, bool)
         self.helper_ab_immutable(10, bool)
 
@@ -426,13 +479,32 @@ class MutableMixin(PersistentMixin):
         self.assertEqual(exp_val, instance.get_val())
         instance.rem()
 
-    def test_set_val(self):
+    def test_set_val_empty(self):
+
+        def test_func(instance, new_val):
+            instance.set_val(new_val)
+
+        # Setup
+        new_val = self.generate_val_multi(0)
+        self.assertEqual(len(new_val), 0)
+
+        # Test DNE
+        self.helper_dne(test_func, new_val)
+
+        # Test Good
+        self.helper_exp_mutable(0, None, new_val, test_func, new_val)
+
+        # Test Bad
+        self.helper_raises(0, TypeError, test_func, None)
+
+    def test_set_val_nonempty(self):
 
         def test_func(instance, new_val):
             instance.set_val(new_val)
 
         # Setup
         new_val = self.generate_val_multi(10)
+        self.assertGreater(len(new_val), 0)
 
         # Test DNE
         self.helper_dne(test_func, new_val)
@@ -491,6 +563,7 @@ class SizedMixin(PersistentMixin):
         self.helper_dne(len)
 
         # Test Good
+        self.helper_ab_immutable( 0, len)
         self.helper_ab_immutable( 1, len)
         self.helper_ab_immutable(10, len)
 
