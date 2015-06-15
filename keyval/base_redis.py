@@ -688,8 +688,6 @@ class Set(Container, Iterable, Sized, base_abc.Set):
                 pass
             else:
                 raise TypeError("{} not supported in set".format(typ))
-        if len(val) == 0:
-            raise ValueError("set must have non-zero length")
 
         # Set Transaction
         def automic_set(pipe):
@@ -703,7 +701,8 @@ class Set(Container, Iterable, Sized, base_abc.Set):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            pipe.sadd(self._redis_key, *val)
+            if len(val) > 0:
+                pipe.sadd(self._redis_key, *val)
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
