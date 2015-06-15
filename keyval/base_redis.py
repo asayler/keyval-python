@@ -162,8 +162,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_setitem(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Check Index
@@ -196,8 +195,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_insert(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Get Ranges
@@ -231,8 +229,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_append(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Append
@@ -252,8 +249,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_extend(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Extend
@@ -273,8 +269,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_reverse(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Read
@@ -297,8 +292,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_pop(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Check Index
@@ -342,8 +336,7 @@ class MutableString(String, base_abc.MutableString):
         def automic_remove(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Get idx
@@ -443,8 +436,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_setitem(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Check Index
@@ -478,8 +470,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_insert(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Get Ranges
@@ -515,8 +506,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_append(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Append
@@ -542,8 +532,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_extend(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Extend
@@ -563,8 +552,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_reverse(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Read
@@ -588,8 +576,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_pop(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Check Index
@@ -635,8 +622,7 @@ class MutableList(List, base_abc.MutableList):
         def automic_remove(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Write
@@ -722,8 +708,7 @@ class MutableSet(Mutable, Set, base_abc.MutableSet):
         def automic_add(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Add Item
@@ -746,8 +731,7 @@ class MutableSet(Mutable, Set, base_abc.MutableSet):
         def automic_discard(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Remove Item
@@ -829,8 +813,7 @@ class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
         def automic_setitem(pipe):
 
             # Check Exists
-            exists = pipe.exists(self._redis_key)
-            if not exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Set Item
@@ -851,8 +834,7 @@ class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
         def automic_delitem(pipe):
 
             # Check Exists
-            obj_exists = pipe.exists(self._redis_key)
-            if not obj_exists:
+            if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
             # Check Key
