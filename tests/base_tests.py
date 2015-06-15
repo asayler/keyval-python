@@ -1537,7 +1537,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Test Existing Keys
         for k in i_val.keys():
             self.helper_ab_mutable_core(instance, i_val, delitem, k)
-        self.assert_zero(len(instance))
+        self.assertEqual(0, len(instance))
 
         # Test Bad Key
         self.helper_raises_core(instance, i_val, KeyError, delitem, "key_d")
