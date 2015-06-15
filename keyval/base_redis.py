@@ -795,8 +795,6 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
                 pass
             else:
                 raise TypeError("{} not supported in seq".format(typ))
-        if len(val) == 0:
-            raise ValueError("mapping must have non-zero length")
 
         # Set Transaction
         def automic_set(pipe):
@@ -810,7 +808,8 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            pipe.hmset(self._redis_key, val)
+            if len(val) > 0:
+                pipe.hmset(self._redis_key, val)
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
