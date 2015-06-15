@@ -409,8 +409,6 @@ class List(Sequence, base_abc.List):
                 pass
             else:
                 raise TypeError("{} not supported in seq".format(typ))
-        if len(val) == 0:
-            raise ValueError("list must have non-zero length")
 
         # Set Transaction
         def automic_set(pipe):
@@ -424,7 +422,8 @@ class List(Sequence, base_abc.List):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *val)
+            if (len(val) > 0):
+                pipe.rpush(self._redis_key, *val)
 
         # Execute Transaction
         self._driver.transaction(automic_set, self._redis_key)
