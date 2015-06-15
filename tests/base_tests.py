@@ -575,13 +575,6 @@ class SizedMixin(PersistentMixin):
         # Test Bool
         self.helper_ab_immutable( 0, bool)
 
-        # Test getitem
-        def getitem(instance, index):
-            return instance[index]
-        self.helper_raises( 0, IndexError, getitem,  0)
-        self.helper_raises( 0, IndexError, getitem,  1)
-        self.helper_raises( 0, IndexError, getitem, -1)
-
 class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def test_getitem(self):
@@ -666,6 +659,18 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_empty(self):
+
+        # Call Parent
+        super(SequenceMixin, self).test_empty()
+
+        # Test getitem
+        def getitem(instance, index):
+            return instance[index]
+        self.helper_raises( 0, IndexError, getitem,  0)
+        self.helper_raises( 0, IndexError, getitem,  1)
+        self.helper_raises( 0, IndexError, getitem, -1)
 
 class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
