@@ -567,6 +567,21 @@ class SizedMixin(PersistentMixin):
         self.helper_ab_immutable( 1, len)
         self.helper_ab_immutable(10, len)
 
+    def test_empty(self):
+
+        # Test Len
+        self.helper_ab_immutable( 0, len)
+
+        # Test Bool
+        self.helper_ab_immutable( 0, bool)
+
+        # Test getitem
+        def getitem(instance, index):
+            return instance[index]
+        self.helper_raises( 0, IndexError, getitem,  0)
+        self.helper_raises( 0, IndexError, getitem,  1)
+        self.helper_raises( 0, IndexError, getitem, -1)
+
 class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def test_getitem(self):
@@ -866,21 +881,6 @@ class StringMixin(SequenceMixin):
             vals.append(val)
         return sorted(vals)
 
-    def test_empty(self):
-
-        # Test Len
-        self.helper_ab_immutable( 0, len)
-
-        # Test Bool
-        self.helper_ab_immutable( 0, bool)
-
-        # Test getitem
-        def getitem(instance, index):
-            return instance[index]
-        self.helper_raises( 0, IndexError, getitem,  0)
-        self.helper_raises( 0, IndexError, getitem,  1)
-        self.helper_raises( 0, IndexError, getitem, -1)
-
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
     class MutableStringRef(collections.MutableSequence, object):
@@ -1032,13 +1032,6 @@ class ListMixin(SequenceMixin):
             vals.append(val)
         return sorted(vals)
 
-    def test_empty(self):
-
-        # Create Empty Instance
-        key = self.generate_key()
-        val = self.generate_val_multi(0)
-        self.assertRaises(ValueError, self.factory.from_new, key, val)
-
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
     def __init__(self, *args, **kwargs):
@@ -1078,13 +1071,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
             base.append(self.generate_val_single())
             vals.append(set(base))
         return vals
-
-    def test_empty(self):
-
-        # Create Empty Instance
-        key = self.generate_key()
-        val = self.generate_val_multi(0)
-        self.assertRaises(ValueError, self.factory.from_new, key, val)
 
     def test_issubset(self):
 
@@ -1414,13 +1400,6 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
             val = self.generate_val_multi(size)
             vals.append(val)
         return sorted(vals)
-
-    def test_empty(self):
-
-        # Create Empty Instance
-        key = self.generate_key()
-        val = self.generate_val_multi(0)
-        self.assertRaises(ValueError, self.factory.from_new, key, val)
 
     def test_getitem(self):
 
