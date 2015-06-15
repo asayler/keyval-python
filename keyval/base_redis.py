@@ -422,7 +422,7 @@ class List(Sequence, base_abc.List):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            if (len(val) > 0):
+            if len(val) > 0:
                 pipe.rpush(self._redis_key, *val)
 
         # Execute Transaction
