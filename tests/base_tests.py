@@ -1544,3 +1544,32 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_popitem(self):
+
+        def popitem(instance):
+            return instance.popitem()
+
+        # Test DNE
+        self.helper_dne(popitem)
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(i_key, i_val)
+
+        # Test Existing Keys
+        while len(instance) > 0:
+            k, v = popitem(instance)
+            self.assertIn(k, i_val)
+            self.assertNotIn(k, instance)
+            self.assertEqual(i_val[k], v)
+            del(i_val[k])
+        self.assertEqual(len(instance), 0)
+        self.assertEqual(len(i_val), 0)
+
+        # Test Empty
+        self.helper_raises_core(instance, i_val, KeyError, popitem)
+
+        # Cleanup
+        instance.rem()
