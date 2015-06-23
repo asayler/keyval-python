@@ -1593,6 +1593,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
             del(i_val[k])
         self.assertEqual(0, len(instance))
         self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
 
         # Test Empty
         self.helper_raises_core(instance, i_val, KeyError, popitem)
