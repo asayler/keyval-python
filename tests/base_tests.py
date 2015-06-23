@@ -1538,6 +1538,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         for k in i_val.keys():
             self.helper_ab_mutable_core(instance, i_val, delitem, k)
         self.assertEqual(0, len(instance))
+        self.assertEqual(0, len(i_val))
 
         # Test Bad Key
         self.helper_raises_core(instance, i_val, KeyError, delitem, "key_d")
@@ -1590,8 +1591,8 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
             self.assertNotIn(k, instance)
             self.assertEqual(i_val[k], v)
             del(i_val[k])
-        self.assertEqual(len(instance), 0)
-        self.assertEqual(len(i_val), 0)
+        self.assertEqual(0, len(instance))
+        self.assertEqual(0, len(i_val))
 
         # Test Empty
         self.helper_raises_core(instance, i_val, KeyError, popitem)
