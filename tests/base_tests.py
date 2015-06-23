@@ -1599,3 +1599,34 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
 
         # Cleanup
         instance.rem()
+
+    def test_clear(self):
+
+        def clear(instance):
+            instance.clear()
+
+        # Test DNE
+        self.helper_dne(clear)
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        instance = self.factory.from_new(i_key, i_val)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Full
+        clear(instance)
+        self.assertEqual(0, len(instance))
+        clear(i_val)
+        self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Empty
+        clear(instance)
+        self.assertEqual(0, len(instance))
+        clear(i_val)
+        self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Cleanup
+        instance.rem()
