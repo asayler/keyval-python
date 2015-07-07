@@ -373,6 +373,10 @@ class MutableSet(Mutable, Set, collections.MutableSet):
         """Remove Item from Set if Present"""
         pass
 
+    #clear
+    #pop
+    #remove
+
 class Mapping(Container, Iterable, Sized, collections.Mapping):
 
     def __getitem__(self, key):

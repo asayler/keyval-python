@@ -1646,7 +1646,9 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
+        self.assertGreater(len(i_val), 0)
         instance = self.factory.from_new(i_key, i_val)
+        self.assertGreater(len(instance), 0)
         self.assertEqual(instance.get_val(), i_val)
 
         # Test Full
