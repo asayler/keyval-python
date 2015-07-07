@@ -23,8 +23,6 @@ Status
 + MutableList (MutableSequence)
 + Set
 + MutableSet
-
-### Planned Data Structures ###
 + Mapping
 + MutableMapping
 
