@@ -1434,6 +1434,35 @@ class MutableSetMixin(MutableMixin, SetMixin):
         # Cleanup
         instance.rem()
 
+    def test_remove(self):
+
+        def remove(instance, item):
+            instance.remove(item)
+
+        # Test DNE
+        self.helper_dne(remove, "a")
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = set(["a", "b", "c"])
+        instance = self.factory.from_new(i_key, i_val)
+
+        # Test Bad Key
+        self.helper_raises_core(instance, i_val, KeyError, remove, "d")
+
+        # Test Existing Items
+        for i in instance.get_val():
+            self.helper_ab_mutable_core(instance, i_val, remove, i)
+        self.assertEqual(0, len(instance))
+        self.assertEqual(0, len(i_val))
+
+        # Test Empty
+        self.helper_raises_core(instance, i_val, KeyError, remove, "a")
+
+        # Cleanup
+        instance.rem()
+
+
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def __init__(self, *args, **kwargs):
