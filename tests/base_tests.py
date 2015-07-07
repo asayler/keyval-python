@@ -1406,6 +1406,33 @@ class MutableSetMixin(MutableMixin, SetMixin):
         # Cleanup
         instance.rem()
 
+    def test_pop(self):
+
+        def pop(instance):
+           return instance.pop()
+
+        # Test DNE
+        self.helper_dne(pop)
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = set(["a", "b", "c"])
+        instance = self.factory.from_new(i_key, i_val)
+
+        while len(instance) > 0:
+            i = pop(instance)
+            self.assertIn(i, i_val)
+            self.assertNotIn(i, instance)
+            i_val.remove(i)
+        self.assertEqual(0, len(instance))
+        self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Empty
+        self.helper_raises_core(instance, i_val, KeyError, pop)
+
+        # Cleanup
+        instance.rem()
 
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
