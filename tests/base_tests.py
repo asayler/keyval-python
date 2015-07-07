@@ -1373,6 +1373,40 @@ class MutableSetMixin(MutableMixin, SetMixin):
         self.helper_ab_mutable(2, discard_in)
         self.helper_ab_mutable(10, discard_in)
 
+    def test_clear(self):
+
+        def clear(instance):
+            instance.clear()
+
+        # Test DNE
+        self.helper_dne(clear)
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = set(["a", "b", "c"])
+        self.assertGreater(len(i_val), 0)
+        instance = self.factory.from_new(i_key, i_val)
+        self.assertGreater(len(instance), 0)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Full
+        clear(instance)
+        self.assertEqual(0, len(instance))
+        clear(i_val)
+        self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Empty
+        clear(instance)
+        self.assertEqual(0, len(instance))
+        clear(i_val)
+        self.assertEqual(0, len(i_val))
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Cleanup
+        instance.rem()
+
+
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def __init__(self, *args, **kwargs):
