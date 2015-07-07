@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 # Andy Sayler
-# Fall 2014
-# Univerity of Colorado
+# 2014, 2015
+# University of Colorado
 
+
+### Imports ###
 
 import abc
 import collections

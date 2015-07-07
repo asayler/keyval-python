@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 # Andy Sayler
-# Fall 2014
-# Univerity of Colorado
+# 2014, 2015
+# University of Colorado
 
+
+### Imports ###
 
 import redis
 
@@ -11,11 +13,14 @@ import base
 import base_abc
 
 
+### Constants ###
+
 _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
 _PREFIX_SET = "set"
 _PREFIX_MAPPING = "hash"
 _INDEX_KEY = "_obj_index"
+
 
 ### Driver ###
 

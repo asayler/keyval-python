@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 # Andy Sayler
-# Fall 2014
-# Univerity of Colorado
+# 2014, 2015
+# University of Colorado
 
+
+### Imports ###
 
 import uuid
 import collections
@@ -11,8 +13,9 @@ import time
 import copy
 
 
+### Constants ###
+
 _ENCODING = 'utf-8'
-_SEP_FIELD = ':'
 
 
 ### Exceptions ###
