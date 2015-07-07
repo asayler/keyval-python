@@ -15,6 +15,7 @@ import base_abc
 
 ### Constants ###
 
+_SEP_FIELD = ':'
 _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
 _PREFIX_SET = "set"
