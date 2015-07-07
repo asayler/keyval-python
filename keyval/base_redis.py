@@ -112,7 +112,7 @@ class String(Sequence, base_abc.String):
         super(String, self).__init__(driver, key)
 
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_STRING, base._SEP_FIELD, self._key)
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_STRING, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
     def _get_val(self):
@@ -379,7 +379,7 @@ class List(Sequence, base_abc.List):
         super(List, self).__init__(driver, key)
 
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_LIST, base._SEP_FIELD, self._key)
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_LIST, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
     def _get_val(self):
@@ -651,7 +651,7 @@ class Set(Container, Iterable, Sized, base_abc.Set):
         super(Set, self).__init__(driver, key)
 
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_SET, base._SEP_FIELD, self._key)
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_SET, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
     def _get_val(self):
@@ -756,7 +756,7 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
         super(Mapping, self).__init__(driver, key)
 
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_MAPPING, base._SEP_FIELD, self._key)
+        redis_key = "{:s}{:s}{:s}".format(_PREFIX_MAPPING, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
     def _get_val(self):
