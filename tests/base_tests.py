@@ -1462,6 +1462,26 @@ class MutableSetMixin(MutableMixin, SetMixin):
         # Cleanup
         instance.rem()
 
+    def test_ior(self):
+
+        # Test Overlap
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a |= instance_b
+        self.assertEqual(set(['a', 'b', 'c']), instance_a.get_val())
+        self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
+        # Test Discreet
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a |= instance_b
+        self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
+        self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
 
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
