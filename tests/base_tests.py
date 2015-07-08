@@ -1482,6 +1482,21 @@ class MutableSetMixin(MutableMixin, SetMixin):
         instance_a.rem()
         instance_b.rem()
 
+        # Test Identity
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a |= instance_a
+        self.assertEqual(set(['a', 'b']), instance_a.get_val())
+        instance_a.rem()
+
+        # Test Empty
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a |= instance_b
+        self.assertEqual(set(['a', 'b']), instance_a.get_val())
+        self.assertEqual(set([]) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
     def test_iand(self):
 
         # Test Overlap
