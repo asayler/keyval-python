@@ -705,26 +705,22 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
     def test_delitem(self):
 
-        def delitem(instance, idx, item):
+        def delitem(instance, idx):
             del(instance[idx])
 
         # Test DNE
-        item = self.generate_val_single()
-        self.helper_dne(delitem, None, item)
+        self.helper_dne(delitem, None)
 
         # Test Good
         for i in range(10):
-            item = self.generate_val_single()
-            self.helper_ab_mutable(10, delitem,  i,     item)
-            item = self.generate_val_single()
-            self.helper_ab_mutable(10, delitem, (i-10), item)
+            self.helper_ab_mutable(10, delitem,  i)
+            self.helper_ab_mutable(10, delitem, (i-10))
 
         # Test OOB
-        item = self.generate_val_single()
-        self.helper_raises(10, IndexError, delitem,  10, item)
-        self.helper_raises(10, IndexError, delitem,  11, item)
-        self.helper_raises(10, IndexError, delitem, -11, item)
-        self.helper_raises(10, IndexError, delitem, -12, item)
+        self.helper_raises(10, IndexError, delitem,  10)
+        self.helper_raises(10, IndexError, delitem,  11)
+        self.helper_raises(10, IndexError, delitem, -11)
+        self.helper_raises(10, IndexError, delitem, -12)
 
     def test_insert(self):
 
@@ -860,7 +856,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 class StringMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
-        super(SequenceMixin, self).__init__(*args, **kwargs)
+        super(StringMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
 
     def generate_val_single(self, exclude=None):
@@ -878,16 +874,18 @@ class StringMixin(SequenceMixin):
     def generate_val_multi(self, size, exclude=None):
 
         val = ""
-        for i in range(size):
+        while size:
             val += self.generate_val_single(exclude=exclude)
+            size -= 1
         return str(val)
 
     def generate_vals_sorted(self, size, cnt):
 
         vals = []
-        for c in range(cnt):
+        while cnt:
             val = self.generate_val_multi(size)
             vals.append(val)
+            cnt -= 1
         return sorted(vals)
 
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
@@ -997,16 +995,18 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
     def generate_val_multi(self, size, exclude=None):
 
         val = ""
-        for i in range(size):
+        while size:
             val += self.generate_val_single(exclude=exclude)
+            size -= 1
         return self.MutableStringRef(val)
 
     def generate_vals_sorted(self, size, cnt):
 
         vals = []
-        for c in range(cnt):
+        while cnt:
             val = self.generate_val_multi(size)
             vals.append(val)
+            cnt -= 1
         return sorted(vals)
 
 class ListMixin(SequenceMixin):
@@ -1029,22 +1029,24 @@ class ListMixin(SequenceMixin):
     def generate_val_multi(self, size, exclude=None):
 
         val = []
-        for i in range(size):
+        while size:
             val.append(self.generate_val_single(exclude=exclude))
+            size -= 1
         return list(val)
 
     def generate_vals_sorted(self, size, cnt):
 
         vals = []
-        for c in range(cnt):
+        while cnt:
             val = self.generate_val_multi(size)
             vals.append(val)
+            cnt -= 1
         return sorted(vals)
 
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
     def __init__(self, *args, **kwargs):
-        super(ListMixin, self).__init__(*args, **kwargs)
+        super(MutableListMixin, self).__init__(*args, **kwargs)
         self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
 
 class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
@@ -1067,18 +1069,20 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
     def generate_val_multi(self, size, exclude=None):
 
         val = []
-        for i in range(size):
+        while size:
             val.append(self.generate_val_single(exclude=exclude))
+            size -= 1
         return set(val)
 
     def generate_vals_sorted(self, size, cnt):
 
-        size = None
+        del(size)
         vals = []
         base = []
-        for c in range(cnt):
+        while cnt:
             base.append(self.generate_val_single())
             vals.append(set(base))
+            cnt -= 1
         return vals
 
     def test_issubset(self):
@@ -1103,7 +1107,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         key_a = self.generate_key()
         key_b = self.generate_key()
         key_c = self.generate_key()
-        key_d = self.generate_key()
         val_a = set(['a', 'b'])
         val_b = set(['b', 'c'])
         val_c = set(['c', 'd'])
@@ -1150,7 +1153,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         key_a = self.generate_key()
         key_b = self.generate_key()
         key_c = self.generate_key()
-        key_d = self.generate_key()
         val_a = set(['a', 'b'])
         val_b = set(['b', 'c'])
         val_c = set(['c', 'd'])
@@ -1197,7 +1199,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         key_a = self.generate_key()
         key_b = self.generate_key()
         key_c = self.generate_key()
-        key_d = self.generate_key()
         val_a = set(['a', 'b'])
         val_b = set(['b', 'c'])
         val_c = set(['a', 'b', 'c'])
@@ -1244,7 +1245,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         key_a = self.generate_key()
         key_b = self.generate_key()
         key_c = self.generate_key()
-        key_d = self.generate_key()
         val_a = set(['a', 'b'])
         val_b = set(['b', 'c'])
         val_c = set(['c', 'd'])
@@ -1292,7 +1292,6 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         key_a = self.generate_key()
         key_b = self.generate_key()
         key_c = self.generate_key()
-        key_d = self.generate_key()
         val_a = set(['a', 'b'])
         val_b = set(['b', 'c'])
         val_c = set(['c', 'd'])
@@ -1370,8 +1369,8 @@ class MutableSetMixin(MutableMixin, SetMixin):
         def discard_out(instance):
             itm = self.generate_val_single(exclude=instance)
             return discard(instance, itm)
-        self.helper_ab_mutable(2, discard_in)
-        self.helper_ab_mutable(10, discard_in)
+        self.helper_ab_mutable(2, discard_out)
+        self.helper_ab_mutable(10, discard_out)
 
     def test_clear(self):
 
@@ -1409,7 +1408,7 @@ class MutableSetMixin(MutableMixin, SetMixin):
     def test_pop(self):
 
         def pop(instance):
-           return instance.pop()
+            return instance.pop()
 
         # Test DNE
         self.helper_dne(pop)
@@ -1626,17 +1625,19 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
     def generate_val_multi(self, size, exclude=None):
 
         multi = {}
-        for i in range(size):
+        while size:
             map_key, map_val = self.generate_val_single(exclude=exclude)
             multi[map_key] = map_val
+            size -= 1
         return dict(multi)
 
     def generate_vals_sorted(self, size, cnt):
 
         vals = []
-        for c in range(cnt):
+        while cnt:
             val = self.generate_val_multi(size)
             vals.append(val)
+            cnt -= 1
         return sorted(vals)
 
     def test_getitem(self):
