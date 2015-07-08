@@ -1602,7 +1602,6 @@ class MutableSetMixin(MutableMixin, SetMixin):
         instance_a.rem()
         instance_b.rem()
 
-
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def __init__(self, *args, **kwargs):
