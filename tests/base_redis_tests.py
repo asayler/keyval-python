@@ -13,9 +13,6 @@
 import unittest
 import warnings
 
-## requirements ##
-import redis
-
 ## keyval ##
 import keyval.base
 import keyval.base_redis
