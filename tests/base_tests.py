@@ -1532,6 +1532,42 @@ class MutableSetMixin(MutableMixin, SetMixin):
         instance_a.rem()
         instance_b.rem()
 
+    def test_ixor(self):
+
+        # Test Overlap
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a ^= instance_b
+        self.assertEqual(set(['a', 'c']), instance_a.get_val())
+        self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
+        # Test Discreet
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a ^= instance_b
+        self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
+        self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
+        # Test Identity
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a ^= instance_a
+        self.assertEqual(set([]), instance_a.get_val())
+        instance_a.rem()
+
+        # Test Empty
+        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a ^= instance_b
+        self.assertEqual(set(['a', 'b']), instance_a.get_val())
+        self.assertEqual(set([]) ,instance_b.get_val())
+        instance_a.rem()
+        instance_b.rem()
+
+
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def __init__(self, *args, **kwargs):
