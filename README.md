@@ -17,14 +17,14 @@ Status
 [![Build Status](https://drone.io/github.com/asayler/keyval-python/status.png)](https://drone.io/github.com/asayler/keyval-python/latest)
 
 ### Completed Data Structures ###
-+ String
-+ MutableString
++ String (Sequence)
++ MutableString (MutableSequence)
 + List (Sequence)
 + MutableList (MutableSequence)
-+ Set
-+ MutableSet
-+ Mapping
-+ MutableMapping
++ Set (Set)
++ MutableSet (MutableSet)
++ Dictionary (Mapping)
++ MutableDictionary (MutableMapping)
 
 ### Completed Backends ###
 + Redis
