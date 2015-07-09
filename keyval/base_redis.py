@@ -100,6 +100,17 @@ class Sequence(Container, Iterable, Sized, base_abc.Sequence):
 class MutableSequence(Mutable, Sequence, base_abc.MutableSequence):
     pass
 
+class BaseSet(Container, Iterable, Sized, base_abc.BaseSet):
+    pass
+
+class MutableBaseSet(Mutable, BaseSet, base_abc.MutableBaseSet):
+    pass
+
+class Mapping(Container, Iterable, Sized, base_abc.Mapping):
+    pass
+
+class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
+    pass
 
 ### Objects ###
 
@@ -426,7 +437,7 @@ class MutableList(List, base_abc.MutableList):
         # Execute Transaction
         self._driver.transaction(atomic_insert, self._redis_key)
 
-class Set(Container, Iterable, Sized, base_abc.Set):
+class Set(BaseSet, base_abc.Set):
 
     def __init__(self, driver, key):
         """Set Constructor"""
@@ -483,7 +494,7 @@ class Set(Container, Iterable, Sized, base_abc.Set):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableSet(Mutable, Set, base_abc.MutableSet):
+class MutableSet(MutableBaseSet, Set, base_abc.MutableSet):
 
     def add(self, itm):
         """Add Item to Set"""
@@ -531,13 +542,13 @@ class MutableSet(Mutable, Set, base_abc.MutableSet):
         # Execute Transaction
         self._driver.transaction(atomic_discard, self._redis_key)
 
-class Mapping(Container, Iterable, Sized, base_abc.Mapping):
+class Dictionary(Mapping, base_abc.Dictionary):
 
     def __init__(self, driver, key):
         """ Constructor"""
 
         # Call Parent
-        super(Mapping, self).__init__(driver, key)
+        super(Dictionary, self).__init__(driver, key)
 
         # Save Extra Attrs
         redis_key = "{:s}{:s}{:s}".format(_PREFIX_MAPPING, _SEP_FIELD, self._key)
@@ -588,7 +599,7 @@ class Mapping(Container, Iterable, Sized, base_abc.Mapping):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
+class MutableDictionary(MutableMapping, Dictionary, base_abc.MutableDictionary):
 
     def __setitem__(self, key, val):
         """Set Mapping Item"""

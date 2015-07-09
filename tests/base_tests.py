@@ -851,239 +851,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
             seq = self.generate_val_multi(cnt)
             self.helper_ab_mutable(10, iadd, seq)
 
-### Object Mixins ###
-
-class StringMixin(SequenceMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(StringMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
-
-    def generate_val_single(self, exclude=None):
-
-        if exclude is None:
-            exclude = ""
-        while True:
-            cnt = self.val_cnt % 26
-            val = chr(ord('A') + cnt)
-            if val not in exclude:
-                self.val_cnt += 1
-                break
-        return str(val)
-
-    def generate_val_multi(self, size, exclude=None):
-
-        val = ""
-        while size:
-            val += self.generate_val_single(exclude=exclude)
-            size -= 1
-        return str(val)
-
-    def generate_vals_sorted(self, size, cnt):
-
-        vals = []
-        while cnt:
-            val = self.generate_val_multi(size)
-            vals.append(val)
-            cnt -= 1
-        return sorted(vals)
-
-class MutableStringMixin(MutableSequenceMixin, StringMixin):
-
-    class MutableStringRef(collections.MutableSequence, object):
-
-        def __init__(self, val):
-
-            # Call Parent
-            super(MutableStringMixin.MutableStringRef, self).__init__()
-
-            # Save Val
-            self._val = val
-
-        def __unicode__(self):
-            """Return Unicode Representation"""
-            return unicode(self._val)
-
-        def __str__(self):
-            """Return String Representation"""
-            return unicode(self).encode(keyval.base._ENCODING)
-
-        def __repr__(self):
-            """Return Unique Representation"""
-            return repr(self._val)
-
-        def __nonzero__(self):
-            """Test Bool"""
-            return bool(self._val)
-
-        def __eq__(self, other):
-            """Test Equality"""
-            return self._val == other
-
-        def __ne__(self, other):
-            """Test Unequality"""
-            return self._val != other
-
-        def __lt__(self, other):
-            """Test Less Than"""
-            return self._val < other
-
-        def __le__(self, other):
-            """Test Less Than or Equal"""
-            return self._val <= other
-
-        def __gt__(self, other):
-            """Test Greater Than"""
-            return self._val > other
-
-        def __ge__(self, other):
-            """Test Greater Than or Equal"""
-            return self._val >= other
-
-        def __len__(self):
-            """Get Len of Set"""
-            return len(self._val)
-
-        def __getitem__(self, i):
-            """Get Seq Item"""
-            return self._val[i]
-
-        def __setitem__(self, idx, item):
-            """Set Seq Item"""
-
-            val_in = self._val
-            val_out = ""
-            if (idx != 0) and (idx != -len(val_in)):
-                val_out += val_in[:idx]
-            val_out += item
-            if (idx != (len(val_in)-1)) and (idx != -1):
-                val_out += val_in[idx+1:]
-            self._val = val_out
-
-        def __delitem__(self, idx):
-            """Del Seq Item"""
-
-            val_in = self._val
-            val_out = ""
-            if (idx != 0) and (idx != -len(val_in)):
-                val_out += val_in[:idx]
-            if (idx != (len(val_in)-1)) and (idx != -1):
-                val_out += val_in[idx+1:]
-            self._val = val_out
-
-        def insert(self, idx, item):
-            """Insert Seq Item"""
-            val_in = self._val
-            self._val = val_in[:idx] + item + val_in[idx:]
-
-    def __init__(self, *args, **kwargs):
-        super(MutableStringMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableString)
-
-    def generate_val_single(self, exclude=None):
-
-        if exclude is None:
-            exclude = ""
-        while True:
-            cnt = self.val_cnt % 26
-            val = chr(ord('A') + cnt)
-            if val not in exclude:
-                self.val_cnt += 1
-                break
-        return str(val)
-
-    def generate_val_multi(self, size, exclude=None):
-
-        val = ""
-        while size:
-            val += self.generate_val_single(exclude=exclude)
-            size -= 1
-        return self.MutableStringRef(val)
-
-    def generate_vals_sorted(self, size, cnt):
-
-        vals = []
-        while cnt:
-            val = self.generate_val_multi(size)
-            vals.append(val)
-            cnt -= 1
-        return sorted(vals)
-
-class ListMixin(SequenceMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(ListMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.List)
-
-    def generate_val_single(self, exclude=None):
-
-        if exclude is None:
-            exclude = []
-        while True:
-            val = self.val_cnt
-            if val not in exclude:
-                self.val_cnt += 1
-                break
-        return str(val)
-
-    def generate_val_multi(self, size, exclude=None):
-
-        val = []
-        while size:
-            val.append(self.generate_val_single(exclude=exclude))
-            size -= 1
-        return list(val)
-
-    def generate_vals_sorted(self, size, cnt):
-
-        vals = []
-        while cnt:
-            val = self.generate_val_multi(size)
-            vals.append(val)
-            cnt -= 1
-        return sorted(vals)
-
-class MutableListMixin(MutableSequenceMixin, ListMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(MutableListMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
-
-class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(SetMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Set)
-
-    def generate_val_single(self, exclude=None):
-
-        if exclude is None:
-            exclude = []
-        while True:
-            val = self.val_cnt
-            if val not in exclude:
-                self.val_cnt += 1
-                break
-        return str(val)
-
-    def generate_val_multi(self, size, exclude=None):
-
-        val = []
-        while size:
-            val.append(self.generate_val_single(exclude=exclude))
-            size -= 1
-        return set(val)
-
-    def generate_vals_sorted(self, size, cnt):
-
-        del(size)
-        vals = []
-        base = []
-        while cnt:
-            base.append(self.generate_val_single())
-            vals.append(set(base))
-            cnt -= 1
-        return vals
+class BaseSetMixin(ContainerMixin, IterableMixin, SizedMixin):
 
     def test_issubset(self):
 
@@ -1315,11 +1083,7 @@ class SetMixin(ContainerMixin, IterableMixin, SizedMixin):
         instance_b.rem()
         instance_c.rem()
 
-class MutableSetMixin(MutableMixin, SetMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(MutableSetMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableSet)
+class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
 
     def test_add(self):
 
@@ -1603,43 +1367,6 @@ class MutableSetMixin(MutableMixin, SetMixin):
 
 class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
 
-    def __init__(self, *args, **kwargs):
-        super(MappingMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Mapping)
-
-    def generate_val_single(self, exclude=None):
-
-        TEST_MAP_KEY_PRE_STRING = "TESTMAPKEY"
-        TEST_MAP_VAL_PRE_STRING = "TESTMAPVAL"
-
-        if exclude is None:
-            exclude = []
-        while True:
-            map_key = TEST_MAP_KEY_PRE_STRING + str(self.val_cnt)
-            map_val = TEST_MAP_VAL_PRE_STRING + str(self.val_cnt)
-            if map_key not in exclude:
-                self.val_cnt += 1
-                break
-        return (map_key, map_val)
-
-    def generate_val_multi(self, size, exclude=None):
-
-        multi = {}
-        while size:
-            map_key, map_val = self.generate_val_single(exclude=exclude)
-            multi[map_key] = map_val
-            size -= 1
-        return dict(multi)
-
-    def generate_vals_sorted(self, size, cnt):
-
-        vals = []
-        while cnt:
-            val = self.generate_val_multi(size)
-            vals.append(val)
-            cnt -= 1
-        return sorted(vals)
-
     def test_getitem(self):
 
         def getitem(instance, key):
@@ -1720,10 +1447,6 @@ class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
         self.helper_ab_immutable(10, items)
 
 class MutableMappingMixin(MutableMixin, MappingMixin):
-
-    def __init__(self, *args, **kwargs):
-        super(MutableMappingMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableMapping)
 
     def test_setitem(self):
 
@@ -1892,3 +1615,289 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
 
         # Cleanup
         instance.rem()
+
+
+### Object Mixins ###
+
+class StringMixin(SequenceMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(StringMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = ""
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = ""
+        while size:
+            val += self.generate_val_single(exclude=exclude)
+            size -= 1
+        return str(val)
+
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        while cnt:
+            val = self.generate_val_multi(size)
+            vals.append(val)
+            cnt -= 1
+        return sorted(vals)
+
+class MutableStringMixin(MutableSequenceMixin, StringMixin):
+
+    class MutableStringRef(collections.MutableSequence, object):
+
+        def __init__(self, val):
+
+            # Call Parent
+            super(MutableStringMixin.MutableStringRef, self).__init__()
+
+            # Save Val
+            self._val = val
+
+        def __unicode__(self):
+            """Return Unicode Representation"""
+            return unicode(self._val)
+
+        def __str__(self):
+            """Return String Representation"""
+            return unicode(self).encode(keyval.base._ENCODING)
+
+        def __repr__(self):
+            """Return Unique Representation"""
+            return repr(self._val)
+
+        def __nonzero__(self):
+            """Test Bool"""
+            return bool(self._val)
+
+        def __eq__(self, other):
+            """Test Equality"""
+            return self._val == other
+
+        def __ne__(self, other):
+            """Test Unequality"""
+            return self._val != other
+
+        def __lt__(self, other):
+            """Test Less Than"""
+            return self._val < other
+
+        def __le__(self, other):
+            """Test Less Than or Equal"""
+            return self._val <= other
+
+        def __gt__(self, other):
+            """Test Greater Than"""
+            return self._val > other
+
+        def __ge__(self, other):
+            """Test Greater Than or Equal"""
+            return self._val >= other
+
+        def __len__(self):
+            """Get Len of Set"""
+            return len(self._val)
+
+        def __getitem__(self, i):
+            """Get Seq Item"""
+            return self._val[i]
+
+        def __setitem__(self, idx, item):
+            """Set Seq Item"""
+
+            val_in = self._val
+            val_out = ""
+            if (idx != 0) and (idx != -len(val_in)):
+                val_out += val_in[:idx]
+            val_out += item
+            if (idx != (len(val_in)-1)) and (idx != -1):
+                val_out += val_in[idx+1:]
+            self._val = val_out
+
+        def __delitem__(self, idx):
+            """Del Seq Item"""
+
+            val_in = self._val
+            val_out = ""
+            if (idx != 0) and (idx != -len(val_in)):
+                val_out += val_in[:idx]
+            if (idx != (len(val_in)-1)) and (idx != -1):
+                val_out += val_in[idx+1:]
+            self._val = val_out
+
+        def insert(self, idx, item):
+            """Insert Seq Item"""
+            val_in = self._val
+            self._val = val_in[:idx] + item + val_in[idx:]
+
+    def __init__(self, *args, **kwargs):
+        super(MutableStringMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableString)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = ""
+        while True:
+            cnt = self.val_cnt % 26
+            val = chr(ord('A') + cnt)
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = ""
+        while size:
+            val += self.generate_val_single(exclude=exclude)
+            size -= 1
+        return self.MutableStringRef(val)
+
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        while cnt:
+            val = self.generate_val_multi(size)
+            vals.append(val)
+            cnt -= 1
+        return sorted(vals)
+
+class ListMixin(SequenceMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(ListMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.List)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = []
+        while True:
+            val = self.val_cnt
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = []
+        while size:
+            val.append(self.generate_val_single(exclude=exclude))
+            size -= 1
+        return list(val)
+
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        while cnt:
+            val = self.generate_val_multi(size)
+            vals.append(val)
+            cnt -= 1
+        return sorted(vals)
+
+class MutableListMixin(MutableSequenceMixin, ListMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableListMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+
+class SetMixin(BaseSetMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(SetMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Set)
+
+    def generate_val_single(self, exclude=None):
+
+        if exclude is None:
+            exclude = []
+        while True:
+            val = self.val_cnt
+            if val not in exclude:
+                self.val_cnt += 1
+                break
+        return str(val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        val = []
+        while size:
+            val.append(self.generate_val_single(exclude=exclude))
+            size -= 1
+        return set(val)
+
+    def generate_vals_sorted(self, size, cnt):
+
+        del(size)
+        vals = []
+        base = []
+        while cnt:
+            base.append(self.generate_val_single())
+            vals.append(set(base))
+            cnt -= 1
+        return vals
+
+class MutableSetMixin(MutableBaseSetMixin, SetMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableSetMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableSet)
+
+class DictionaryMixin(MappingMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(DictionaryMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Dictionary)
+
+    def generate_val_single(self, exclude=None):
+
+        TEST_MAP_KEY_PRE_STRING = "TESTMAPKEY"
+        TEST_MAP_VAL_PRE_STRING = "TESTMAPVAL"
+
+        if exclude is None:
+            exclude = []
+        while True:
+            map_key = TEST_MAP_KEY_PRE_STRING + str(self.val_cnt)
+            map_val = TEST_MAP_VAL_PRE_STRING + str(self.val_cnt)
+            if map_key not in exclude:
+                self.val_cnt += 1
+                break
+        return (map_key, map_val)
+
+    def generate_val_multi(self, size, exclude=None):
+
+        multi = {}
+        while size:
+            map_key, map_val = self.generate_val_single(exclude=exclude)
+            multi[map_key] = map_val
+            size -= 1
+        return dict(multi)
+
+    def generate_vals_sorted(self, size, cnt):
+
+        vals = []
+        while cnt:
+            val = self.generate_val_multi(size)
+            vals.append(val)
+            cnt -= 1
+        return sorted(vals)
+
+class MutableDictionaryMixin(MutableMappingMixin, DictionaryMixin):
+
+    def __init__(self, *args, **kwargs):
+        super(MutableDictionaryMixin, self).__init__(*args, **kwargs)
+        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableDictionary)

@@ -221,22 +221,7 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
         """Insert Seq Item"""
         pass
 
-
-### Abstract Objects ###
-
-class String(Sequence):
-    pass
-
-class MutableString(MutableSequence, String):
-    pass
-
-class List(Sequence):
-    pass
-
-class MutableList(MutableSequence, List):
-    pass
-
-class Set(Container, Iterable, Sized, collections.Set):
+class BaseSet(Container, Iterable, Sized, collections.Set):
 
     def __and__(self, other):
         """Return Intersection"""
@@ -308,7 +293,7 @@ class Set(Container, Iterable, Sized, collections.Set):
         else:
             raise TypeError("Can only symmetric_difference {}".format(type(self)))
 
-class MutableSet(Mutable, Set, collections.MutableSet):
+class MutableBaseSet(Mutable, BaseSet, collections.MutableSet):
 
     @abc.abstractmethod
     def add(self, itm):
@@ -337,3 +322,29 @@ class MutableMapping(Mutable, Mapping, collections.MutableMapping):
     def __delitem__(self, key):
         """Delete Mapping Item"""
         pass
+
+### Abstract Objects ###
+
+class String(Sequence):
+    pass
+
+class MutableString(MutableSequence, String):
+    pass
+
+class List(Sequence):
+    pass
+
+class MutableList(MutableSequence, List):
+    pass
+
+class Set(BaseSet):
+    pass
+
+class MutableSet(MutableBaseSet, Set):
+    pass
+
+class Dictionary(Mapping):
+    pass
+
+class MutableDictionary(MutableMapping, Dictionary):
+    pass
