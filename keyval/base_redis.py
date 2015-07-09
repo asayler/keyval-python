@@ -165,7 +165,7 @@ class String(Sequence, base_abc.String):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableString(String, base_abc.MutableString):
+class MutableString(MutableSequence, String, base_abc.MutableString):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -328,7 +328,7 @@ class List(Sequence, base_abc.List):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableList(List, base_abc.MutableList):
+class MutableList(MutableSequence, List, base_abc.MutableList):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
