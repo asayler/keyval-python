@@ -204,6 +204,19 @@ class Sequence(Container, Iterable, Sized, collections.Sequence):
         """Get Seq Item"""
         return self.get_val()[idx]
 
+    def __reversed__(self):
+        """Iterate Backwards Across Seq"""
+        for itm in reversed(self.get_val()):
+            yield itm
+
+    def index(self, itm):
+        """Return index of first occurance of v"""
+        return self.get_val().index(itm)
+
+    def count(self, itm):
+        """Return number os occurances of v"""
+        return self.get_val().count(itm)
+
 class MutableSequence(Mutable, Sequence, collections.MutableSequence):
 
     @abc.abstractmethod
@@ -212,14 +225,47 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
         pass
 
     @abc.abstractmethod
-    def __delitem__(self, idx):
-        """Del Seq Item"""
-        self.pop(idx)
-
-    @abc.abstractmethod
     def insert(self, idx, itm):
         """Insert Seq Item"""
         pass
+
+    @abc.abstractmethod
+    def append(self, itm):
+        """Append Seq Item"""
+        pass
+
+    @abc.abstractmethod
+    def extend(self, seq):
+        """Extend Seq with another Seq"""
+        pass
+
+    @abc.abstractmethod
+    def reverse(self):
+        """Reverse Seq"""
+        pass
+
+    @abc.abstractmethod
+    def pop(self, pop_idx=None):
+        """Remove and return item"""
+        pass
+
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
+
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remove itm from seq"""
+        pass
+
+    def __iadd__(self, other):
+        """+="""
+        self.extend(other)
+
+    def __delitem__(self, idx):
+        """Del Seq Item"""
+        self.pop(idx)
 
 
 ### Abstract Objects ###
@@ -238,34 +284,6 @@ class MutableList(MutableSequence, List):
 
 class Set(Container, Iterable, Sized, collections.Set):
 
-    def __and__(self, other):
-        """Return Intersection"""
-        if (type(other) == type(self)):
-            return (self.get_val() & other.get_val())
-        else:
-            raise TypeError("Can only and {}".format(type(self)))
-
-    def __or__(self, other):
-        """Return Union"""
-        if (type(other) == type(self)):
-            return (self.get_val() | other.get_val())
-        else:
-            raise TypeError("Can only or {}".format(type(self)))
-
-    def __xor__(self, other):
-        """Return Symmetric Difference"""
-        if (type(other) == type(self)):
-            return (self.get_val() ^ other.get_val())
-        else:
-            raise TypeError("Can only xor {}".format(type(self)))
-
-    def __sub__(self, other):
-        """Return Difference"""
-        if (type(other) == type(self)):
-            return (self.get_val() - other.get_val())
-        else:
-            raise TypeError("Can only sub {}".format(type(self)))
-
     def issubset(self, other):
         """Test Subset"""
         if (type(other) == type(self)):
@@ -280,12 +298,26 @@ class Set(Container, Iterable, Sized, collections.Set):
         else:
             raise TypeError("Can only compare {}".format(type(self)))
 
+    def __and__(self, other):
+        """Return Intersection"""
+        if (type(other) == type(self)):
+            return (self.get_val() & other.get_val())
+        else:
+            raise TypeError("Can only and {}".format(type(self)))
+
     def intersection(self, other):
         """Return Intersection"""
         if (type(other) == type(self)):
             return (self.get_val().intersection(other.get_val()))
         else:
             raise TypeError("Can only intersect {}".format(type(self)))
+
+    def __or__(self, other):
+        """Return Union"""
+        if (type(other) == type(self)):
+            return (self.get_val() | other.get_val())
+        else:
+            raise TypeError("Can only or {}".format(type(self)))
 
     def union(self, other):
         """Return Union"""
@@ -294,6 +326,13 @@ class Set(Container, Iterable, Sized, collections.Set):
         else:
             raise TypeError("Can only union {}".format(type(self)))
 
+    def __sub__(self, other):
+        """Return Difference"""
+        if (type(other) == type(self)):
+            return (self.get_val() - other.get_val())
+        else:
+            raise TypeError("Can only sub {}".format(type(self)))
+
     def difference(self, other):
         """Return Difference"""
         if (type(other) == type(self)):
@@ -301,12 +340,26 @@ class Set(Container, Iterable, Sized, collections.Set):
         else:
             raise TypeError("Can only difference {}".format(type(self)))
 
+    def __xor__(self, other):
+        """Return Symmetric Difference"""
+        if (type(other) == type(self)):
+            return (self.get_val() ^ other.get_val())
+        else:
+            raise TypeError("Can only xor {}".format(type(self)))
+
     def symmetric_difference(self, other):
         """Return Symmetric Difference"""
         if (type(other) == type(self)):
             return (self.get_val().symmetric_difference(other.get_val()))
         else:
             raise TypeError("Can only symmetric_difference {}".format(type(self)))
+
+    def isdisjoint(self, other):
+        """Test Disjoint"""
+        if (type(other) == type(self)):
+            return (self.get_val().isdisjoint(other.get_val()))
+        else:
+            raise TypeError("Can only compare {}".format(type(self)))
 
 class MutableSet(Mutable, Set, collections.MutableSet):
 
@@ -319,6 +372,10 @@ class MutableSet(Mutable, Set, collections.MutableSet):
     def discard(self, itm):
         """Remove Item from Set if Present"""
         pass
+
+    #clear
+    #pop
+    #remove
 
 class Mapping(Container, Iterable, Sized, collections.Mapping):
 
