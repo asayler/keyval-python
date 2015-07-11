@@ -389,7 +389,44 @@ class MutableMixin(PersistentMixin):
         # Test Bad
         self.helper_raises(10, TypeError, test_func, None)
 
-class ComparableMixin(PersistentMixin):
+class EqualityMixin(PersistentMixin):
+
+    def test_eq(self):
+
+        # Setup Test Vals
+        key_a = self.generate_key()
+        key_b = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create Instance
+        instance_a = self.factory.from_new(key_a, val)
+        instance_b = self.factory.from_new(key_b, val)
+        self.assertEqual(instance_a, instance_b)
+        self.assertEqual(instance_b, instance_a)
+
+        # Cleanup
+        instance_a.rem()
+        instance_b.rem()
+
+    def test_ne(self):
+
+        # Setup Test Vals
+        key_a = self.generate_key()
+        key_b = self.generate_key()
+        val_a = self.generate_val_multi(10)
+        val_b = self.generate_val_multi(10)
+        self.assertNotEqual(val_a, val_b)
+
+        # Create Instance
+        instance_a = self.factory.from_new(key_a, val_a)
+        instance_b = self.factory.from_new(key_b, val_b)
+        self.assertNotEqual(instance_a, instance_b)
+
+        # Cleanup
+        instance_a.rem()
+        instance_b.rem()
+
+class ComparableMixin(EqualityMixin):
 
     def helper_cmp(self, mode, func, sorted_vals):
 
@@ -453,41 +490,6 @@ class ComparableMixin(PersistentMixin):
         # Cleanup
         for instance in instances:
             instance.rem()
-
-    def test_eq(self):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val)
-        instance_b = self.factory.from_new(key_b, val)
-        self.assertEqual(instance_a, instance_b)
-        self.assertEqual(instance_b, instance_a)
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
-
-    def test_ne(self):
-
-        # Setup Test Vals
-        key_a = self.generate_key()
-        key_b = self.generate_key()
-        val_a = self.generate_val_multi(10)
-        val_b = self.generate_val_multi(10)
-        self.assertNotEqual(val_a, val_b)
-
-        # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        self.assertNotEqual(instance_a, instance_b)
-
-        # Cleanup
-        instance_a.rem()
-        instance_b.rem()
 
     def test_lt(self):
 
@@ -1367,7 +1369,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a.rem()
         instance_b.rem()
 
-class MappingMixin(ContainerMixin, IterableMixin, SizedMixin):
+class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
 
     def test_getitem(self):
 

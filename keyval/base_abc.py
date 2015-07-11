@@ -137,7 +137,7 @@ class Mutable(Persistent):
         """Set Value of Persistent Object"""
         return self._set_val(val, create=False, overwrite=True)
 
-class Comparable(Persistent):
+class Equality(Persistent):
 
     def __eq__(self, other):
         """Test Equality"""
@@ -152,6 +152,8 @@ class Comparable(Persistent):
             return (self.get_val() != other.get_val())
         else:
             raise TypeError("Can only compare {}".format(type(self)))
+
+class Comparable(Equality):
 
     def __lt__(self, other):
         """Test Less Than"""
@@ -307,7 +309,7 @@ class MutableBaseSet(Mutable, BaseSet, collections.MutableSet):
         """Remove Item from Set if Present"""
         pass
 
-class Mapping(Container, Iterable, Sized, collections.Mapping):
+class Mapping(Equality, Container, Iterable, Sized, collections.Mapping):
 
     def __getitem__(self, key):
         """Get Mapping Item"""
