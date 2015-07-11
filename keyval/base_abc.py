@@ -131,6 +131,14 @@ class Persistent(object):
         """Get Value as Corresponding Python Object"""
         return self._get_val()
 
+class Mutable(Persistent):
+
+    def set_val(self, val):
+        """Set Value of Persistent Object"""
+        return self._set_val(val, create=False, overwrite=True)
+
+class Comparable(Persistent):
+
     def __eq__(self, other):
         """Test Equality"""
         if (type(other) == type(self)):
@@ -172,12 +180,6 @@ class Persistent(object):
             return (self.get_val() >= other.get_val())
         else:
             raise TypeError("Can only compare {}".format(type(self)))
-
-class Mutable(Persistent):
-
-    def set_val(self, val):
-        """Set Value of Persistent Object"""
-        return self._set_val(val, create=False, overwrite=True)
 
 class Container(Persistent, collections.Container):
 
@@ -221,7 +223,7 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
         """Insert Seq Item"""
         pass
 
-class BaseSet(Container, Iterable, Sized, collections.Set):
+class BaseSet(Comparable, Container, Iterable, Sized, collections.Set):
 
     def __and__(self, other):
         """Return Intersection"""
