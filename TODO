@@ -1,0 +1,2 @@
++ Clean up input validation (e.g. string-only val limits)
++ Add support for vals other than strings
