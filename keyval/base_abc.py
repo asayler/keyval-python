@@ -218,7 +218,7 @@ class MutableSequence(Mutable, Sequence, collections.MutableSequence):
     @abc.abstractmethod
     def __delitem__(self, idx):
         """Del Seq Item"""
-        self.pop(idx)
+        pass
 
     @abc.abstractmethod
     def insert(self, idx, itm):
@@ -333,13 +333,89 @@ class String(Sequence):
     pass
 
 class MutableString(MutableSequence, String):
-    pass
+
+    def __setitem__(self, idx, item):
+        """Set Seq Item"""
+
+        # Get string
+        val_in = self.get_val()
+        length = len(val_in)
+
+        # Check bounds
+        if (idx >= length) or (idx < -length):
+            raise IndexError("{:d} out of range".format(idx))
+
+        # Generate new string
+        val_out = ""
+        if (idx != 0) and (idx != -len(val_in)):
+            val_out += val_in[:idx]
+        val_out += item
+        if (idx != (len(val_in)-1)) and (idx != -1):
+            val_out += val_in[idx+1:]
+
+        # Set string
+        self.set_val(val_out)
+
+    def __delitem__(self, idx):
+        """Del Seq Item"""
+
+        # Get string
+        val_in = self.get_val()
+        length = len(val_in)
+
+        # Check bounds
+        if (idx >= length) or (idx < -length):
+            raise IndexError("{:d} out of range".format(idx))
+
+        # Generate new string
+        val_out = ""
+        if (idx != 0) and (idx != -len(val_in)):
+            val_out += val_in[:idx]
+        if (idx != (len(val_in)-1)) and (idx != -1):
+            val_out += val_in[idx+1:]
+
+        # Set string
+        self.set_val(val_out)
+
+    def insert(self, idx, item):
+        """Insert Seq Item"""
+
+        # Get String
+        val_in = self.get_val()
+
+        # No bounds check: slicing works without it
+
+        # Generate new string
+        val_out = val_in[:idx] + item + val_in[idx:]
+
+        # Set string
+        self.set_val(val_out)
 
 class List(Sequence):
     pass
 
 class MutableList(MutableSequence, List):
-    pass
+
+    def __setitem__(self, idx, itm):
+        """Set Seq Item"""
+
+        val = self.get_val()
+        val[idx] = itm
+        self.set_val(val)
+
+    def __delitem__(self, idx):
+        """Del Seq Item"""
+
+        val = self.get_val()
+        del(val[idx])
+        self.set_val(val)
+
+    def insert(self, idx, itm):
+        """Insert Seq Item"""
+
+        val = self.get_val()
+        val.insert(idx, itm)
+        self.set_val(val)
 
 class Set(BaseSet):
     pass
