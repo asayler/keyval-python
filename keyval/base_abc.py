@@ -421,7 +421,30 @@ class Set(BaseSet):
     pass
 
 class MutableSet(MutableBaseSet, Set):
-    pass
+
+    def add(self, itm):
+        """Add Item to Set"""
+
+        # Validate Input
+        if (type(itm) is not str):
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # R/U/W
+        val = self.get_val()
+        val.add(itm)
+        self.set_val(val)
+
+    def discard(self, itm):
+        """Remove Item from Set if Present"""
+
+        # Validate Input
+        if (type(itm) is not str):
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # R/U/W
+        val = self.get_val()
+        val.discard(itm)
+        self.set_val(val)
 
 class Dictionary(Mapping):
     pass
