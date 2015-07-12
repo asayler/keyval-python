@@ -450,4 +450,17 @@ class Dictionary(Mapping):
     pass
 
 class MutableDictionary(MutableMapping, Dictionary):
-    pass
+
+    def __setitem__(self, key, itm):
+        """Set Mapping Item"""
+
+        val = self.get_val()
+        val[key] = itm
+        self.set_val(val)
+
+    def __delitem__(self, key):
+        """Delete Mapping Item"""
+
+        val = self.get_val()
+        del(val[key])
+        self.set_val(val)
