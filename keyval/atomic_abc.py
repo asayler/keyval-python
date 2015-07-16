@@ -6,9 +6,12 @@
 
 
 ### Imports ###
+import abc
 
 import base_abc
 
+
+### Abstract Base Objects ###
 
 class Sequence(base_abc.Sequence):
     pass
@@ -43,3 +46,18 @@ class MutableSequence(Sequence, base_abc.MutableSequence):
     def __iadd__(self, other):
         """+="""
         self.extend(other)
+
+
+### Abstract Objects ###
+
+class String(Sequence, base_abc.String):
+    pass
+
+class MutableString(MutableSequence, String, base_abc.MutableString):
+    pass
+
+class List(Sequence, base_abc.List):
+    pass
+
+class MutableList(MutableSequence, List, base_abc.MutableList):
+    pass
