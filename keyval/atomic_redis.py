@@ -35,8 +35,7 @@ class String(Sequence,
              base_redis.String, atomic_abc.String):
     pass
 
-class MutableString(MutableSequence, String,
-                    base_redis.MutableString, atomic_abc.String):
+class MutableString(MutableSequence, String, atomic_abc.String):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -127,29 +126,6 @@ class MutableString(MutableSequence, String,
         # Execute Transaction
         self._driver.transaction(automic_append, self._redis_key)
 
-    def extend(self, seq):
-        """Append Seq wuth another Seq"""
-
-        # Validate Input
-        seq = str(seq)
-
-        # Transaction
-        def automic_extend(pipe):
-
-            # Check Exists
-            if not self._exists(pipe):
-                raise base.ObjectDNE(self)
-
-            # Extend
-            pipe.multi()
-            pipe.append(self._redis_key, seq)
-
-        # Execute Transaction
-        if len(seq):
-            self._driver.transaction(automic_extend, self._redis_key)
-        else:
-            pass
-
     def reverse(self):
         """Reverse Seq"""
 
@@ -172,6 +148,30 @@ class MutableString(MutableSequence, String,
 
         # Execute Transaction
         self._driver.transaction(automic_reverse, self._redis_key)
+
+
+    def extend(self, seq):
+        """Append Seq wuth another Seq"""
+
+        # Validate Input
+        seq = str(seq)
+
+        # Transaction
+        def automic_extend(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Extend
+            pipe.multi()
+            pipe.append(self._redis_key, seq)
+
+        # Execute Transaction
+        if len(seq):
+            self._driver.transaction(automic_extend, self._redis_key)
+        else:
+            pass
 
     def pop(self, pop_idx=None):
         """Pop Seq Item"""
@@ -256,8 +256,7 @@ class List(Sequence,
            base_redis.List, atomic_abc.List):
     pass
 
-class MutableList(MutableSequence, List,
-                  base_redis.MutableList, atomic_abc.MutableList):
+class MutableList(MutableSequence, List, atomic_abc.MutableList):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -352,6 +351,30 @@ class MutableList(MutableSequence, List,
         # Execute Transaction
         self._driver.transaction(automic_append, self._redis_key)
 
+    def reverse(self):
+        """Reverse Seq"""
+
+        # Transaction
+        def automic_reverse(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Read
+            seq = pipe.lrange(self._redis_key, 0, -1)
+
+            # Reverse
+            rev = seq[::-1]
+
+            # Write
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            pipe.rpush(self._redis_key, *rev)
+
+        # Execute Transaction
+        self._driver.transaction(automic_reverse, self._redis_key)
+
     def extend(self, seq):
         """Append Seq wuth another Seq"""
 
@@ -380,30 +403,6 @@ class MutableList(MutableSequence, List,
             self._driver.transaction(automic_extend, self._redis_key)
         else:
             pass
-
-    def reverse(self):
-        """Reverse Seq"""
-
-        # Transaction
-        def automic_reverse(pipe):
-
-            # Check Exists
-            if not self._exists(pipe):
-                raise base.ObjectDNE(self)
-
-            # Read
-            seq = pipe.lrange(self._redis_key, 0, -1)
-
-            # Reverse
-            rev = seq[::-1]
-
-            # Write
-            pipe.multi()
-            pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *rev)
-
-        # Execute Transaction
-        self._driver.transaction(automic_reverse, self._redis_key)
 
     def pop(self, pop_idx=None):
         """Pop Seq Item"""

@@ -47,17 +47,20 @@ class MutableSequence(Sequence, base_abc.MutableSequence):
         """+="""
         self.extend(other)
 
+    def __delitem__(self, idx):
+        """Del Seq Item"""
+        self.pop(idx)
 
 ### Abstract Objects ###
 
 class String(Sequence, base_abc.String):
     pass
 
-class MutableString(MutableSequence, String, base_abc.MutableString):
+class MutableString(MutableSequence, String):
     pass
 
 class List(Sequence, base_abc.List):
     pass
 
-class MutableList(MutableSequence, List, base_abc.MutableList):
+class MutableList(MutableSequence, List):
     pass
