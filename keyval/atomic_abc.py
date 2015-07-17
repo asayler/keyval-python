@@ -55,41 +55,42 @@ class BaseSet(base_abc.BaseSet):
     pass
 
 class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
+    pass
 
-    @abc.abstractmethod
-    def clear(self):
-        """Clear Set"""
-        pass
+    # @abc.abstractmethod
+    # def clear(self):
+    #     """Clear Set"""
+    #     pass
 
-    @abc.abstractmethod
-    def pop(self):
-        """Pop item from set"""
-        pass
+    # @abc.abstractmethod
+    # def pop(self):
+    #     """Pop item from set"""
+    #     pass
 
-    @abc.abstractmethod
-    def remove(self, itm):
-        """Remote itm from set"""
-        pass
+    # @abc.abstractmethod
+    # def remove(self, itm):
+    #     """Remote itm from set"""
+    #     pass
 
-    @abc.abstractmethod
-    def __ior__(self, other):
-        """Unary or"""
-        pass
+    # @abc.abstractmethod
+    # def __ior__(self, other):
+    #     """Unary or"""
+    #     pass
 
-    @abc.abstractmethod
-    def __iand__(self, other):
-        """Unary and"""
-        pass
+    # @abc.abstractmethod
+    # def __iand__(self, other):
+    #     """Unary and"""
+    #     pass
 
-    @abc.abstractmethod
-    def __ixor__(self, other):
-        """Unary xor"""
-        pass
+    # @abc.abstractmethod
+    # def __ixor__(self, other):
+    #     """Unary xor"""
+    #     pass
 
-    @abc.abstractmethod
-    def __isub__(self, other):
-        """Unary subtract"""
-        pass
+    # @abc.abstractmethod
+    # def __isub__(self, other):
+    #     """Unary subtract"""
+    #     pass
 
 ### Abstract Objects ###
 

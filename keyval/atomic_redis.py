@@ -479,4 +479,45 @@ class Set(BaseSet, base_redis.Set, atomic_abc.Set):
     pass
 
 class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
-    pass
+
+    def add(self, itm):
+        """Add Item to Set"""
+
+        # Validate Input
+        if (type(itm) is not str):
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # Set Transaction
+        def automic_add(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Add Item
+            pipe.multi()
+            pipe.sadd(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_add, self._redis_key)
+
+    def discard(self, itm):
+        """Remove Item from Set if Present"""
+
+        # Validate Input
+        if (type(itm) is not str):
+            raise TypeError("{} not supported in set".format(type(itm)))
+
+        # Set Transaction
+        def automic_discard(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Remove Item
+            pipe.multi()
+            pipe.srem(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_discard, self._redis_key)
