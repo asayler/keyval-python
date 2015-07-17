@@ -50,6 +50,9 @@ class ListTestCase(base_abc_tests.ListMixin, RedisAtomicTestCase):
 class MutableListTestCase(base_abc_tests.MutableListMixin, RedisAtomicTestCase):
     pass
 
+class SetTestCase(base_abc_tests.SetMixin, RedisAtomicTestCase):
+    pass
+
 
 ### Main ###
 
