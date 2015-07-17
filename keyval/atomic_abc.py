@@ -66,10 +66,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Pop item from Set"""
         pass
 
-    # @abc.abstractmethod
-    # def remove(self, itm):
-    #     """Remote itm from set"""
-    #     pass
+    @abc.abstractmethod
+    def remove(self, itm):
+        """Remote itm from set"""
+        pass
 
     # @abc.abstractmethod
     # def __ior__(self, other):

@@ -561,3 +561,24 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             raise KeyError("Empty set, can not pop()")
         else:
             return ret[0]
+
+    def remove(self, itm):
+        """Remove itm from Set"""
+
+        # Set Transaction
+        def automic_remove(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Check Item in Set
+            if not pipe.sismember(self._redis_key, itm):
+                raise KeyError("{} not in set".format(itm))
+
+            # Remove Item
+            pipe.multi()
+            pipe.srem(self._redis_key, itm)
+
+        # Execute Transaction
+        self._driver.transaction(automic_remove, self._redis_key)
