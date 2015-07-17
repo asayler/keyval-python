@@ -55,12 +55,11 @@ class BaseSet(base_abc.BaseSet):
     pass
 
 class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
-    pass
 
-    # @abc.abstractmethod
-    # def clear(self):
-    #     """Clear Set"""
-    #     pass
+    @abc.abstractmethod
+    def clear(self):
+        """Clear Set"""
+        pass
 
     # @abc.abstractmethod
     # def pop(self):

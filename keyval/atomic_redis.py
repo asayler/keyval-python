@@ -521,3 +521,20 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Execute Transaction
         self._driver.transaction(automic_discard, self._redis_key)
+
+    def clear(self):
+        """Clear Set"""
+
+        # Set Transaction
+        def automic_clear(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Remove Item
+            pipe.multi()
+            pipe.delete(self._redis_key)
+
+        # Execute Transaction
+        self._driver.transaction(automic_clear, self._redis_key)
