@@ -24,18 +24,16 @@ class Driver(base_redis.Driver):
 class Sequence(base_redis.Sequence, atomic_abc.Sequence):
     pass
 
-class MutableSequence(Sequence,
-                      base_redis.MutableSequence, atomic_abc.MutableSequence):
+class MutableSequence(Sequence, base_redis.MutableSequence, atomic_abc.MutableSequence):
     pass
 
 
 ### Objects ###
 
-class String(Sequence,
-             base_redis.String, atomic_abc.String):
+class String(Sequence, base_redis.String, atomic_abc.String):
     pass
 
-class MutableString(MutableSequence, String, atomic_abc.String):
+class MutableString(MutableSequence, String, atomic_abc.MutableString):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
