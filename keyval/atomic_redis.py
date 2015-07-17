@@ -27,6 +27,12 @@ class Sequence(base_redis.Sequence, atomic_abc.Sequence):
 class MutableSequence(Sequence, base_redis.MutableSequence, atomic_abc.MutableSequence):
     pass
 
+class BaseSet(base_redis.BaseSet, atomic_abc.BaseSet):
+    pass
+
+class MutableBaseSet(BaseSet, base_redis.MutableBaseSet, atomic_abc.MutableBaseSet):
+    pass
+
 
 ### Objects ###
 
@@ -468,3 +474,9 @@ class MutableList(MutableSequence, List, atomic_abc.MutableList):
         # Check result
         if (ret[0] != 1):
             raise ValueError("'{}' is not in list".format(itm))
+
+class Set(BaseSet, base_redis.Set, atomic_abc.Set):
+    pass
+
+class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
+    pass
