@@ -538,3 +538,26 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Execute Transaction
         self._driver.transaction(automic_clear, self._redis_key)
+
+    def pop(self):
+        """Pop item from Set"""
+
+        # Set Transaction
+        def automic_pop(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Remove Item
+            pipe.multi()
+            pipe.spop(self._redis_key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(automic_pop, self._redis_key)
+
+        # Check and Return
+        if ret[0] is None:
+            raise KeyError("Empty set, can not pop()")
+        else:
+            return ret[0]
