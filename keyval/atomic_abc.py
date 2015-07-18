@@ -72,10 +72,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Remote itm from set"""
         pass
 
-    # @abc.abstractmethod
-    # def __ior__(self, other):
-    #     """Unary or"""
-    #     pass
+    @abc.abstractmethod
+    def __ior__(self, other):
+        """Unary or"""
+        pass
 
     # @abc.abstractmethod
     # def __iand__(self, other):

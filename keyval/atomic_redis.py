@@ -582,3 +582,24 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Execute Transaction
         self._driver.transaction(automic_remove, self._redis_key)
+
+    def __ior__(self, other):
+        """Unary or"""
+
+        # Transaction
+        def automic_ior(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Add Items
+            pipe.multi()
+            if len(other) > 0:
+                pipe.sadd(self._redis_key, *other)
+
+        # Execute Transaction
+        self._driver.transaction(automic_ior, self._redis_key)
+
+        # Return
+        return self
