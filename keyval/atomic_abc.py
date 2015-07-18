@@ -46,6 +46,7 @@ class MutableSequence(Sequence, base_abc.MutableSequence):
     def __iadd__(self, other):
         """+="""
         self.extend(other)
+        return self
 
     def __delitem__(self, idx):
         """Del Seq Item"""
