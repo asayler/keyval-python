@@ -487,7 +487,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
         if (type(itm) is not str):
             raise TypeError("{} not supported in set".format(type(itm)))
 
-        # Set Transaction
+        # Transaction
         def automic_add(pipe):
 
             # Check Exists
@@ -508,7 +508,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
         if (type(itm) is not str):
             raise TypeError("{} not supported in set".format(type(itm)))
 
-        # Set Transaction
+        # Transaction
         def automic_discard(pipe):
 
             # Check Exists
@@ -525,7 +525,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
     def clear(self):
         """Clear Set"""
 
-        # Set Transaction
+        # Transaction
         def automic_clear(pipe):
 
             # Check Exists
@@ -542,7 +542,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
     def pop(self):
         """Pop item from Set"""
 
-        # Set Transaction
+        # Transaction
         def automic_pop(pipe):
 
             # Check Exists
@@ -565,7 +565,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
     def remove(self, itm):
         """Remove itm from Set"""
 
-        # Set Transaction
+        # Transaction
         def automic_remove(pipe):
 
             # Check Exists
