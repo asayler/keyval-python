@@ -841,6 +841,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
         def iadd(instance, other):
             instance += other
+            self.assertIsNotNone(instance)
 
         # Test DNE
         seq = self.generate_val_multi(1)
@@ -1235,6 +1236,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['b', 'c']))
         instance_a |= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c']), instance_a.get_val())
         self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
         instance_a.rem()
@@ -1244,6 +1246,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['c', 'd']))
         instance_a |= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
         self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
         instance_a.rem()
@@ -1252,6 +1255,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Test Identity
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_a |= instance_a
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         instance_a.rem()
 
@@ -1259,6 +1263,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set([]))
         instance_a |= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         self.assertEqual(set([]) ,instance_b.get_val())
         instance_a.rem()
@@ -1270,6 +1275,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['b', 'c']))
         instance_a &= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['b']), instance_a.get_val())
         self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
         instance_a.rem()
@@ -1279,6 +1285,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['c', 'd']))
         instance_a &= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
         instance_a.rem()
@@ -1287,6 +1294,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Test Identity
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_a &= instance_a
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         instance_a.rem()
 
@@ -1294,6 +1302,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set([]))
         instance_a &= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         self.assertEqual(set([]) ,instance_b.get_val())
         instance_a.rem()
@@ -1305,6 +1314,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['b', 'c']))
         instance_a ^= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'c']), instance_a.get_val())
         self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
         instance_a.rem()
@@ -1314,6 +1324,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['c', 'd']))
         instance_a ^= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
         self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
         instance_a.rem()
@@ -1322,6 +1333,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Test Identity
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_a ^= instance_a
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         instance_a.rem()
 
@@ -1329,6 +1341,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set([]))
         instance_a ^= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         self.assertEqual(set([]) ,instance_b.get_val())
         instance_a.rem()
@@ -1340,6 +1353,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['b', 'c']))
         instance_a -= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a']), instance_a.get_val())
         self.assertEqual(set(['b', 'c']) ,instance_b.get_val())
         instance_a.rem()
@@ -1349,6 +1363,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set(['c', 'd']))
         instance_a -= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         self.assertEqual(set(['c', 'd']) ,instance_b.get_val())
         instance_a.rem()
@@ -1357,6 +1372,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Test Identity
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_a -= instance_a
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         instance_a.rem()
 
@@ -1364,6 +1380,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_a = self.factory.from_new("key_a", set(['a', 'b']))
         instance_b = self.factory.from_new("key_b", set([]))
         instance_a -= instance_b
+        self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         self.assertEqual(set([]) ,instance_b.get_val())
         instance_a.rem()
