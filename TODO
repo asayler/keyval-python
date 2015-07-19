@@ -1,4 +1,3 @@
 + Clean up input validation (e.g. string-only val limits)
 + Clean up output validation (e.g. casting to str(), etc)
 + Add support for vals other than strings
-+ Fix Unary operator tests to verify non-None return
