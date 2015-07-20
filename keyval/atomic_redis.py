@@ -612,6 +612,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
     def __iand__(self, other):
         """Unary and"""
 
+        # Validate Input
         other = set(other)
 
         # Transaction
@@ -621,7 +622,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Add Items
+            # Intersect Items
             val = pipe.smembers(self._redis_key)
             val &= other
             pipe.multi()
