@@ -586,6 +586,9 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
     def __ior__(self, other):
         """Unary or"""
 
+        # Validate Input
+        other = set(other)
+
         # Transaction
         def automic_ior(pipe):
 
@@ -593,10 +596,12 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Add Items
+            # Union Items
+            val = pipe.smembers(self._redis_key)
+            val |= other
             pipe.multi()
-            if len(other) > 0:
-                pipe.sadd(self._redis_key, *other)
+            if len(val) > 0:
+                pipe.sadd(self._redis_key, *val)
 
         # Execute Transaction
         self._driver.transaction(automic_ior, self._redis_key)
