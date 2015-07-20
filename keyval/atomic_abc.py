@@ -77,10 +77,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Unary or"""
         pass
 
-    # @abc.abstractmethod
-    # def __iand__(self, other):
-    #     """Unary and"""
-    #     pass
+    @abc.abstractmethod
+    def __iand__(self, other):
+        """Unary and"""
+        pass
 
     # @abc.abstractmethod
     # def __ixor__(self, other):
