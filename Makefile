@@ -30,8 +30,8 @@ test:
 	$(EXPORT_PATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
 
 clean:
-	$(RM) unittests/*.pyc
-	$(RM) unittests/*~
+	$(RM) tests/*.pyc
+	$(RM) tests/*~
 	$(RM) keyval/*.pyc
 	$(RM) keyval/*~
 	$(RM) *~
