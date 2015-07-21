@@ -662,3 +662,30 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Return
         return self
+
+    def __isub__(self, other):
+        """Unary subtract"""
+
+        # Validate Input
+        other = set(other)
+
+        # Transaction
+        def automic_isub(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Subtract Items
+            val = pipe.smembers(self._redis_key)
+            val -= other
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            if len(val) > 0:
+                pipe.sadd(self._redis_key, *val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_isub, self._redis_key)
+
+        # Return
+        return self
