@@ -596,7 +596,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Union Items
+            # Union Sets
             val = pipe.smembers(self._redis_key)
             val |= other
             pipe.multi()
@@ -622,7 +622,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Intersect Items
+            # Intersect Sets
             val = pipe.smembers(self._redis_key)
             val &= other
             pipe.multi()
@@ -649,7 +649,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Xor Items
+            # Xor Sets
             val = pipe.smembers(self._redis_key)
             val ^= other
             pipe.multi()
@@ -676,7 +676,7 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Subtract Items
+            # Difference Sets
             val = pipe.smembers(self._redis_key)
             val -= other
             pipe.multi()
