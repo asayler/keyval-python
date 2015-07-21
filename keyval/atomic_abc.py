@@ -82,10 +82,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Unary and"""
         pass
 
-    # @abc.abstractmethod
-    # def __ixor__(self, other):
-    #     """Unary xor"""
-    #     pass
+    @abc.abstractmethod
+    def __ixor__(self, other):
+        """Unary xor"""
+        pass
 
     # @abc.abstractmethod
     # def __isub__(self, other):

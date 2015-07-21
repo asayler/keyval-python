@@ -635,3 +635,30 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Return
         return self
+
+    def __ixor__(self, other):
+        """Unary xor"""
+
+        # Validate Input
+        other = set(other)
+
+        # Transaction
+        def automic_ixor(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Xor Items
+            val = pipe.smembers(self._redis_key)
+            val ^= other
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            if len(val) > 0:
+                pipe.sadd(self._redis_key, *val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_ixor, self._redis_key)
+
+        # Return
+        return self
