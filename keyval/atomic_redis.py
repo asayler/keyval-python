@@ -700,4 +700,45 @@ class Dictionary(Mapping, base_redis.Dictionary, atomic_abc.Dictionary):
     pass
 
 class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary):
-    pass
+
+    def __setitem__(self, key, val):
+        """Set Mapping Item"""
+
+        # Validate Input
+        if type(val) is not str:
+            raise TypeError("{} not supported in mapping".format(type(val)))
+
+        # Transaction
+        def atomic_setitem(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Set Item
+            pipe.multi()
+            pipe.hset(self._redis_key, key, val)
+
+        # Execute Transaction
+        self._driver.transaction(atomic_setitem, self._redis_key)
+
+    def __delitem__(self, key):
+        """Delete Mapping Item"""
+
+        # Transaction
+        def atomic_delitem(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Set Item
+            pipe.multi()
+            pipe.hdel(self._redis_key, key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(atomic_delitem, self._redis_key)
+
+        # Validate Return
+        if not ret[0]:
+            raise KeyError("'{}' not in dict".format(key))

@@ -96,31 +96,31 @@ class Mapping(base_abc.Mapping):
     pass
 
 class MutableMapping(Mapping, base_abc.MutableMapping):
+    pass
+    # @abc.abstractmethod
+    # def pop(self, key, default=None):
+    #     """Pop Specified Item"""
+    #     pass
 
-    @abc.abstractmethod
-    def pop(self, key, default=None):
-        """Pop Specified Item"""
-        pass
+    # @abc.abstractmethod
+    # def popitem(self):
+    #     """Pop Arbitrary Item"""
+    #     pass
 
-    @abc.abstractmethod
-    def popitem(self):
-        """Pop Arbitrary Item"""
-        pass
+    # @abc.abstractmethod
+    # def clear(self):
+    #     """Clear Dictionary"""
+    #     pass
 
-    @abc.abstractmethod
-    def clear(self):
-        """Clear Dictionary"""
-        pass
+    # @abc.abstractmethod
+    # def update(self, other=None):
+    #     """Update Dictionary from Other"""
+    #     pass
 
-    @abc.abstractmethod
-    def update(self, other=None):
-        """Update Dictionary from Other"""
-        pass
-
-    @abc.abstractmethod
-    def setdefault(key, default=None):
-        """Return Key or Set to Default"""
-        raise NotImplementedError("setdefault not yet implemented")
+    # @abc.abstractmethod
+    # def setdefault(key, default=None):
+    #     """Return Key or Set to Default"""
+    #     raise NotImplementedError("setdefault not yet implemented")
 
 
 ### Abstract Objects ###
