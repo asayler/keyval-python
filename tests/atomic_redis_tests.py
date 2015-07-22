@@ -59,6 +59,9 @@ class MutableSetTestCase(base_abc_tests.MutableSetMixin, RedisAtomicTestCase):
 class DictionaryTestCase(base_abc_tests.DictionaryMixin, RedisAtomicTestCase):
     pass
 
+class MutableDictionaryTestCase(base_abc_tests.MutableDictionaryMixin, RedisAtomicTestCase):
+    pass
+
 
 ### Main ###
 
