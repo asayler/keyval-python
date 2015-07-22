@@ -33,6 +33,9 @@ class BaseSet(base_redis.BaseSet, atomic_abc.BaseSet):
 class MutableBaseSet(BaseSet, base_redis.MutableBaseSet, atomic_abc.MutableBaseSet):
     pass
 
+class Mapping(base_redis.Mapping, atomic_abc.Mapping):
+    pass
+
 
 ### Objects ###
 
@@ -689,3 +692,6 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
 
         # Return
         return self
+
+class Dictionary(Mapping, base_redis.Dictionary, atomic_abc.Dictionary):
+    pass

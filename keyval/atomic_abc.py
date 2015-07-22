@@ -92,6 +92,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Unary subtract"""
         pass
 
+class Mapping(base_abc.Mapping):
+    pass
+
+
 ### Abstract Objects ###
 
 class String(Sequence, base_abc.String):
@@ -110,4 +114,7 @@ class Set(BaseSet, base_abc.Set):
     pass
 
 class MutableSet(MutableBaseSet, Set):
+    pass
+
+class Dictionary(Mapping, base_abc.Dictionary):
     pass
