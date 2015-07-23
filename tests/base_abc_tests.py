@@ -1555,6 +1555,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Test Bad Key (Full)
         self.helper_raises_core(instance, i_val, KeyError, pop, "key_d")
         self.helper_ab_mutable_core(instance, i_val, pop_default, "key_d", "val_x")
+        self.helper_exp_mutable_core(instance, i_val, "val_x", i_val, pop_default, "key_d", "val_x")
 
         # Test Key w/ Default
         self.helper_ab_mutable_core(instance, i_val, pop_default, "key_a", "val_x")
@@ -1568,6 +1569,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Test Bad Key (Empty)
         self.helper_raises_core(instance, i_val, KeyError, pop, "key_a")
         self.helper_ab_mutable_core(instance, i_val, pop_default, "key_a", "val_X")
+        self.helper_exp_mutable_core(instance, i_val, "val_x", {}, pop_default, "key_d", "val_x")
 
         # Cleanup
         instance.rem()
