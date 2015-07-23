@@ -744,7 +744,7 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
             raise KeyError("'{}' not in dict".format(key))
 
     def pop(self, *args):
-        """Set Mapping Item"""
+        """Pop Specified Item or Default"""
 
         # Validate input:
         if (len(args) < 1) or (len(args) > 2):
@@ -758,7 +758,7 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
             if not self._exists(pipe):
                 raise base.ObjectDNE(self)
 
-            # Set Item
+            # Pop Item
             pipe.multi()
             pipe.hget(self._redis_key, key)
             pipe.hdel(self._redis_key, key)
