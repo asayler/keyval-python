@@ -742,3 +742,35 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
         # Validate Return
         if not ret[0]:
             raise KeyError("'{}' not in dict".format(key))
+
+    def pop(self, *args):
+        """Set Mapping Item"""
+
+        # Validate input:
+        if (len(args) < 1) or (len(args) > 2):
+            raise TypeError("pop() requires either 1 or 2 args: {}".format(args))
+        key = args[0]
+
+        # Transaction
+        def atomic_pop(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Set Item
+            pipe.multi()
+            pipe.hget(self._redis_key, key)
+            pipe.hdel(self._redis_key, key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(atomic_pop, self._redis_key)
+
+        # Process Return
+        if not ret[1]:
+            if len(args) > 1:
+                return args[1]
+            else:
+                raise KeyError("'{}' not in dict".format(key))
+        else:
+            return ret[0]

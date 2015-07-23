@@ -96,11 +96,11 @@ class Mapping(base_abc.Mapping):
     pass
 
 class MutableMapping(Mapping, base_abc.MutableMapping):
-    pass
-    # @abc.abstractmethod
-    # def pop(self, key, default=None):
-    #     """Pop Specified Item"""
-    #     pass
+
+    @abc.abstractmethod
+    def pop(self, *args):
+        """Pop Specified Item"""
+        pass
 
     # @abc.abstractmethod
     # def popitem(self):
