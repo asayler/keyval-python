@@ -1525,22 +1525,34 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         def pop(instance, key):
             return instance.pop(key)
 
+        def pop_default(instance, key, default):
+            return instance.pop(key, default)
+
         # Test DNE
         self.helper_dne(pop, "key_a")
+        self.helper_dne(pop_default, "key_a", None)
 
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
         instance = self.factory.from_new(i_key, i_val)
 
-        # Test Existing Keys
+        # Test Bad Key (Full)
+        self.helper_raises_core(instance, i_val, KeyError, pop, "key_d")
+        self.helper_ab_mutable_core(instance, i_val, pop_default, "key_d", "val_x")
+
+        # Test Key w/ Default
+        self.helper_ab_mutable_core(instance, i_val, pop_default, "key_a", "val_x")
+
+        # Test Remaining Keys
         for k in i_val.keys():
             self.helper_ab_mutable_core(instance, i_val, pop, k)
         self.assertEqual(0, len(instance))
         self.assertEqual(0, len(i_val))
 
-        # Test Bad Key
-        self.helper_raises_core(instance, i_val, KeyError, pop, "key_d")
+        # Test Bad Key (Empty)
+        self.helper_raises_core(instance, i_val, KeyError, pop, "key_a")
+        self.helper_ab_mutable_core(instance, i_val, pop_default, "key_a", "val_X")
 
         # Cleanup
         instance.rem()
