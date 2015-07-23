@@ -774,3 +774,30 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
                 raise KeyError("'{}' not in dict".format(key))
         else:
             return ret[0]
+
+    def popitem(self, *args):
+        """Pop Arbitrary Item"""
+
+        # Transaction
+        def atomic_popitem(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Set Item
+            dic = pipe.hgetall(self._redis_key)
+            key, val = dic.popitem()
+            pipe.multi()
+            pipe.echo(key)
+            pipe.echo(val)
+            pipe.hdel(self._redis_key, key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(atomic_popitem, self._redis_key)
+
+        # Process Return
+        key = ret[0]
+        val = ret[1]
+        assert ret[2] == 1
+        return (key, val)

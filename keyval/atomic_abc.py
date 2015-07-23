@@ -102,10 +102,10 @@ class MutableMapping(Mapping, base_abc.MutableMapping):
         """Pop Specified Item"""
         pass
 
-    # @abc.abstractmethod
-    # def popitem(self):
-    #     """Pop Arbitrary Item"""
-    #     pass
+    @abc.abstractmethod
+    def popitem(self):
+        """Pop Arbitrary Item"""
+        pass
 
     # @abc.abstractmethod
     # def clear(self):
