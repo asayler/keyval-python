@@ -819,6 +819,8 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         for idx in range(10):
             self.helper_ab_mutable(10, pop, idx)
 
+        #TODO - Add pop from empty set test for KeyError
+
     def test_remove(self):
 
         def remove(instance, itm):
