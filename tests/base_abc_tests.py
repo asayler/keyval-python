@@ -346,12 +346,16 @@ class MutableMixin(PersistentMixin):
         key = self.generate_key()
         val = self.generate_val_multi(size)
         instance = self.factory.from_new(key, val)
+        self.helper_exp_mutable_core(instance, val, exp_ret, exp_val, test_func, *args)
+        instance.rem()
+
+    def helper_exp_mutable_core(self, instance, ref, exp_ret, exp_val, test_func, *args):
+
         self.assertTrue(instance.exists())
-        self.assertEqual(val, instance.get_val())
+        self.assertEqual(ref, instance.get_val())
         ret = test_func(instance, *args)
         self.assertEqual(exp_ret, ret)
         self.assertEqual(exp_val, instance.get_val())
-        instance.rem()
 
     def test_set_val_empty(self):
 
