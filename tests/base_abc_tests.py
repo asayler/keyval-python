@@ -1415,20 +1415,31 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
 
         def get(instance, key):
             return instance.get(key)
+        def get_default(instance, key, default):
+            return instance.get(key, default)
 
         # Test DNE
-        self.helper_dne(get, None)
+        self.helper_dne(get, "key_a")
+        self.helper_dne(get_default, "key_a", "val_x")
 
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
         instance = self.factory.from_new(i_key, i_val)
 
+        # Test Bad Key (Full)
+        self.helper_ab_immutable_core(instance, i_val, get_default, "key_d", "val_x")
+        self.helper_exp_immutable_core(instance, i_val, "val_x", get_default, "key_d", "val_x")
+        self.helper_exp_immutable_core(instance, i_val, None, get, "key_d")
+
         # Test Good Keys
         for k in i_val:
             self.helper_ab_immutable_core(instance, i_val, get, k)
+            self.helper_ab_immutable_core(instance, i_val, get_default, k, "val_x")
 
-        # Test Bad Key
+        # Test Bad Key (Empty)
+        self.helper_ab_immutable_core(instance, i_val, get_default, "key_d", "val_x")
+        self.helper_exp_immutable_core(instance, i_val, "val_x", get_default, "key_d", "val_x")
         self.helper_exp_immutable_core(instance, i_val, None, get, "key_d")
 
         # Cleanup
