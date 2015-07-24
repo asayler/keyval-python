@@ -801,3 +801,20 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
         val = ret[1]
         assert ret[2] == 1
         return (key, val)
+
+    def clear(self):
+        """Clear Dictionary"""
+
+        # Transaction
+        def automic_clear(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Remove Item
+            pipe.multi()
+            pipe.delete(self._redis_key)
+
+        # Execute Transaction
+        self._driver.transaction(automic_clear, self._redis_key)

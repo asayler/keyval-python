@@ -107,10 +107,10 @@ class MutableMapping(Mapping, base_abc.MutableMapping):
         """Pop Arbitrary Item"""
         pass
 
-    # @abc.abstractmethod
-    # def clear(self):
-    #     """Clear Dictionary"""
-    #     pass
+    @abc.abstractmethod
+    def clear(self):
+        """Clear Dictionary"""
+        pass
 
     # @abc.abstractmethod
     # def update(self, other=None):
