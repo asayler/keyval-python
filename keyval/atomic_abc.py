@@ -112,10 +112,10 @@ class MutableMapping(Mapping, base_abc.MutableMapping):
         """Clear Dictionary"""
         pass
 
-    # @abc.abstractmethod
-    # def update(self, other=None):
-    #     """Update Dictionary from Other"""
-    #     pass
+    @abc.abstractmethod
+    def update(self, *args, **kwargs):
+        """Update Dictionary"""
+        pass
 
     # @abc.abstractmethod
     # def setdefault(key, default=None):

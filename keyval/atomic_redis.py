@@ -775,7 +775,7 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
         else:
             return ret[0]
 
-    def popitem(self, *args):
+    def popitem(self):
         """Pop Arbitrary Item"""
 
         # Transaction
@@ -818,3 +818,27 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
 
         # Execute Transaction
         self._driver.transaction(automic_clear, self._redis_key)
+
+    def update(self, *args, **kwargs):
+        """Update Dictionary"""
+
+        # Transaction
+        def automic_update(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Difference Sets
+            val = pipe.hgetall(self._redis_key)
+            val.update(*args, **kwargs)
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            if len(val) > 0:
+                pipe.hmset(self._redis_key, val)
+
+        # Execute Transaction
+        self._driver.transaction(automic_update, self._redis_key)
+
+        # Return
+        return self
