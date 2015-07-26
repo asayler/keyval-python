@@ -2,4 +2,3 @@
 + Clean up output validation (e.g. casting to str(), etc)
 + Add support for vals other than strings
 + Add support for comparison with native types
-+ Add test for mapping.setdefault()
