@@ -842,3 +842,29 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
 
         # Return
         return self
+
+    def setdefault(self, key, default=None):
+        """return Key or Set to Default"""
+
+        # Transaction
+        def atomic_setdefault(pipe):
+
+            # Check Exists
+            if not self._exists(pipe):
+                raise base.ObjectDNE(self)
+
+            # Validate Input
+            if not pipe.hexists(self._redis_key, key):
+                if type(default) is not str:
+                    raise TypeError("{} not supported in mapping".format(type(default)))
+
+            # Set val if not set
+            pipe.multi()
+            pipe.hsetnx(self._redis_key, key, default)
+            pipe.hget(self._redis_key, key)
+
+        # Execute Transaction
+        ret = self._driver.transaction(atomic_setdefault, self._redis_key)
+
+        # Return
+        return ret[1]

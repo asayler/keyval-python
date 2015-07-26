@@ -117,10 +117,19 @@ class MutableMapping(Mapping, base_abc.MutableMapping):
         """Update Dictionary"""
         pass
 
-    # @abc.abstractmethod
-    # def setdefault(key, default=None):
-    #     """Return Key or Set to Default"""
-    #     raise NotImplementedError("setdefault not yet implemented")
+    @abc.abstractmethod
+    def setdefault(key, default=None):
+        """
+        Return Key or Set to Default
+
+        setdefault(key[, default])
+
+        If key is in the dictionary, return its value. If not, insert
+        key with a value of default and return default. default
+        defaults to None.
+        """
+        pass
+
 
 
 ### Abstract Objects ###

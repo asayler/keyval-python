@@ -1668,6 +1668,57 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Cleanup
         instance.rem()
 
+    def test_setdefault(self):
+
+        def setdefault(instance, k, d):
+            return instance.setdefault(k, d)
+
+        def setdefaultdefault(instance, k):
+            return instance.setdefault(k)
+
+        # Test DNE
+        self.helper_dne(setdefault, "key_a", "val_def")
+        self.helper_dne(setdefaultdefault, "key_a")
+
+        # Create Instance
+        i_key = self.generate_key()
+        i_val = {}
+        instance = self.factory.from_new(i_key, i_val)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Empty
+        ret = setdefault(instance, "key_a", "val_a")
+        ref = setdefault(i_val, "key_a", "val_a")
+        self.assertEqual(ret, "val_a")
+        self.assertEqual(ret, ref)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Overwrite
+        ret = setdefault(instance, "key_a", "val_b")
+        ref = setdefault(i_val, "key_a", "val_b")
+        self.assertEqual(ret, "val_a")
+        self.assertEqual(ret, ref)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Test Default
+        # TODO: Add support for None-type
+        self.assertRaises(TypeError, setdefaultdefault, instance, "key_b")
+        # ret = setdefaultdefault(instance, "key_b")
+        # ref = setdefaultdefault(i_val, "key_b")
+        # self.assertEqual(ret, None)
+        # self.assertEqual(ret, ref)
+        # self.assertEqual(instance.get_val(), i_val)
+
+        # Test Default Overwrite
+        ret = setdefaultdefault(instance, "key_a")
+        ref = setdefaultdefault(i_val, "key_a")
+        self.assertEqual(ret, "val_a")
+        self.assertEqual(ret, ref)
+        self.assertEqual(instance.get_val(), i_val)
+
+        # Cleanup
+        instance.rem()
+
 
 ### Object Mixins ###
 
