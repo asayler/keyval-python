@@ -822,6 +822,8 @@ class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary
     def update(self, *args, **kwargs):
         """Update Dictionary"""
 
+        # TODO: Verify input types
+
         # Transaction
         def atomic_update(pipe):
 
