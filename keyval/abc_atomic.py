@@ -122,7 +122,7 @@ class MutableMapping(Mapping, abc_base.MutableMapping):
         pass
 
     @abc.abstractmethod
-    def setdefault(key, default=None):
+    def setdefault(self, key, default=None):
         """
         Return Key or Set to Default
 
@@ -133,7 +133,6 @@ class MutableMapping(Mapping, abc_base.MutableMapping):
         defaults to None.
         """
         pass
-
 
 
 ### Abstract Objects ###

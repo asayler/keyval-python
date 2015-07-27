@@ -7,8 +7,6 @@
 
 ### Imports ###
 
-import redis
-
 import keyval
 import base_redis
 import abc_atomic
@@ -60,7 +58,7 @@ class MutableString(String, MutableSequence, abc_atomic.MutableString):
         # Check Input
         itm = str(itm)
         if len(itm) != 1:
-            raise ValueError("{:s} must be a single charecter".format(v))
+            raise ValueError("{:s} must be a single charecter".format(itm))
 
         # Transaction
         def atomic_setitem(pipe):
@@ -125,7 +123,7 @@ class MutableString(String, MutableSequence, abc_atomic.MutableString):
         """Append Seq Item"""
 
         # Validate Input
-        v = str(itm)
+        itm = str(itm)
         if len(itm) != 1:
             raise ValueError("{:s} must be a single charecter".format(itm))
 
