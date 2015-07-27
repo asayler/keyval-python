@@ -14,7 +14,6 @@ import unittest
 import warnings
 
 ## keyval ##
-import keyval.base
 import keyval.base_redis
 
 ## tests ##

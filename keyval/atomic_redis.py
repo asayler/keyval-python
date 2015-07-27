@@ -9,7 +9,7 @@
 
 import redis
 
-import base
+import keyval
 import base_redis
 import abc_atomic
 
@@ -61,7 +61,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Check Index
             length = pipe.strlen(self._redis_key)
@@ -94,7 +94,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Get Ranges
             length = pipe.strlen(self._redis_key)
@@ -128,7 +128,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Append
             pipe.multi()
@@ -145,7 +145,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Read
             seq = pipe.get(self._redis_key)
@@ -172,7 +172,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Extend
             pipe.multi()
@@ -192,7 +192,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Check Index
             length = pipe.strlen(self._redis_key)
@@ -236,7 +236,7 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Get idx
             seq = pipe.get(self._redis_key)
@@ -283,7 +283,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Check Index
             length = pipe.llen(self._redis_key)
@@ -317,7 +317,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Get Ranges
             length = pipe.llen(self._redis_key)
@@ -353,7 +353,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Append
             pipe.multi()
@@ -370,7 +370,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Read
             seq = pipe.lrange(self._redis_key, 0, -1)
@@ -403,7 +403,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Extend
             pipe.multi()
@@ -423,7 +423,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Check Index
             length = pipe.llen(self._redis_key)
@@ -469,7 +469,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Write
             pipe.multi()
@@ -499,7 +499,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Add Item
             pipe.multi()
@@ -520,7 +520,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Remove Item
             pipe.multi()
@@ -537,7 +537,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Remove Item
             pipe.multi()
@@ -554,7 +554,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Remove Item
             pipe.multi()
@@ -577,7 +577,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Check Item in Set
             if not pipe.sismember(self._redis_key, itm):
@@ -601,7 +601,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Union Sets
             val = pipe.smembers(self._redis_key)
@@ -627,7 +627,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Intersect Sets
             val = pipe.smembers(self._redis_key)
@@ -654,7 +654,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Xor Sets
             val = pipe.smembers(self._redis_key)
@@ -681,7 +681,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Difference Sets
             val = pipe.smembers(self._redis_key)
@@ -714,7 +714,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Set Item
             pipe.multi()
@@ -731,7 +731,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Set Item
             pipe.multi()
@@ -757,7 +757,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Pop Item
             pipe.multi()
@@ -784,7 +784,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Set Item
             dic = pipe.hgetall(self._redis_key)
@@ -811,7 +811,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Remove Item
             pipe.multi()
@@ -830,7 +830,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Difference Sets
             val = pipe.hgetall(self._redis_key)
@@ -854,7 +854,7 @@ class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary
 
             # Check Exists
             if not self._exists(pipe):
-                raise base.ObjectDNE(self)
+                raise keyval.ObjectDNE(self)
 
             # Validate Input
             if not pipe.hexists(self._redis_key, key):

@@ -15,7 +15,7 @@ import unittest
 import warnings
 
 ### keyval ###
-import keyval.base
+import keyval.keyval
 
 
 ### Globals ###
@@ -81,7 +81,7 @@ class PersistentMixin(object):
     def helper_dne_core(self, instance, test_func, *args):
 
         self.assertFalse(instance.exists())
-        self.assertRaises(keyval.base.ObjectDNE, test_func, instance, *args)
+        self.assertRaises(keyval.keyval.ObjectDNE, test_func, instance, *args)
 
     def helper_ab_immutable(self, size, test_func, *args):
 
@@ -139,7 +139,7 @@ class PersistentMixin(object):
         self.assertEqual(val, instance.get_val())
 
         # Recreate Instance
-        self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
+        self.assertRaises(keyval.keyval.ObjectExists, self.factory.from_new, key, val)
 
         # Cleanup
         instance.rem()
@@ -163,7 +163,7 @@ class PersistentMixin(object):
         self.assertEqual(val, instance.get_val())
 
         # Recreate Instance
-        self.assertRaises(keyval.base.ObjectExists, self.factory.from_new, key, val)
+        self.assertRaises(keyval.keyval.ObjectExists, self.factory.from_new, key, val)
 
         # Cleanup
         instance.rem()
@@ -179,7 +179,7 @@ class PersistentMixin(object):
         self.assertRaises(TypeError, self.factory.from_existing, None)
 
         # Get Nonexistant Instance
-        self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
+        self.assertRaises(keyval.keyval.ObjectDNE, self.factory.from_existing, key)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -205,7 +205,7 @@ class PersistentMixin(object):
         self.assertRaises(TypeError, self.factory.from_existing, None)
 
         # Get Nonexistant Instance
-        self.assertRaises(keyval.base.ObjectDNE, self.factory.from_existing, key)
+        self.assertRaises(keyval.keyval.ObjectDNE, self.factory.from_existing, key)
 
         # Create New Instance
         instance = self.factory.from_new(key, val)
@@ -232,7 +232,7 @@ class PersistentMixin(object):
         instance = self.factory.from_raw(key)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.get_key())
-        self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
+        self.assertRaises(keyval.keyval.ObjectDNE, instance.get_val)
 
     def test_rem(self):
 
@@ -249,7 +249,7 @@ class PersistentMixin(object):
         self.assertFalse(instance.exists())
 
         # Rem Non-existant Instance (No Force)
-        self.assertRaises(keyval.base.ObjectDNE, instance.rem)
+        self.assertRaises(keyval.keyval.ObjectDNE, instance.rem)
 
         # Rem Non-existant Instance (Force)
         instance.rem(force=True)
@@ -267,7 +267,7 @@ class PersistentMixin(object):
 
         # Rem Instance
         instance.rem()
-        self.assertRaises(keyval.base.ObjectDNE, instance.get_val)
+        self.assertRaises(keyval.keyval.ObjectDNE, instance.get_val)
 
     def test_get_key(self):
 
@@ -1726,7 +1726,7 @@ class StringMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
         super(StringMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.String)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.String)
 
     def generate_val_single(self, exclude=None):
 
@@ -1775,7 +1775,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
         def __str__(self):
             """Return String Representation"""
-            return unicode(self).encode(keyval.base._ENCODING)
+            return unicode(self).encode(keyval.keyval._ENCODING)
 
         def __repr__(self):
             """Return Unique Representation"""
@@ -1847,7 +1847,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableStringMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableString)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.MutableString)
 
     def generate_val_single(self, exclude=None):
 
@@ -1882,7 +1882,7 @@ class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.List)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.List)
 
     def generate_val_single(self, exclude=None):
 
@@ -1916,13 +1916,13 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableListMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableList)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.MutableList)
 
 class SetMixin(BaseSetMixin):
 
     def __init__(self, *args, **kwargs):
         super(SetMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Set)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.Set)
 
     def generate_val_single(self, exclude=None):
 
@@ -1958,13 +1958,13 @@ class MutableSetMixin(MutableBaseSetMixin, SetMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableSetMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableSet)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.MutableSet)
 
 class DictionaryMixin(MappingMixin):
 
     def __init__(self, *args, **kwargs):
         super(DictionaryMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.Dictionary)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.Dictionary)
 
     def generate_val_single(self, exclude=None):
 
@@ -2003,4 +2003,4 @@ class MutableDictionaryMixin(MutableMappingMixin, DictionaryMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableDictionaryMixin, self).__init__(*args, **kwargs)
-        self.factory = keyval.base.InstanceFactory(self.driver, self.module.MutableDictionary)
+        self.factory = keyval.keyval.InstanceFactory(self.driver, self.module.MutableDictionary)

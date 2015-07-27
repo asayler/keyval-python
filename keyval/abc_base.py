@@ -10,7 +10,7 @@
 import abc
 import collections
 
-import base
+import keyval
 
 
 ### Helpers ###
@@ -76,7 +76,7 @@ class Persistent(object):
 
         # Check Existence
         if not obj.exists():
-            raise base.ObjectDNE(obj)
+            raise keyval.ObjectDNE(obj)
 
         # Return Object
         return obj
@@ -113,7 +113,7 @@ class Persistent(object):
 
     def __str__(self):
         """Return String Representation"""
-        return unicode(self).encode(base._ENCODING)
+        return unicode(self).encode(keyval._ENCODING)
 
     def __repr__(self):
         """Return Unique Representation"""
