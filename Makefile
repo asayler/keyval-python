@@ -7,6 +7,7 @@ ECHO = @echo
 PYTHON = python
 PIP = pip
 PYLINT = pylint
+PYLINT_OPTIONS = --disable=all --enable=E,W --reports=n
 
 REQUIRMENTS = requirments.txt
 
@@ -28,6 +29,9 @@ reqs: $(REQUIRMENTS)
 
 test:
 	$(EXPORT_PATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
+
+lint:
+	$(EXPORT_PATH) && cd $(UNITTEST_DIRECTORY) && $(PYLINT) $(PYLINT_OPTIONS) *.py
 
 clean:
 	$(RM) tests/*.pyc
