@@ -52,7 +52,7 @@ class MutableMapping(Mapping, base_redis.MutableMapping, abc_atomic.MutableMappi
 class String(Sequence, base_redis.String, abc_atomic.String):
     pass
 
-class MutableString(MutableSequence, String, abc_atomic.MutableString):
+class MutableString(String, MutableSequence, abc_atomic.MutableString):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -269,11 +269,10 @@ class MutableString(MutableSequence, String, abc_atomic.MutableString):
         # Execute Transaction
         self._driver.transaction(atomic_remove, self._redis_key)
 
-class List(Sequence,
-           base_redis.List, abc_atomic.List):
+class List(Sequence, base_redis.List, abc_atomic.List):
     pass
 
-class MutableList(MutableSequence, List, abc_atomic.MutableList):
+class MutableList(List, MutableSequence, abc_atomic.MutableList):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -491,7 +490,7 @@ class MutableList(MutableSequence, List, abc_atomic.MutableList):
 class Set(BaseSet, base_redis.Set, abc_atomic.Set):
     pass
 
-class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
+class MutableSet(Set, MutableBaseSet, abc_atomic.MutableSet):
 
     def add(self, itm):
         """Add Item to Set"""
@@ -706,7 +705,7 @@ class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 class Dictionary(Mapping, base_redis.Dictionary, abc_atomic.Dictionary):
     pass
 
-class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary):
+class MutableDictionary(Dictionary, MutableMapping, abc_atomic.MutableDictionary):
 
     def __setitem__(self, key, val):
         """Set Mapping Item"""

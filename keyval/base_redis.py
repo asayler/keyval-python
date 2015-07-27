@@ -178,7 +178,7 @@ class String(Sequence, abc_base.String):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableString(MutableSequence, String, abc_base.MutableString):
+class MutableString(String, abc_base.MutableString, MutableSequence):
     pass
 
 class List(Sequence, abc_base.List):
@@ -238,7 +238,7 @@ class List(Sequence, abc_base.List):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableList(MutableSequence, List, abc_base.MutableList):
+class MutableList(List, abc_base.MutableList, MutableSequence):
     pass
 
 class Set(BaseSet, abc_base.Set):
@@ -298,8 +298,7 @@ class Set(BaseSet, abc_base.Set):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableSet(MutableBaseSet, Set, abc_base.MutableSet):
-
+class MutableSet(Set, abc_base.MutableSet, MutableBaseSet):
     pass
 
 class Dictionary(Mapping, abc_base.Dictionary):
@@ -359,6 +358,5 @@ class Dictionary(Mapping, abc_base.Dictionary):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableDictionary(MutableMapping, Dictionary, abc_base.MutableDictionary):
-
+class MutableDictionary(Dictionary, abc_base.MutableDictionary, MutableMapping):
     pass

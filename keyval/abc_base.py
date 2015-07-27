@@ -212,7 +212,7 @@ class Sequence(Container, Iterable, Sized, collections.Sequence):
         """Get Seq Item"""
         return self.get_val()[idx]
 
-class MutableSequence(Mutable, Sequence, collections.MutableSequence):
+class MutableSequence(Sequence, Mutable, collections.MutableSequence):
 
     @abc.abstractmethod
     def __setitem__(self, idx, itm):
@@ -301,7 +301,7 @@ class BaseSet(Comparable, Container, Iterable, Sized, collections.Set):
         else:
             raise TypeError("Can only symmetric_difference {}".format(type(self)))
 
-class MutableBaseSet(Mutable, BaseSet, collections.MutableSet):
+class MutableBaseSet(BaseSet, Mutable, collections.MutableSet):
 
     @abc.abstractmethod
     def add(self, itm):
@@ -319,7 +319,7 @@ class Mapping(Equality, Container, Iterable, Sized, collections.Mapping):
         """Get Mapping Item"""
         return self.get_val()[key]
 
-class MutableMapping(Mutable, Mapping, collections.MutableMapping):
+class MutableMapping(Mapping, Mutable, collections.MutableMapping):
 
     @abc.abstractmethod
     def __setitem__(self, key, val):
@@ -336,7 +336,7 @@ class MutableMapping(Mutable, Mapping, collections.MutableMapping):
 class String(Sequence):
     pass
 
-class MutableString(MutableSequence, String):
+class MutableString(String, MutableSequence):
 
     def __setitem__(self, idx, item):
         """Set Seq Item"""
@@ -398,7 +398,7 @@ class MutableString(MutableSequence, String):
 class List(Sequence):
     pass
 
-class MutableList(MutableSequence, List):
+class MutableList(List, MutableSequence):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -424,7 +424,7 @@ class MutableList(MutableSequence, List):
 class Set(BaseSet):
     pass
 
-class MutableSet(MutableBaseSet, Set):
+class MutableSet(Set, MutableBaseSet):
 
     def add(self, itm):
         """Add Item to Set"""
@@ -453,7 +453,7 @@ class MutableSet(MutableBaseSet, Set):
 class Dictionary(Mapping):
     pass
 
-class MutableDictionary(MutableMapping, Dictionary):
+class MutableDictionary(Dictionary, MutableMapping):
 
     def __setitem__(self, key, itm):
         """Set Mapping Item"""
