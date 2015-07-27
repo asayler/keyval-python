@@ -11,7 +11,8 @@ import redis
 
 import base
 import base_redis
-import atomic_abc
+import abc_atomic
+
 
 ### Driver ###
 
@@ -21,31 +22,31 @@ class Driver(base_redis.Driver):
 
 ### Base Objects ###
 
-class Sequence(base_redis.Sequence, atomic_abc.Sequence):
+class Sequence(base_redis.Sequence, abc_atomic.Sequence):
     pass
 
-class MutableSequence(Sequence, base_redis.MutableSequence, atomic_abc.MutableSequence):
+class MutableSequence(Sequence, base_redis.MutableSequence, abc_atomic.MutableSequence):
     pass
 
-class BaseSet(base_redis.BaseSet, atomic_abc.BaseSet):
+class BaseSet(base_redis.BaseSet, abc_atomic.BaseSet):
     pass
 
-class MutableBaseSet(BaseSet, base_redis.MutableBaseSet, atomic_abc.MutableBaseSet):
+class MutableBaseSet(BaseSet, base_redis.MutableBaseSet, abc_atomic.MutableBaseSet):
     pass
 
-class Mapping(base_redis.Mapping, atomic_abc.Mapping):
+class Mapping(base_redis.Mapping, abc_atomic.Mapping):
     pass
 
-class MutableMapping(Mapping, base_redis.MutableMapping, atomic_abc.MutableMapping):
+class MutableMapping(Mapping, base_redis.MutableMapping, abc_atomic.MutableMapping):
     pass
 
 
 ### Objects ###
 
-class String(Sequence, base_redis.String, atomic_abc.String):
+class String(Sequence, base_redis.String, abc_atomic.String):
     pass
 
-class MutableString(MutableSequence, String, atomic_abc.MutableString):
+class MutableString(MutableSequence, String, abc_atomic.MutableString):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -263,10 +264,10 @@ class MutableString(MutableSequence, String, atomic_abc.MutableString):
         self._driver.transaction(atomic_remove, self._redis_key)
 
 class List(Sequence,
-           base_redis.List, atomic_abc.List):
+           base_redis.List, abc_atomic.List):
     pass
 
-class MutableList(MutableSequence, List, atomic_abc.MutableList):
+class MutableList(MutableSequence, List, abc_atomic.MutableList):
 
     def __setitem__(self, idx, itm):
         """Set Seq Item"""
@@ -481,10 +482,10 @@ class MutableList(MutableSequence, List, atomic_abc.MutableList):
         if (ret[0] != 1):
             raise ValueError("'{}' is not in list".format(itm))
 
-class Set(BaseSet, base_redis.Set, atomic_abc.Set):
+class Set(BaseSet, base_redis.Set, abc_atomic.Set):
     pass
 
-class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
+class MutableSet(MutableBaseSet, Set, abc_atomic.MutableSet):
 
     def add(self, itm):
         """Add Item to Set"""
@@ -696,10 +697,10 @@ class MutableSet(MutableBaseSet, Set, atomic_abc.MutableSet):
         # Return
         return self
 
-class Dictionary(Mapping, base_redis.Dictionary, atomic_abc.Dictionary):
+class Dictionary(Mapping, base_redis.Dictionary, abc_atomic.Dictionary):
     pass
 
-class MutableDictionary(MutableMapping, Dictionary, atomic_abc.MutableDictionary):
+class MutableDictionary(MutableMapping, Dictionary, abc_atomic.MutableDictionary):
 
     def __setitem__(self, key, val):
         """Set Mapping Item"""

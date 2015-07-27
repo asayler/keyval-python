@@ -8,15 +8,15 @@
 ### Imports ###
 import abc
 
-import base_abc
+import abc_base
 
 
 ### Abstract Base Objects ###
 
-class Sequence(base_abc.Sequence):
+class Sequence(abc_base.Sequence):
     pass
 
-class MutableSequence(Sequence, base_abc.MutableSequence):
+class MutableSequence(Sequence, abc_base.MutableSequence):
 
     @abc.abstractmethod
     def append(self, itm):
@@ -52,10 +52,10 @@ class MutableSequence(Sequence, base_abc.MutableSequence):
         """Del Seq Item"""
         self.pop(idx)
 
-class BaseSet(base_abc.BaseSet):
+class BaseSet(abc_base.BaseSet):
     pass
 
-class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
+class MutableBaseSet(BaseSet, abc_base.MutableBaseSet):
 
     @abc.abstractmethod
     def clear(self):
@@ -92,10 +92,10 @@ class MutableBaseSet(BaseSet, base_abc.MutableBaseSet):
         """Unary subtract"""
         pass
 
-class Mapping(base_abc.Mapping):
+class Mapping(abc_base.Mapping):
     pass
 
-class MutableMapping(Mapping, base_abc.MutableMapping):
+class MutableMapping(Mapping, abc_base.MutableMapping):
 
     @abc.abstractmethod
     def pop(self, *args):
@@ -134,25 +134,25 @@ class MutableMapping(Mapping, base_abc.MutableMapping):
 
 ### Abstract Objects ###
 
-class String(Sequence, base_abc.String):
+class String(Sequence, abc_base.String):
     pass
 
 class MutableString(MutableSequence, String):
     pass
 
-class List(Sequence, base_abc.List):
+class List(Sequence, abc_base.List):
     pass
 
 class MutableList(MutableSequence, List):
     pass
 
-class Set(BaseSet, base_abc.Set):
+class Set(BaseSet, abc_base.Set):
     pass
 
 class MutableSet(MutableBaseSet, Set):
     pass
 
-class Dictionary(Mapping, base_abc.Dictionary):
+class Dictionary(Mapping, abc_base.Dictionary):
     pass
 
 class MutableDictionary(MutableMapping, Dictionary):

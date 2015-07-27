@@ -10,7 +10,7 @@
 import redis
 
 import base
-import base_abc
+import abc_base
 
 
 ### Constants ###
@@ -32,7 +32,7 @@ class Driver(redis.StrictRedis):
 
 ### Base Objects ###
 
-class Persistent(base_abc.Persistent):
+class Persistent(abc_base.Persistent):
 
     def _register(self, pipe):
         """Register Object as Existing"""
@@ -82,39 +82,39 @@ class Persistent(base_abc.Persistent):
         # Delete Object
         self._driver.transaction(atomic_rem, self._redis_key)
 
-class Mutable(Persistent, base_abc.Mutable):
+class Mutable(Persistent, abc_base.Mutable):
     pass
 
-class Container(Persistent, base_abc.Container):
+class Container(Persistent, abc_base.Container):
     pass
 
-class Iterable(Persistent, base_abc.Iterable):
+class Iterable(Persistent, abc_base.Iterable):
     pass
 
-class Sized(Persistent, base_abc.Sized):
+class Sized(Persistent, abc_base.Sized):
     pass
 
-class Sequence(Container, Iterable, Sized, base_abc.Sequence):
+class Sequence(Container, Iterable, Sized, abc_base.Sequence):
     pass
 
-class MutableSequence(Mutable, Sequence, base_abc.MutableSequence):
+class MutableSequence(Mutable, Sequence, abc_base.MutableSequence):
     pass
 
-class BaseSet(Container, Iterable, Sized, base_abc.BaseSet):
+class BaseSet(Container, Iterable, Sized, abc_base.BaseSet):
     pass
 
-class MutableBaseSet(Mutable, BaseSet, base_abc.MutableBaseSet):
+class MutableBaseSet(Mutable, BaseSet, abc_base.MutableBaseSet):
     pass
 
-class Mapping(Container, Iterable, Sized, base_abc.Mapping):
+class Mapping(Container, Iterable, Sized, abc_base.Mapping):
     pass
 
-class MutableMapping(Mutable, Mapping, base_abc.MutableMapping):
+class MutableMapping(Mutable, Mapping, abc_base.MutableMapping):
     pass
 
 ### Objects ###
 
-class String(Sequence, base_abc.String):
+class String(Sequence, abc_base.String):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -165,10 +165,10 @@ class String(Sequence, base_abc.String):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableString(MutableSequence, String, base_abc.MutableString):
+class MutableString(MutableSequence, String, abc_base.MutableString):
     pass
 
-class List(Sequence, base_abc.List):
+class List(Sequence, abc_base.List):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -225,10 +225,10 @@ class List(Sequence, base_abc.List):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableList(MutableSequence, List, base_abc.MutableList):
+class MutableList(MutableSequence, List, abc_base.MutableList):
     pass
 
-class Set(BaseSet, base_abc.Set):
+class Set(BaseSet, abc_base.Set):
 
     def __init__(self, driver, key):
         """Set Constructor"""
@@ -285,11 +285,11 @@ class Set(BaseSet, base_abc.Set):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableSet(MutableBaseSet, Set, base_abc.MutableSet):
+class MutableSet(MutableBaseSet, Set, abc_base.MutableSet):
 
     pass
 
-class Dictionary(Mapping, base_abc.Dictionary):
+class Dictionary(Mapping, abc_base.Dictionary):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -346,6 +346,6 @@ class Dictionary(Mapping, base_abc.Dictionary):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableDictionary(MutableMapping, Dictionary, base_abc.MutableDictionary):
+class MutableDictionary(MutableMapping, Dictionary, abc_base.MutableDictionary):
 
     pass
