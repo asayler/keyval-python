@@ -26,6 +26,10 @@ Status
 + Dictionary (Mapping)
 + MutableDictionary (MutableMapping)
 
+### Complted Flavors ###
++ base - atomic reads
++ atomic - atomic reads and writes
+
 ### Completed Backends ###
 + Redis
 
