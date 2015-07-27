@@ -17,7 +17,7 @@ import warnings
 import keyval.atomic_redis
 
 ## tests ##
-import base_abc_tests
+import test_mixins
 import base_redis_tests
 
 
@@ -38,28 +38,28 @@ class RedisAtomicTestCase(base_redis_tests.RedisBaseTestCase):
 
 ### Object Classes ###
 
-class StringTestCase(base_abc_tests.StringMixin, RedisAtomicTestCase):
+class StringTestCase(test_mixins.StringMixin, RedisAtomicTestCase):
     pass
 
-class MutableStringTestCase(base_abc_tests.MutableStringMixin, RedisAtomicTestCase):
+class MutableStringTestCase(test_mixins.MutableStringMixin, RedisAtomicTestCase):
     pass
 
-class ListTestCase(base_abc_tests.ListMixin, RedisAtomicTestCase):
+class ListTestCase(test_mixins.ListMixin, RedisAtomicTestCase):
     pass
 
-class MutableListTestCase(base_abc_tests.MutableListMixin, RedisAtomicTestCase):
+class MutableListTestCase(test_mixins.MutableListMixin, RedisAtomicTestCase):
     pass
 
-class SetTestCase(base_abc_tests.SetMixin, RedisAtomicTestCase):
+class SetTestCase(test_mixins.SetMixin, RedisAtomicTestCase):
     pass
 
-class MutableSetTestCase(base_abc_tests.MutableSetMixin, RedisAtomicTestCase):
+class MutableSetTestCase(test_mixins.MutableSetMixin, RedisAtomicTestCase):
     pass
 
-class DictionaryTestCase(base_abc_tests.DictionaryMixin, RedisAtomicTestCase):
+class DictionaryTestCase(test_mixins.DictionaryMixin, RedisAtomicTestCase):
     pass
 
-class MutableDictionaryTestCase(base_abc_tests.MutableDictionaryMixin, RedisAtomicTestCase):
+class MutableDictionaryTestCase(test_mixins.MutableDictionaryMixin, RedisAtomicTestCase):
     pass
 
 

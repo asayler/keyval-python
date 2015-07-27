@@ -17,7 +17,7 @@ import warnings
 import keyval.base_redis
 
 ## tests ##
-import base_abc_tests
+import test_mixins
 
 
 ### Globals ###
@@ -27,7 +27,7 @@ _REDIS_DB = 9
 
 ### Exceptions ###
 
-class RedisBaseTestError(base_abc_tests.BaseTestError):
+class RedisBaseTestError(test_mixins.BaseTestError):
     """Base class for RedisBaseTest Exceptions"""
 
     def __init__(self, *args, **kwargs):
@@ -42,7 +42,7 @@ class RedisDatabaseNotEmpty(RedisBaseTestError):
 
 ### Base Class ###
 
-class RedisBaseTestCase(base_abc_tests.BaseTestCase):
+class RedisBaseTestCase(test_mixins.BaseTestCase):
 
     def __init__(self, *args, **kwargs):
         super(RedisBaseTestCase, self).__init__(*args, **kwargs)
@@ -71,28 +71,28 @@ class RedisBaseTestCase(base_abc_tests.BaseTestCase):
 
 ### Object Classes ###
 
-class StringTestCase(base_abc_tests.StringMixin, RedisBaseTestCase):
+class StringTestCase(test_mixins.StringMixin, RedisBaseTestCase):
     pass
 
-class MutableStringTestCase(base_abc_tests.MutableStringMixin, RedisBaseTestCase):
+class MutableStringTestCase(test_mixins.MutableStringMixin, RedisBaseTestCase):
     pass
 
-class ListTestCase(base_abc_tests.ListMixin, RedisBaseTestCase):
+class ListTestCase(test_mixins.ListMixin, RedisBaseTestCase):
     pass
 
-class MutableListTestCase(base_abc_tests.MutableListMixin, RedisBaseTestCase):
+class MutableListTestCase(test_mixins.MutableListMixin, RedisBaseTestCase):
     pass
 
-class SetTestCase(base_abc_tests.SetMixin, RedisBaseTestCase):
+class SetTestCase(test_mixins.SetMixin, RedisBaseTestCase):
     pass
 
-class MutableSetTestCase(base_abc_tests.MutableSetMixin, RedisBaseTestCase):
+class MutableSetTestCase(test_mixins.MutableSetMixin, RedisBaseTestCase):
     pass
 
-class DictionaryTestCase(base_abc_tests.DictionaryMixin, RedisBaseTestCase):
+class DictionaryTestCase(test_mixins.DictionaryMixin, RedisBaseTestCase):
     pass
 
-class MutableDictionaryTestCase(base_abc_tests.MutableDictionaryMixin, RedisBaseTestCase):
+class MutableDictionaryTestCase(test_mixins.MutableDictionaryMixin, RedisBaseTestCase):
     pass
 
 
