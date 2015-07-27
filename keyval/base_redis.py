@@ -34,6 +34,8 @@ class Driver(redis.StrictRedis):
 
 class Persistent(abc_base.Persistent):
 
+    #pylint: disable=abstract-method
+
     def _register(self, pipe):
         """Register Object as Existing"""
 
@@ -83,34 +85,45 @@ class Persistent(abc_base.Persistent):
         self._driver.transaction(atomic_rem, self._redis_key)
 
 class Mutable(Persistent, abc_base.Mutable):
+    #pylint: disable=abstract-method
     pass
 
 class Container(Persistent, abc_base.Container):
+    #pylint: disable=abstract-method
     pass
 
 class Iterable(Persistent, abc_base.Iterable):
+    #pylint: disable=abstract-method
     pass
 
 class Sized(Persistent, abc_base.Sized):
+    #pylint: disable=abstract-method
     pass
 
 class Sequence(Container, Iterable, Sized, abc_base.Sequence):
+    #pylint: disable=abstract-method
     pass
 
 class MutableSequence(Mutable, Sequence, abc_base.MutableSequence):
+    #pylint: disable=abstract-method
     pass
 
 class BaseSet(Container, Iterable, Sized, abc_base.BaseSet):
+    #pylint: disable=abstract-method
     pass
 
 class MutableBaseSet(Mutable, BaseSet, abc_base.MutableBaseSet):
+    #pylint: disable=abstract-method
     pass
 
 class Mapping(Container, Iterable, Sized, abc_base.Mapping):
+    #pylint: disable=abstract-method
     pass
 
 class MutableMapping(Mutable, Mapping, abc_base.MutableMapping):
+    #pylint: disable=abstract-method
     pass
+
 
 ### Objects ###
 

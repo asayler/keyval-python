@@ -23,21 +23,27 @@ class Driver(base_redis.Driver):
 ### Base Objects ###
 
 class Sequence(base_redis.Sequence, abc_atomic.Sequence):
+    #pylint: disable=abstract-method
     pass
 
 class MutableSequence(Sequence, base_redis.MutableSequence, abc_atomic.MutableSequence):
+    #pylint: disable=abstract-method
     pass
 
 class BaseSet(base_redis.BaseSet, abc_atomic.BaseSet):
+    #pylint: disable=abstract-method
     pass
 
 class MutableBaseSet(BaseSet, base_redis.MutableBaseSet, abc_atomic.MutableBaseSet):
+    #pylint: disable=abstract-method
     pass
 
 class Mapping(base_redis.Mapping, abc_atomic.Mapping):
+    #pylint: disable=abstract-method
     pass
 
 class MutableMapping(Mapping, base_redis.MutableMapping, abc_atomic.MutableMapping):
+    #pylint: disable=abstract-method
     pass
 
 

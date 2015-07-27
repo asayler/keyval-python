@@ -5,6 +5,10 @@
 # University of Colorado
 
 
+### Pylint ###
+#pylint: disable=abstract-method
+
+
 ### Imports ###
 
 import abc
