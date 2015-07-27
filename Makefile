@@ -31,7 +31,8 @@ test:
 	$(EXPORT_PATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
 
 lint:
-	$(EXPORT_PATH) && cd $(UNITTEST_DIRECTORY) && $(PYLINT) $(PYLINT_OPTIONS) *.py
+	-$(EXPORT_PATH) && cd $(UNITTEST_DIRECTORY) && $(PYLINT) $(PYLINT_OPTIONS) *.py
+	-$(EXPORT_PATH) && $(PYLINT) $(PYLINT_OPTIONS) keyval
 
 clean:
 	$(RM) tests/*.pyc
