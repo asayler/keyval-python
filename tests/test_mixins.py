@@ -22,6 +22,7 @@ import keyval.keyval
 
 _TEST_KEY_PRE = "TESTKEY"
 
+
 ### Initialization ###
 
 warnings.simplefilter('default')
@@ -32,8 +33,8 @@ warnings.simplefilter('default')
 class BaseTestError(Exception):
     """Base class for BaseTest Exceptions"""
 
-    def __init__(self, *args, **kwargs):
-        super(BaseTestError, self).__init__(*args, **kwargs)
+    pass
+
 
 ### Base Class ###
 
@@ -819,7 +820,7 @@ class MutableSequenceMixin(SequenceMixin, MutableMixin):
         for idx in range(10):
             self.helper_ab_mutable(10, pop, idx)
 
-        #TODO - Add pop from empty set test for KeyError
+        #TODO: Add pop from empty set test for KeyError
 
     def test_remove(self):
 

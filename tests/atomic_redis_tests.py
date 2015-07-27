@@ -11,7 +11,6 @@
 
 ## stdlib ##
 import unittest
-import warnings
 
 ## keyval ##
 import keyval.atomic_redis

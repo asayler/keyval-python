@@ -30,8 +30,7 @@ _REDIS_DB = 9
 class RedisBaseTestError(test_mixins.BaseTestError):
     """Base class for RedisBaseTest Exceptions"""
 
-    def __init__(self, *args, **kwargs):
-        super(RedisBaseTestError, self).__init__(*args, **kwargs)
+    pass
 
 class RedisDatabaseNotEmpty(RedisBaseTestError):
 
