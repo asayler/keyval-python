@@ -91,7 +91,7 @@ class Persistent(abc_base.Persistent):
         # Call Parent
         super(Persistent, self).__init__(driver, key)
 
-        #ToDo: setup global init
+        #TODO: setup global init
 
     @abc.abstractmethod
     def _get_val(self):
