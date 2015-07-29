@@ -17,24 +17,6 @@ import collections
 import keyval
 
 
-### Helpers ###
-
-class abstractstaticmethod(staticmethod):
-    __slots__ = ()
-    def __init__(self, function):
-        super(abstractstaticmethod, self).__init__(function)
-        function.__isabstractmethod__ = True
-    __isabstractmethod__ = True
-
-
-class abstractclassmethod(classmethod):
-    __slots__ = ()
-    def __init__(self, function):
-        super(abstractclassmethod, self).__init__(function)
-        function.__isabstractmethod__ = True
-    __isabstractmethod__ = True
-
-
 ### Abstract Base Objects ###
 
 class Persistent(object):
