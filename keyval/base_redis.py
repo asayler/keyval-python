@@ -84,50 +84,10 @@ class Persistent(abc_base.Persistent):
         # Delete Object
         self._driver.transaction(atomic_rem, self._redis_key)
 
-class Mutable(Persistent, abc_base.Mutable):
-    #pylint: disable=abstract-method
-    pass
-
-class Container(Persistent, abc_base.Container):
-    #pylint: disable=abstract-method
-    pass
-
-class Iterable(Persistent, abc_base.Iterable):
-    #pylint: disable=abstract-method
-    pass
-
-class Sized(Persistent, abc_base.Sized):
-    #pylint: disable=abstract-method
-    pass
-
-class Sequence(Container, Iterable, Sized, abc_base.Sequence):
-    #pylint: disable=abstract-method
-    pass
-
-class MutableSequence(Mutable, Sequence, abc_base.MutableSequence):
-    #pylint: disable=abstract-method
-    pass
-
-class BaseSet(Container, Iterable, Sized, abc_base.BaseSet):
-    #pylint: disable=abstract-method
-    pass
-
-class MutableBaseSet(Mutable, BaseSet, abc_base.MutableBaseSet):
-    #pylint: disable=abstract-method
-    pass
-
-class Mapping(Container, Iterable, Sized, abc_base.Mapping):
-    #pylint: disable=abstract-method
-    pass
-
-class MutableMapping(Mutable, Mapping, abc_base.MutableMapping):
-    #pylint: disable=abstract-method
-    pass
-
 
 ### Objects ###
 
-class String(Sequence, abc_base.String):
+class String(Persistent, abc_base.String):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -178,10 +138,10 @@ class String(Sequence, abc_base.String):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableString(String, abc_base.MutableString, MutableSequence):
+class MutableString(String, abc_base.MutableString):
     pass
 
-class List(Sequence, abc_base.List):
+class List(Persistent, abc_base.List):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -238,10 +198,10 @@ class List(Sequence, abc_base.List):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableList(List, abc_base.MutableList, MutableSequence):
+class MutableList(List, abc_base.MutableList):
     pass
 
-class Set(BaseSet, abc_base.Set):
+class Set(Persistent, abc_base.Set):
 
     def __init__(self, driver, key):
         """Set Constructor"""
@@ -298,10 +258,10 @@ class Set(BaseSet, abc_base.Set):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableSet(Set, abc_base.MutableSet, MutableBaseSet):
+class MutableSet(Set, abc_base.MutableSet):
     pass
 
-class Dictionary(Mapping, abc_base.Dictionary):
+class Dictionary(Persistent, abc_base.Dictionary):
 
     def __init__(self, driver, key):
         """ Constructor"""
@@ -358,5 +318,5 @@ class Dictionary(Mapping, abc_base.Dictionary):
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
 
-class MutableDictionary(Dictionary, abc_base.MutableDictionary, MutableMapping):
+class MutableDictionary(Dictionary, abc_base.MutableDictionary):
     pass
