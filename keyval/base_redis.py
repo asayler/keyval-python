@@ -7,6 +7,8 @@
 
 ### Imports ###
 
+import abc
+
 import redis
 
 import keyval
@@ -33,8 +35,6 @@ class Driver(redis.StrictRedis):
 ### Base Objects ###
 
 class Persistent(abc_base.Persistent):
-
-    #pylint: disable=abstract-method
 
     def _register(self, pipe):
         """Register Object as Existing"""
@@ -83,6 +83,25 @@ class Persistent(abc_base.Persistent):
 
         # Delete Object
         self._driver.transaction(atomic_rem, self._redis_key)
+
+    @abc.abstractmethod
+    def __init__(self, driver, key):
+        """ Constructor"""
+
+        # Call Parent
+        super(Persistent, self).__init__(driver, key)
+
+        #ToDo: setup global init
+
+    @abc.abstractmethod
+    def _get_val(self):
+        """Get Value"""
+        pass
+
+    @abc.abstractmethod
+    def _set_val(self, val, create=False, overwrite=True):
+        """Set Value"""
+        pass
 
 
 ### Objects ###
