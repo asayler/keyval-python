@@ -1776,7 +1776,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
         def __str__(self):
             """Return String Representation"""
-            return unicode(self).encode(keyval.keyval._ENCODING)
+            return unicode(self).encode(keyval.keyval.ENCODING)
 
         def __repr__(self):
             """Return Unique Representation"""

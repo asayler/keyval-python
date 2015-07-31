@@ -99,7 +99,7 @@ class Persistent(object):
 
     def __str__(self):
         """Return String Representation"""
-        return unicode(self).encode(keyval._ENCODING)
+        return unicode(self).encode(keyval.ENCODING)
 
     def __repr__(self):
         """Return Unique Representation"""

@@ -10,7 +10,7 @@
 
 ### Constants ###
 
-_ENCODING = 'utf-8'
+ENCODING = 'utf-8'
 
 
 ### Exceptions ###
