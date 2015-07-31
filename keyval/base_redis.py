@@ -21,7 +21,7 @@ _SEP_FIELD = ':'
 _PREFIX_STRING = "string"
 _PREFIX_LIST = "list"
 _PREFIX_SET = "set"
-_PREFIX_MAPPING = "hash"
+_PREFIX_DICTIONARY = "hash"
 _INDEX_KEY = "_obj_index"
 
 
@@ -85,13 +85,15 @@ class Persistent(abc_base.Persistent):
         self._driver.transaction(atomic_rem, self._redis_key)
 
     @abc.abstractmethod
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, prefix):
         """ Constructor"""
 
         # Call Parent
         super(Persistent, self).__init__(driver, key)
 
-        #TODO: setup global init
+        # Save Extra Attrs
+        redis_key = "{:s}{:s}{:s}".format(prefix, _SEP_FIELD, self._key)
+        self._redis_key = redis_key
 
     @abc.abstractmethod
     def _get_val(self):
@@ -112,11 +114,7 @@ class String(Persistent, abc_base.String):
         """ Constructor"""
 
         # Call Parent
-        super(String, self).__init__(driver, key)
-
-        # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_STRING, _SEP_FIELD, self._key)
-        self._redis_key = redis_key
+        super(String, self).__init__(driver, key, _PREFIX_STRING)
 
     def _get_val(self):
 
@@ -166,11 +164,7 @@ class List(Persistent, abc_base.List):
         """ Constructor"""
 
         # Call Parent
-        super(List, self).__init__(driver, key)
-
-        # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_LIST, _SEP_FIELD, self._key)
-        self._redis_key = redis_key
+        super(List, self).__init__(driver, key, _PREFIX_LIST)
 
     def _get_val(self):
 
@@ -226,11 +220,7 @@ class Set(Persistent, abc_base.Set):
         """Set Constructor"""
 
         # Call Parent
-        super(Set, self).__init__(driver, key)
-
-        # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_SET, _SEP_FIELD, self._key)
-        self._redis_key = redis_key
+        super(Set, self).__init__(driver, key, _PREFIX_SET)
 
     def _get_val(self):
 
@@ -286,11 +276,7 @@ class Dictionary(Persistent, abc_base.Dictionary):
         """ Constructor"""
 
         # Call Parent
-        super(Dictionary, self).__init__(driver, key)
-
-        # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(_PREFIX_MAPPING, _SEP_FIELD, self._key)
-        self._redis_key = redis_key
+        super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
 
     def _get_val(self):
 
