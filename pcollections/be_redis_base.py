@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+
 # Andy Sayler
 # 2014, 2015
+# pcollections Package
 
 
 ### Imports ###
@@ -10,8 +12,8 @@ import abc
 
 import redis
 
-import keyval
-import abc_base
+from . import exceptions
+from . import abc_base
 
 
 ### Constants ###
@@ -75,7 +77,7 @@ class Persistent(abc_base.Persistent):
                 if force:
                     return
                 else:
-                    raise keyval.ObjectDNE(self)
+                    raise exceptions.ObjectDNE(self)
             pipe.multi()
             pipe.delete(self._redis_key)
             self._unregister(pipe)
@@ -121,7 +123,7 @@ class String(Persistent, abc_base.String):
         def atomic_get(pipe):
 
             if not self._exists(pipe):
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             pipe.get(self._redis_key)
 
@@ -143,9 +145,9 @@ class String(Persistent, abc_base.String):
 
             exists = self._exists(pipe)
             if not overwrite and exists:
-                raise keyval.ObjectExists(self)
+                raise exceptions.ObjectExists(self)
             if not create and not exists:
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             if create:
                 self._register(pipe)
@@ -171,7 +173,7 @@ class List(Persistent, abc_base.List):
         def atomic_get(pipe):
 
             if not self._exists(pipe):
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             pipe.lrange(self._redis_key, 0, -1)
 
@@ -197,9 +199,9 @@ class List(Persistent, abc_base.List):
 
             exists = self._exists(pipe)
             if not overwrite and exists:
-                raise keyval.ObjectExists(self)
+                raise exceptions.ObjectExists(self)
             if not create and not exists:
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             if create:
                 self._register(pipe)
@@ -227,7 +229,7 @@ class Set(Persistent, abc_base.Set):
         def atomic_get(pipe):
 
             if not self._exists(pipe):
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             pipe.smembers(self._redis_key)
 
@@ -253,9 +255,9 @@ class Set(Persistent, abc_base.Set):
 
             exists = self._exists(pipe)
             if not overwrite and exists:
-                raise keyval.ObjectExists(self)
+                raise exceptions.ObjectExists(self)
             if not create and not exists:
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             if create:
                 self._register(pipe)
@@ -283,7 +285,7 @@ class Dictionary(Persistent, abc_base.Dictionary):
         def atomic_get(pipe):
 
             if not self._exists(pipe):
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             pipe.hgetall(self._redis_key)
 
@@ -309,9 +311,9 @@ class Dictionary(Persistent, abc_base.Dictionary):
 
             exists = self._exists(pipe)
             if not overwrite and exists:
-                raise keyval.ObjectExists(self)
+                raise exceptions.ObjectExists(self)
             if not create and not exists:
-                raise keyval.ObjectDNE(self)
+                raise exceptions.ObjectDNE(self)
             pipe.multi()
             if create:
                 self._register(pipe)

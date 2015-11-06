@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+
 # Andy Sayler
 # 2014, 2015
+# pcollections Package
 
 
 ### Pylint ###
@@ -13,7 +15,8 @@
 import abc
 import collections
 
-import keyval
+from . import exceptions
+from . import constants
 
 
 ### Abstract Base Objects ###
@@ -61,7 +64,7 @@ class Persistent(object):
 
         # Check Existence
         if not obj.exists():
-            raise keyval.ObjectDNE(obj)
+            raise exceptions.ObjectDNE(obj)
 
         # Return Object
         return obj
@@ -98,7 +101,7 @@ class Persistent(object):
 
     def __str__(self):
         """Return String Representation"""
-        return unicode(self).encode(keyval.ENCODING)
+        return unicode(self).encode(constants.ENCODING)
 
     def __repr__(self):
         """Return Unique Representation"""

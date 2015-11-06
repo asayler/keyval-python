@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+
 # Andy Sayler
 # 2014, 2015
+# pcollections Package
 
 
 ### Pylint ###
@@ -12,7 +14,7 @@
 
 import abc
 
-import abc_base
+from . import abc_base
 
 
 ### Abstract Base Objects ###

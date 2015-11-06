@@ -3,6 +3,8 @@
 
 
 # Andy Sayler
+# 2014, 2015
+# pcollections Tests
 
 
 ### Imports ###
@@ -11,7 +13,7 @@
 import unittest
 
 ## keyval ##
-import pcollections.atomic_redis
+import pcollections.be_redis_atomic
 
 ## tests ##
 import test_mixins
@@ -29,7 +31,7 @@ class RedisAtomicTestCase(base_redis_tests.RedisBaseTestCase):
 
     def __init__(self, *args, **kwargs):
         super(RedisAtomicTestCase, self).__init__(*args, **kwargs)
-        self.module = pcollections.atomic_redis
+        self.module = pcollections.be_redis_atomic
         self.driver = self.module.Driver(db=_REDIS_DB)
 
 
