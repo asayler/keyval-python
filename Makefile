@@ -1,6 +1,4 @@
 # Andy Sayler
-# Summer 2014
-# Univerity of Colorado
 
 ECHO = @echo
 

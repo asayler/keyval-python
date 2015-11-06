@@ -3,8 +3,6 @@
 
 
 # Andy Sayler
-# Summer 2014
-# Univerity of Colorado
 
 
 ### Imports ###
@@ -13,8 +11,8 @@
 import unittest
 import warnings
 
-## keyval ##
-import keyval.base_redis
+## pcollections ##
+import pcollections.base_redis
 
 ## tests ##
 import test_mixins
@@ -45,7 +43,7 @@ class RedisBaseTestCase(test_mixins.BaseTestCase):
 
     def __init__(self, *args, **kwargs):
         super(RedisBaseTestCase, self).__init__(*args, **kwargs)
-        self.module = keyval.base_redis
+        self.module = pcollections.base_redis
         self.driver = self.module.Driver(db=_REDIS_DB)
 
     def setUp(self):

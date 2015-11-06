@@ -1,8 +1,7 @@
-Python KeyVal Container Interface
-================================
+Python Persistent Collections ABC Interface
+===========================================
 
 By [Andy Sayler](https://www.andysayler.com)  
-University of Colorado, Boulder
 
 About
 -----
@@ -14,7 +13,7 @@ plus a few others.
 Status
 ------
 
-[![Build Status](https://drone.io/github.com/asayler/keyval-python/status.png)](https://drone.io/github.com/asayler/keyval-python/latest)
+[![Build Status](https://drone.io/github.com/asayler/pcollections/status.png)](https://drone.io/github.com/asayler/pcollections/latest)
 
 ### Completed Data Structures ###
 + String (Sequence)
@@ -26,7 +25,7 @@ Status
 + Dictionary (Mapping)
 + MutableDictionary (MutableMapping)
 
-### Complted Flavors ###
+### Completed Flavors ###
 + base - atomic reads
 + atomic - atomic reads and writes
 
@@ -36,6 +35,7 @@ Status
 ### Planned Backends ###
 + In Memory (?)
 + SQL (?)
++ Disk (?)
 
 Providence
 ----------
@@ -46,16 +46,16 @@ https://github.com/asayler/COG/commit/68d1df183d33ca7c8ef4e26a72cfc0b231c4a805.
 Licensing
 ---------
 
-Copyright 2014 by Andy Sayler
+Copyright 2014, 2015 by Andy Sayler
 
-This file is part of Python KeyVal.
+This file is part of PCollections.
 
-Python KeyVal is free software: you can redistribute it and/or modify
+PCollections is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-Python KeyVal is distributed in the hope that it will be useful, but
+PCollections is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
