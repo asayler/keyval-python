@@ -8,6 +8,16 @@
 
 ### Imports ###
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+from future.utils import native_str
+from builtins import *
+
+standard_library.install_aliases()
+
 from . import exceptions
 from . import be_redis_base
 from . import abc_atomic
@@ -250,9 +260,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Set Seq Item"""
 
         # Validate Input
-        if (type(itm) is str):
-            pass
-        else:
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
@@ -284,9 +292,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Insert Seq Item"""
 
         # Validate Input
-        if (type(itm) is str):
-            pass
-        else:
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
@@ -320,9 +326,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Append Seq Item"""
 
         # Validate Input
-        if (type(itm) is str):
-            pass
-        else:
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
@@ -368,12 +372,9 @@ class MutableList(List, abc_atomic.MutableList):
 
         # Validate Input
         seq = list(seq)
-        types = set([type(v) for v in seq])
-        for typ in types:
-            if (typ is str):
-                pass
-            else:
-                raise TypeError("{} not supported in seq".format(typ))
+        for s in seq:
+            if not (isinstance(s, str) or isinstance(s, native_str)):
+                raise TypeError("{} not supported in seq".format(type(s)))
 
         # Transaction
         def atomic_extend(pipe):
@@ -436,9 +437,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Remove itm from Seq"""
 
         # Validate Input
-        if (type(itm) is str):
-            pass
-        else:
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in seq".format(type(itm)))
 
         # Transaction
@@ -468,7 +467,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Add Item to Set"""
 
         # Validate Input
-        if (type(itm) is not str):
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in set".format(type(itm)))
 
         # Transaction
@@ -489,7 +488,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Remove Item from Set if Present"""
 
         # Validate Input
-        if (type(itm) is not str):
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in set".format(type(itm)))
 
         # Transaction
@@ -683,7 +682,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         """Set Mapping Item"""
 
         # Validate Input
-        if type(val) is not str:
+        if not (isinstance(val, str) or isinstance(val, native_str)):
             raise TypeError("{} not supported in mapping".format(type(val)))
 
         # Transaction
@@ -835,7 +834,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
 
             # Validate Input
             if not pipe.hexists(self._redis_key, key):
-                if type(default) is not str:
+                if not (isinstance(default, str) or isinstance(default, native_str)):
                     raise TypeError("{} not supported in mapping".format(type(default)))
 
             # Set val if not set

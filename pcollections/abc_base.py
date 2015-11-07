@@ -12,18 +12,27 @@
 
 ### Imports ###
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+from future.utils import native_str
+from builtins import *
+
+standard_library.install_aliases()
+
 import abc
 import collections
 
 from . import exceptions
 from . import constants
+from future.utils import with_metaclass
 
 
 ### Abstract Base Objects ###
 
-class Persistent(object):
-
-    __metaclass__ = abc.ABCMeta
+class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, driver, key):
         """Object Constructor"""
@@ -97,17 +106,17 @@ class Persistent(object):
 
     def __unicode__(self):
         """Return Unicode Representation"""
-        return unicode(self.get_val())
+        return str(self.get_val())
 
     def __str__(self):
         """Return String Representation"""
-        return unicode(self).encode(constants.ENCODING)
+        return str(self).encode(constants.ENCODING)
 
     def __repr__(self):
         """Return Unique Representation"""
         return self.get_key()
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Test Bool"""
         return bool(self.get_val())
 
@@ -414,7 +423,7 @@ class MutableSet(Set, MutableBaseSet):
         """Add Item to Set"""
 
         # Validate Input
-        if (type(itm) is not str):
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in set".format(type(itm)))
 
         # R/U/W
@@ -426,7 +435,7 @@ class MutableSet(Set, MutableBaseSet):
         """Remove Item from Set if Present"""
 
         # Validate Input
-        if (type(itm) is not str):
+        if not (isinstance(itm, str) or isinstance(itm, native_str)):
             raise TypeError("{} not supported in set".format(type(itm)))
 
         # R/U/W

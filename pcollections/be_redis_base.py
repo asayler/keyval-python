@@ -8,6 +8,16 @@
 
 ### Imports ###
 
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+from future.utils import native_str
+from builtins import *
+
+standard_library.install_aliases()
+
 import abc
 
 import redis
@@ -187,12 +197,9 @@ class List(Persistent, abc_base.List):
 
         # Validate Input
         val = list(val)
-        types = set([type(v) for v in val])
-        for typ in types:
-            if (typ is str):
-                pass
-            else:
-                raise TypeError("{} not supported in seq".format(typ))
+        for v in val:
+            if not (isinstance(v, str) or isinstance(v, native_str)):
+                raise TypeError("{} not supported in seq".format(type(v)))
 
         # Set Transaction
         def atomic_set(pipe):
@@ -243,12 +250,9 @@ class Set(Persistent, abc_base.Set):
 
         # Validate Input
         val = set(val)
-        types = set([type(v) for v in val])
-        for typ in types:
-            if (typ is str):
-                pass
-            else:
-                raise TypeError("{} not supported in set".format(typ))
+        for v in val:
+            if not (isinstance(v, str) or isinstance(v, native_str)):
+                raise TypeError("{} not supported in set".format(type(v)))
 
         # Set Transaction
         def atomic_set(pipe):
@@ -299,12 +303,9 @@ class Dictionary(Persistent, abc_base.Dictionary):
 
         # Validate Input
         val = dict(val)
-        types = set([type(v) for v in val.values()])
-        for typ in types:
-            if (typ is str):
-                pass
-            else:
-                raise TypeError("{} not supported in mapping".format(typ))
+        for v in val.values():
+            if not (isinstance(v, str) or isinstance(v, native_str)):
+                raise TypeError("{} not supported in set".format(type(v)))
 
         # Set Transaction
         def atomic_set(pipe):
