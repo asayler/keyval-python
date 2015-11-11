@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
@@ -93,9 +92,3 @@ class DictionaryTestCase(test_mixins.DictionaryMixin, RedisBaseTestCase):
 
 class MutableDictionaryTestCase(test_mixins.MutableDictionaryMixin, RedisBaseTestCase):
     pass
-
-
-### Main ###
-
-if __name__ == '__main__':
-    unittest.main()
