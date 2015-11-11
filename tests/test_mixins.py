@@ -8,6 +8,15 @@
 
 ### Imports ###
 
+## Future ##
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+from future.utils import native_str
+from builtins import *
+
 ## stdlib ##
 import copy
 import collections
@@ -289,10 +298,10 @@ class PersistentMixin(object):
     def test_unicode(self):
 
         # Test DNE
-        self.helper_dne(unicode)
+        self.helper_dne(str)
 
         # Test Good
-        self.helper_ab_immutable(10, unicode)
+        self.helper_ab_immutable(10, str)
 
     def test_string(self):
 
@@ -1457,7 +1466,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_keys(self):
 
         def keys(instance):
-            return instance.keys()
+            return list(instance.keys())
 
         # Test DNE
         self.helper_dne(keys)
@@ -1468,7 +1477,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_values(self):
 
         def values(instance):
-            return instance.values()
+            return list(instance.values())
 
         # Test DNE
         self.helper_dne(values)
@@ -1479,7 +1488,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_items(self):
 
         def items(instance):
-            return instance.items()
+            return list(instance.items())
 
         # Test DNE
         self.helper_dne(items)
@@ -1505,11 +1514,11 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         instance = self.factory.from_new(i_key, i_val_1)
 
         # Test Existing Keys
-        for k, v in i_val_2.iteritems():
+        for k, v in i_val_2.items():
             self.helper_ab_mutable_core(instance, i_val_1, setitem, k, v)
 
         # Test New Keys
-        for k, v in i_val_3.iteritems():
+        for k, v in i_val_3.items():
             self.helper_ab_mutable_core(instance, i_val_1, setitem, k, v)
 
         # Cleanup
@@ -1529,7 +1538,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         instance = self.factory.from_new(i_key, i_val)
 
         # Test Existing Keys
-        for k in i_val.keys():
+        for k in list(i_val.keys()):
             self.helper_ab_mutable_core(instance, i_val, delitem, k)
         self.assertEqual(0, len(instance))
         self.assertEqual(0, len(i_val))
@@ -1566,7 +1575,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         self.helper_ab_mutable_core(instance, i_val, pop_default, "key_a", "val_x")
 
         # Test Remaining Keys
-        for k in i_val.keys():
+        for k in list(i_val.keys()):
             self.helper_ab_mutable_core(instance, i_val, pop, k)
         self.assertEqual(0, len(instance))
         self.assertEqual(0, len(i_val))
@@ -1774,23 +1783,23 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
         def __unicode__(self):
             """Return Unicode Representation"""
-            return unicode(self._val)
+            return str(self._val)
 
         def __str__(self):
             """Return String Representation"""
-            return unicode(self).encode(pcollections.constants.ENCODING)
+            return str(self).encode(pcollections.constants.ENCODING)
 
         def __repr__(self):
             """Return Unique Representation"""
             return repr(self._val)
 
-        def __nonzero__(self):
+        def __bool__(self):
             """Test Bool"""
             return bool(self._val)
 
         def __eq__(self, other):
             """Test Equality"""
-            return self._val == other
+            return str(self._val) == str(other)
 
         def __ne__(self, other):
             """Test Unequality"""
