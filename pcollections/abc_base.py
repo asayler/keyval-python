@@ -17,17 +17,16 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
-from future.utils import native_str
-from builtins import *
-
 standard_library.install_aliases()
+from future.utils import native_str
+from future.utils import with_metaclass
+from builtins import *
 
 import abc
 import collections
 
 from . import exceptions
 from . import constants
-from future.utils import with_metaclass
 
 
 ### Abstract Base Objects ###
