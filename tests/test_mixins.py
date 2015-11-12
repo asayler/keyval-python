@@ -15,6 +15,7 @@ from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
 from future.utils import native_str
+from future.utils import python_2_unicode_compatible
 from builtins import *
 
 ## stdlib ##
@@ -1771,6 +1772,7 @@ class StringMixin(SequenceMixin):
 
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
+    @python_2_unicode_compatible
     class MutableStringRef(collections.MutableSequence, object):
 
         def __init__(self, val):
@@ -1781,13 +1783,9 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             # Save Val
             self._val = val
 
-        def __unicode__(self):
-            """Return Unicode Representation"""
-            return str(self._val)
-
         def __str__(self):
             """Return String Representation"""
-            return str(self).encode(pcollections.constants.ENCODING)
+            return str(self._val)
 
         def __repr__(self):
             """Return Unique Representation"""

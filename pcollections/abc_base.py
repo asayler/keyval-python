@@ -20,6 +20,7 @@ from future import standard_library
 standard_library.install_aliases()
 from future.utils import native_str
 from future.utils import with_metaclass
+from future.utils import python_2_unicode_compatible
 from builtins import *
 
 import abc
@@ -31,6 +32,7 @@ from . import constants
 
 ### Abstract Base Objects ###
 
+@python_2_unicode_compatible
 class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, driver, key):
@@ -103,13 +105,9 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         """Delete Object"""
         pass
 
-    def __unicode__(self):
-        """Return Unicode Representation"""
-        return str(self.get_val())
-
     def __str__(self):
         """Return String Representation"""
-        return str(self).encode(constants.ENCODING)
+        return str(self.get_val())
 
     def __repr__(self):
         """Return Unique Representation"""
