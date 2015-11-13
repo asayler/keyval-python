@@ -1835,7 +1835,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
             elif isinstance(other, str) or isinstance(other, native_str):
                 return str(self._get_val()) == str(other)
             else:
-                raise TypeError("Unsupported comaprison type")
+                raise TypeError("Unsupported comparison type")
 
         def __ne__(self, other):
             """Test Unequality"""

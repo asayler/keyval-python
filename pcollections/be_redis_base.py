@@ -151,7 +151,7 @@ class String(Persistent, abc_base.String):
 
     def _get_val(self):
 
-        data = self._get_bytes().decode(constants.ENCODING)
+        data = str(self._get_bytes().decode(constants.ENCODING))
         assert isinstance(data, str)
         return data
 
