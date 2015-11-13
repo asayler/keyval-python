@@ -189,7 +189,7 @@ class List(Persistent, abc_base.List):
         # Call Parent
         super(List, self).__init__(driver, key, _PREFIX_LIST)
 
-    def _get_val(self):
+    def _get_bytes(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -202,16 +202,38 @@ class List(Persistent, abc_base.List):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Object
-        return list(ret[0])
+        # Convert to Bytes
+        lst_in = ret[0]
+        lst_out = []
+        for item in lst_in:
+            if (isinstance(item, str) or isinstance(item, native_str)):
+                item = item.encode(constants.ENCODING)
+            assert isinstance(item, bytes)
+            lst_out.append(item)
 
-    def _set_val(self, val, create=True, overwrite=True):
+        # Return Object
+        return lst_out
+
+    def _get_val(self):
+
+        lst_bytes = self._get_bytes()
+        lst_str = []
+        for item in lst_bytes:
+            item = str(item.decode(constants.ENCODING))
+            assert isinstance(item, str)
+            lst_str.append(item)
+        return lst_str
+
+    def _set_val(self, val_in, create=True, overwrite=True):
 
         # Validate Input
-        val = list(val)
-        for v in val:
-            if not (isinstance(v, str) or isinstance(v, native_str)):
-                raise TypeError("{} not supported in seq".format(type(v)))
+        val_in = list(val_in)
+        val_out = []
+        for item in val_in:
+            if not (isinstance(item, str) or isinstance(item, native_str)):
+                raise TypeError("{} not supported in seq".format(type(item)))
+            item = item.encode(constants.ENCODING)
+            val_out.append(item)
 
         # Set Transaction
         def atomic_set(pipe):
@@ -225,8 +247,8 @@ class List(Persistent, abc_base.List):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.rpush(self._redis_key, *val)
+            if len(val_out) > 0:
+                pipe.rpush(self._redis_key, *val_out)
 
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)

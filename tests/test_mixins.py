@@ -1963,6 +1963,14 @@ class ListMixin(SequenceMixin):
             cnt -= 1
         return sorted(vals)
 
+    def convert_bytes(self, val_in):
+
+        val_out = []
+        for item in val_in:
+            item = item.encode(pcollections.constants.ENCODING)
+            val_out.append(item)
+        return val_out
+
 class MutableListMixin(MutableSequenceMixin, ListMixin):
 
     def __init__(self, *args, **kwargs):
