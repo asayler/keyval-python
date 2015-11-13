@@ -85,13 +85,18 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         return cls(driver, key, *args, **kwargs)
 
     @abc.abstractmethod
+    def _get_bytes(self):
+        """Get value as bytes"""
+        pass
+
+    @abc.abstractmethod
     def _get_val(self):
-        """Get Value"""
+        """Get value as str"""
         pass
 
     @abc.abstractmethod
     def _set_val(self, val, create=False, overwrite=True):
-        """Set Value"""
+        """Set value"""
         pass
 
     @abc.abstractmethod

@@ -106,16 +106,6 @@ class Persistent(abc_base.Persistent):
         redis_key = "{:s}{:s}{:s}".format(prefix, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
-    @abc.abstractmethod
-    def _get_val(self):
-        """Get Value"""
-        pass
-
-    @abc.abstractmethod
-    def _set_val(self, val, create=False, overwrite=True):
-        """Set Value"""
-        pass
-
 
 ### Objects ###
 
