@@ -22,6 +22,7 @@ import abc
 import redis
 
 from . import exceptions
+from . import constants
 from . import abc_base
 
 
@@ -126,7 +127,7 @@ class String(Persistent, abc_base.String):
         # Call Parent
         super(String, self).__init__(driver, key, _PREFIX_STRING)
 
-    def _get_val(self):
+    def _get_bytes(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -139,15 +140,27 @@ class String(Persistent, abc_base.String):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Object
-        return str(ret[0])
+        # Convert to Bytes
+        data = ret[0]
+        if (isinstance(data, str) or isinstance(data, native_str)):
+            data = data.encode(constants.ENCODING)
+        assert isinstance(data, bytes)
+
+        # Return Bytes
+        return data
+
+    def _get_val(self):
+
+        data = self._get_bytes().decode(constants.ENCODING)
+        assert isinstance(data, str)
+        return data
 
     def _set_val(self, val, create=True, overwrite=True):
 
         # Validate Input
-        if val is None:
-            raise TypeError("val must not be None")
-        val = str(val)
+        if not (isinstance(val, str) or isinstance(val, native_str)):
+            raise TypeError("{} not supported in string".format(type(val)))
+        val = val.encode(constants.ENCODING)
 
         # Set Transaction
         def atomic_set(pipe):

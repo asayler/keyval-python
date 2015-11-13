@@ -19,6 +19,7 @@ from future.utils import python_2_unicode_compatible
 from builtins import *
 
 ## stdlib ##
+import abc
 import copy
 import collections
 import unittest
@@ -267,6 +268,20 @@ class PersistentMixin(object):
         # Rem Non-existant Instance (Force)
         instance.rem(force=True)
         self.assertFalse(instance.exists())
+
+    def test_get_bytes(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Create New Instance
+        instance = self.factory.from_new(key, val)
+        self.assertEqual(self.convert_bytes(val), instance.get_bytes())
+
+        # Rem Instance
+        instance.rem()
+        self.assertRaises(pcollections.exceptions.ObjectDNE, instance.get_bytes)
 
     def test_get_val(self):
 
@@ -1770,90 +1785,116 @@ class StringMixin(SequenceMixin):
             cnt -= 1
         return sorted(vals)
 
+    def convert_bytes(self, val):
+
+        return val.encode(pcollections.constants.ENCODING)
+
 class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
-    @python_2_unicode_compatible
-    class MutableStringRef(collections.MutableSequence, object):
+    class MutableStringRef(collections.MutableSequence, native_str):
 
         def __init__(self, val):
 
             # Call Parent
             super(MutableStringMixin.MutableStringRef, self).__init__()
 
-            # Save Val
-            self._val = val
+            # Set Val
+            self._set_val(val)
+
+        def _get_bytes(self):
+
+            assert isinstance(self._val, bytes)
+            return self._val
+
+        def _get_val(self):
+
+            return self._get_bytes().decode(pcollections.constants.ENCODING)
+
+        def _set_val(self, val):
+
+            if not (isinstance(val, str) or isinstance(val, native_str)):
+                raise TypeError("{} not supported in mutable string ref".format(type(val)))
+            self._val = val.encode(pcollections.constants.ENCODING)
 
         def __str__(self):
             """Return String Representation"""
-            return str(self._val)
+            return str(self._get_val())
 
         def __repr__(self):
             """Return Unique Representation"""
-            return repr(self._val)
+            return repr(self._get_val())
 
         def __bool__(self):
             """Test Bool"""
-            return bool(self._val)
+            return bool(self._get_val())
 
         def __eq__(self, other):
             """Test Equality"""
-            return str(self._val) == str(other)
+            if isinstance(other, type(self)):
+                return self._get_val() == other._get_val()
+            elif isinstance(other, str) or isinstance(other, native_str):
+                return str(self._get_val()) == str(other)
+            else:
+                raise TypeError("Unsupported comaprison type")
 
         def __ne__(self, other):
             """Test Unequality"""
-            return self._val != other
+            return self._get_val() != other
 
         def __lt__(self, other):
             """Test Less Than"""
-            return self._val < other
+            return self._get_val() < other
 
         def __le__(self, other):
             """Test Less Than or Equal"""
-            return self._val <= other
+            return self._get_val() <= other
 
         def __gt__(self, other):
             """Test Greater Than"""
-            return self._val > other
+            return self._get_val() > other
 
         def __ge__(self, other):
             """Test Greater Than or Equal"""
-            return self._val >= other
+            return self._get_val() >= other
 
         def __len__(self):
             """Get Len of Set"""
-            return len(self._val)
+            return len(self._get_val())
 
         def __getitem__(self, i):
             """Get Seq Item"""
-            return self._val[i]
+            return self._get_val()[i]
 
         def __setitem__(self, idx, item):
             """Set Seq Item"""
 
-            val_in = self._val
+            val_in = self._get_val()
             val_out = ""
             if (idx != 0) and (idx != -len(val_in)):
                 val_out += val_in[:idx]
             val_out += item
             if (idx != (len(val_in)-1)) and (idx != -1):
                 val_out += val_in[idx+1:]
-            self._val = val_out
+            self._set_val(val_out)
 
         def __delitem__(self, idx):
             """Del Seq Item"""
 
-            val_in = self._val
+            val_in = self._get_val()
             val_out = ""
             if (idx != 0) and (idx != -len(val_in)):
                 val_out += val_in[:idx]
             if (idx != (len(val_in)-1)) and (idx != -1):
                 val_out += val_in[idx+1:]
-            self._val = val_out
+            self._set_val(val_out)
 
         def insert(self, idx, item):
             """Insert Seq Item"""
-            val_in = self._val
-            self._val = val_in[:idx] + item + val_in[idx:]
+            val_in = self._get_val()
+            self._set_val(val_in[:idx] + item + val_in[idx:])
+
+        def encode(self, encoding):
+            return self._get_val().encode(encoding)
 
     def __init__(self, *args, **kwargs):
         super(MutableStringMixin, self).__init__(*args, **kwargs)

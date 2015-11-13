@@ -32,7 +32,6 @@ from . import constants
 
 ### Abstract Base Objects ###
 
-@python_2_unicode_compatible
 class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, driver, key):
@@ -121,8 +120,12 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         """Get Key"""
         return self._key
 
+    def get_bytes(self):
+        """Get Value as Corresponding Python Object (Bytes)"""
+        return self._get_bytes()
+
     def get_val(self):
-        """Get Value as Corresponding Python Object"""
+        """Get Value as Corresponding Python Object (String)"""
         return self._get_val()
 
 class Mutable(Persistent):
