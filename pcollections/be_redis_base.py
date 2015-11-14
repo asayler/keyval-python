@@ -15,6 +15,7 @@ from __future__ import absolute_import
 from future import standard_library
 standard_library.install_aliases()
 from future.utils import native_str
+from future.utils import viewitems
 from builtins import *
 
 import abc
@@ -362,7 +363,51 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Call Parent
         super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
 
-    def _get_val(self):
+    def _to_bytes(self, dict_in):
+
+        dict_in = dict(dict_in)
+        dict_out = dict()
+
+        for key, val in viewitems(dict_in):
+            if (isinstance(key, bytes)):
+                pass
+            elif (isinstance(key, str) or isinstance(key, native_str)):
+                key = bytes(key.encode(constants.ENCODING))
+            else:
+                raise TypeError("{} not supported in dictionary".format(type(val)))
+            if (isinstance(val, bytes)):
+                pass
+            elif (isinstance(val, str) or isinstance(val, native_str)):
+                val = bytes(val.encode(constants.ENCODING))
+            else:
+                raise TypeError("{} not supported in dictionary".format(type(val)))
+            dict_out[key] = val
+
+        return dict_out
+
+    def _to_str(self, dict_in):
+
+        dict_in = dict(dict_in)
+        dict_out = dict()
+
+        for key, val in viewitems(dict_in):
+            if (isinstance(key, bytes)):
+                key = str(key.decode(constants.ENCODING))
+            elif (isinstance(key, str) or isinstance(key, native_str)):
+                pass
+            else:
+                raise TypeError("{} not supported in dictionary".format(type(val)))
+            if (isinstance(val, bytes)):
+                val = str(val.decode(constants.ENCODING))
+            elif (isinstance(val, str) or isinstance(val, native_str)):
+                pass
+            else:
+                raise TypeError("{} not supported in dictionary".format(type(val)))
+            dict_out[key] = val
+
+        return dict_out
+
+    def _get_bytes(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -375,16 +420,18 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Object
-        return dict(ret[0])
+        # Return Bytes Object
+        return self._to_bytes(ret[0])
+
+    def _get_val(self):
+
+        # Return Strings Object
+        return self._to_str(self._get_bytes())
 
     def _set_val(self, val, create=True, overwrite=True):
 
         # Validate Input
-        val = dict(val)
-        for v in val.values():
-            if not (isinstance(v, str) or isinstance(v, native_str)):
-                raise TypeError("{} not supported in set".format(type(v)))
+        val = self._to_bytes(val)
 
         # Set Transaction
         def atomic_set(pipe):

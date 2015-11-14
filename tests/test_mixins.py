@@ -15,7 +15,7 @@ from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
 from future.utils import native_str
-from future.utils import python_2_unicode_compatible
+from future.utils import viewitems, viewkeys
 from builtins import *
 
 ## stdlib ##
@@ -310,22 +310,6 @@ class PersistentMixin(object):
         # Rem Instance
         instance.rem()
         self.assertEqual(key, instance.get_key())
-
-    def test_unicode(self):
-
-        # Test DNE
-        self.helper_dne(str)
-
-        # Test Good
-        self.helper_ab_immutable(10, str)
-
-    def test_string(self):
-
-        # Test DNE
-        self.helper_dne(str)
-
-        # Test Good
-        self.helper_ab_immutable(10, str)
 
     def test_bool(self):
 
@@ -711,6 +695,14 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
         self.helper_raises( 0, IndexError, getitem,  0)
         self.helper_raises( 0, IndexError, getitem,  1)
         self.helper_raises( 0, IndexError, getitem, -1)
+
+    def test_string(self):
+
+        # Test DNE
+        self.helper_dne(str)
+
+        # Test Good
+        self.helper_ab_immutable(10, str)
 
 class MutableSequenceMixin(SequenceMixin, MutableMixin):
 
@@ -1122,6 +1114,20 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         instance_b.rem()
         instance_c.rem()
 
+    def test_string(self):
+
+        def unordered_str(val):
+            s = str(val)
+            l = list(s)
+            l.sort()
+            return l
+
+        # Test DNE
+        self.helper_dne(unordered_str)
+
+        # Test Good
+        self.helper_ab_immutable(10, unordered_str)
+
 class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
 
     def test_add(self):
@@ -1482,7 +1488,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_keys(self):
 
         def keys(instance):
-            return list(instance.keys())
+            return set(instance.keys())
 
         # Test DNE
         self.helper_dne(keys)
@@ -1493,7 +1499,9 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_values(self):
 
         def values(instance):
-            return list(instance.values())
+            lst = list(instance.values())
+            lst.sort()
+            return lst
 
         # Test DNE
         self.helper_dne(values)
@@ -1504,13 +1512,29 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
     def test_items(self):
 
         def items(instance):
-            return list(instance.items())
+            lst = list(instance.items())
+            lst.sort()
+            return lst
 
         # Test DNE
         self.helper_dne(items)
 
         # Test Items
         self.helper_ab_immutable(10, items)
+
+    def test_string(self):
+
+        def unordered_str(val):
+            s = str(val)
+            l = list(s)
+            l.sort()
+            return l
+
+        # Test DNE
+        self.helper_dne(unordered_str)
+
+        # Test Good
+        self.helper_ab_immutable(10, unordered_str)
 
 class MutableMappingMixin(MutableMixin, MappingMixin):
 
@@ -2065,6 +2089,15 @@ class DictionaryMixin(MappingMixin):
             vals.append(val)
             cnt -= 1
         return sorted(vals)
+
+    def convert_bytes(self, val_in):
+
+        val_out = dict()
+        for key, val in viewitems(val_in):
+            key = bytes(key.encode(pcollections.constants.ENCODING))
+            val = bytes(val.encode(pcollections.constants.ENCODING))
+            val_out[key] = val
+        return val_out
 
 class MutableDictionaryMixin(MutableMappingMixin, DictionaryMixin):
 
