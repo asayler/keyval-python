@@ -117,6 +117,28 @@ class String(Persistent, abc_base.String):
         # Call Parent
         super(String, self).__init__(driver, key, _PREFIX_STRING)
 
+    def _to_bytes(self, str_in):
+
+        if isinstance(str_in, bytes):
+            str_out = str_in
+        elif isinstance(str_in, str) or isinstance(str_in, native_str) :
+            str_out = bytes(str_in.encode(constants.ENCODING))
+        else:
+            raise TypeError("{} not supported in string".format(type(str_in)))
+
+        return str_out
+
+    def _to_str(self, str_in):
+
+        if isinstance(str_in, bytes):
+            str_out = str(str_in.decode(constants.ENCODING))
+        elif isinstance(str_in, str) or isinstance(str_in, native_str) :
+            str_out = str_in
+        else:
+            raise TypeError("{} not supported in string".format(type(str_in)))
+
+        return str_out
+
     def _get_bytes(self):
 
         # Get Transaction
@@ -130,27 +152,18 @@ class String(Persistent, abc_base.String):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Convert to Bytes
-        data = ret[0]
-        if (isinstance(data, str) or isinstance(data, native_str)):
-            data = data.encode(constants.ENCODING)
-        assert isinstance(data, bytes)
-
-        # Return Bytes
-        return data
+        # Return Bytes Object
+        return self._to_bytes(ret[0])
 
     def _get_val(self):
 
-        data = str(self._get_bytes().decode(constants.ENCODING))
-        assert isinstance(data, str)
-        return data
+        # Return Strings Object
+        return self._to_str(self._get_bytes())
 
     def _set_val(self, val, create=True, overwrite=True):
 
         # Validate Input
-        if not (isinstance(val, str) or isinstance(val, native_str)):
-            raise TypeError("{} not supported in string".format(type(val)))
-        val = val.encode(constants.ENCODING)
+        val = self._to_bytes(val)
 
         # Set Transaction
         def atomic_set(pipe):
@@ -179,6 +192,36 @@ class List(Persistent, abc_base.List):
         # Call Parent
         super(List, self).__init__(driver, key, _PREFIX_LIST)
 
+    def _to_bytes(self, lst_in):
+
+        lst_out = list()
+
+        for item in lst_in:
+            if (isinstance(item, bytes)):
+                pass
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                item = bytes(item.encode(constants.ENCODING))
+            else:
+                raise TypeError("{} not supported in list".format(type(item)))
+            lst_out.append(item)
+
+        return lst_out
+
+    def _to_str(self, lst_in):
+
+        lst_out = list()
+
+        for item in lst_in:
+            if (isinstance(item, bytes)):
+                item = str(item.decode(constants.ENCODING))
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                pass
+            else:
+                raise TypeError("{} not supported in list".format(type(v)))
+            lst_out.append(item)
+
+        return lst_out
+
     def _get_bytes(self):
 
         # Get Transaction
@@ -192,38 +235,18 @@ class List(Persistent, abc_base.List):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Convert to Bytes
-        lst_in = ret[0]
-        lst_out = []
-        for item in lst_in:
-            if (isinstance(item, str) or isinstance(item, native_str)):
-                item = item.encode(constants.ENCODING)
-            assert isinstance(item, bytes)
-            lst_out.append(item)
-
-        # Return Object
-        return lst_out
+        # Return Bytes Object
+        return self._to_bytes(ret[0])
 
     def _get_val(self):
 
-        lst_bytes = self._get_bytes()
-        lst_str = []
-        for item in lst_bytes:
-            item = str(item.decode(constants.ENCODING))
-            assert isinstance(item, str)
-            lst_str.append(item)
-        return lst_str
+        # Return Strings Object
+        return self._to_str(self._get_bytes())
 
-    def _set_val(self, val_in, create=True, overwrite=True):
+    def _set_val(self, val, create=True, overwrite=True):
 
         # Validate Input
-        val_in = list(val_in)
-        val_out = []
-        for item in val_in:
-            if not (isinstance(item, str) or isinstance(item, native_str)):
-                raise TypeError("{} not supported in seq".format(type(item)))
-            item = item.encode(constants.ENCODING)
-            val_out.append(item)
+        val = self._to_bytes(val)
 
         # Set Transaction
         def atomic_set(pipe):
@@ -237,8 +260,8 @@ class List(Persistent, abc_base.List):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            if len(val_out) > 0:
-                pipe.rpush(self._redis_key, *val_out)
+            if len(val) > 0:
+                pipe.rpush(self._redis_key, *val)
 
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
@@ -264,7 +287,7 @@ class Set(Persistent, abc_base.Set):
             elif (isinstance(item, str) or isinstance(item, native_str)):
                 item = bytes(item.encode(constants.ENCODING))
             else:
-                raise TypeError("{} not supported in set".format(type(v)))
+                raise TypeError("{} not supported in set".format(type(item)))
             set_out.add(item)
 
         return set_out
@@ -297,11 +320,12 @@ class Set(Persistent, abc_base.Set):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Object
+        # Return Bytes Object
         return self._to_bytes(ret[0])
 
     def _get_val(self):
 
+        # Return Strings Object
         return self._to_str(self._get_bytes())
 
     def _set_val(self, val, create=True, overwrite=True):
