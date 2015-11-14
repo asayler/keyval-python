@@ -22,7 +22,7 @@ EXPORTPATH = export PYTHONPATH="$(PYTHONPATH)"
 
 COGS = cogs
 
-.PHONY: all test clean
+.PHONY: all reqs tests reqs2 tests2 reqs3 tests3 clean
 
 all:
 	$(ECHO) "This is a python project; nothing to build!"
