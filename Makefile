@@ -2,6 +2,8 @@
 
 ECHO = @echo
 
+PYTHON = python
+PIP = pip
 PYTHON2 = python2
 PIP2 = pip2
 PYTHON3 = python3
@@ -25,16 +27,22 @@ COGS = cogs
 all:
 	$(ECHO) "This is a python project; nothing to build!"
 
+reqs: $(REQUIRMENTS)
+	$(PIP) install -r "$<" -U
+
+tests:
+	$(EXPORTPATH) && $(PYTHON) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
+
 reqs2: $(REQUIRMENTS)
 	$(PIP2) install -r "$<" -U
 
-test2:
+tests2:
 	$(EXPORTPATH) && $(PYTHON2) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
 
 reqs3: $(REQUIRMENTS)
 	$(PIP3) install -r "$<" -U
 
-test3:
+tests3:
 	$(EXPORTPATH) && $(PYTHON3) -m unittest discover -v -p $(UNITTEST_PATTERN) -s $(UNITTEST_DIRECTORY)
 
 lint:
