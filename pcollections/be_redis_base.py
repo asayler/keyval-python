@@ -254,7 +254,7 @@ class Set(Persistent, abc_base.Set):
         # Call Parent
         super(Set, self).__init__(driver, key, _PREFIX_SET)
 
-    def _get_val(self):
+    def _get_bytes(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -267,16 +267,43 @@ class Set(Persistent, abc_base.Set):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Object
-        return set(ret[0])
+        # Convert to Bytes
+        set_in = ret[0]
+        set_out = set()
+        for item in set_in:
+            if (isinstance(item, bytes)):
+                pass
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                item = bytes(item.encode(constants.ENCODING))
+            else:
+                raise TypeError("{} not supported in set".format(type(v)))
+            set_out.add(item)
 
-    def _set_val(self, val, create=True, overwrite=True):
+        # Return Object
+        return set_out
+
+    def _get_val(self):
+
+        set_bytes = self._get_bytes()
+        set_str = set()
+        for item in set_bytes:
+            item = str(item.decode(constants.ENCODING))
+            set_str.add(item)
+        return set_str
+
+    def _set_val(self, val_in, create=True, overwrite=True):
 
         # Validate Input
-        val = set(val)
-        for v in val:
-            if not (isinstance(v, str) or isinstance(v, native_str)):
-                raise TypeError("{} not supported in set".format(type(v)))
+        val_in = set(val_in)
+        val_out = set()
+        for item in val_in:
+            if (isinstance(item, bytes)):
+                pass
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                item = bytes(item.encode(constants.ENCODING)                )
+            else:
+                raise TypeError("{} not supported in set".format(type(item)))
+            val_out.add(item)
 
         # Set Transaction
         def atomic_set(pipe):
@@ -290,8 +317,8 @@ class Set(Persistent, abc_base.Set):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
+            if len(val_out) > 0:
+                pipe.sadd(self._redis_key, *val_out)
 
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)

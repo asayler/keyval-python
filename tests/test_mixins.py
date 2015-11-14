@@ -2013,6 +2013,14 @@ class SetMixin(BaseSetMixin):
             cnt -= 1
         return vals
 
+    def convert_bytes(self, val_in):
+
+        val_out = set()
+        for item in val_in:
+            item = bytes(item.encode(pcollections.constants.ENCODING))
+            val_out.add(item)
+        return val_out
+
 class MutableSetMixin(MutableBaseSetMixin, SetMixin):
 
     def __init__(self, *args, **kwargs):
