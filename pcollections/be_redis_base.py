@@ -254,6 +254,36 @@ class Set(Persistent, abc_base.Set):
         # Call Parent
         super(Set, self).__init__(driver, key, _PREFIX_SET)
 
+    def _to_bytes(self, set_in):
+
+        set_out = set()
+
+        for item in set_in:
+            if (isinstance(item, bytes)):
+                pass
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                item = bytes(item.encode(constants.ENCODING))
+            else:
+                raise TypeError("{} not supported in set".format(type(v)))
+            set_out.add(item)
+
+        return set_out
+
+    def _to_str(self, set_in):
+
+        set_out = set()
+
+        for item in set_in:
+            if (isinstance(item, bytes)):
+                item = str(item.decode(constants.ENCODING))
+            elif (isinstance(item, str) or isinstance(item, native_str)):
+                pass
+            else:
+                raise TypeError("{} not supported in set".format(type(v)))
+            set_out.add(item)
+
+        return set_out
+
     def _get_bytes(self):
 
         # Get Transaction
@@ -267,43 +297,17 @@ class Set(Persistent, abc_base.Set):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Convert to Bytes
-        set_in = ret[0]
-        set_out = set()
-        for item in set_in:
-            if (isinstance(item, bytes)):
-                pass
-            elif (isinstance(item, str) or isinstance(item, native_str)):
-                item = bytes(item.encode(constants.ENCODING))
-            else:
-                raise TypeError("{} not supported in set".format(type(v)))
-            set_out.add(item)
-
         # Return Object
-        return set_out
+        return self._to_bytes(ret[0])
 
     def _get_val(self):
 
-        set_bytes = self._get_bytes()
-        set_str = set()
-        for item in set_bytes:
-            item = str(item.decode(constants.ENCODING))
-            set_str.add(item)
-        return set_str
+        return self._to_str(self._get_bytes())
 
-    def _set_val(self, val_in, create=True, overwrite=True):
+    def _set_val(self, val, create=True, overwrite=True):
 
         # Validate Input
-        val_in = set(val_in)
-        val_out = set()
-        for item in val_in:
-            if (isinstance(item, bytes)):
-                pass
-            elif (isinstance(item, str) or isinstance(item, native_str)):
-                item = bytes(item.encode(constants.ENCODING)                )
-            else:
-                raise TypeError("{} not supported in set".format(type(item)))
-            val_out.add(item)
+        val = self._to_bytes(val)
 
         # Set Transaction
         def atomic_set(pipe):
@@ -317,8 +321,8 @@ class Set(Persistent, abc_base.Set):
             if create:
                 self._register(pipe)
             pipe.delete(self._redis_key)
-            if len(val_out) > 0:
-                pipe.sadd(self._redis_key, *val_out)
+            if len(val) > 0:
+                pipe.sadd(self._redis_key, *val)
 
         # Execute Transaction
         self._driver.transaction(atomic_set, self._redis_key)
