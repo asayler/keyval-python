@@ -63,7 +63,7 @@ class MutableString(String, abc_atomic.MutableString):
 
             # Set Item
             pipe.multi()
-            pipe.setrange(self._redis_key, idx_norm, itm)
+            pipe.setrange(self._redis_key, idx_norm, self._encode_val_item(itm))
 
         # Execute Transaction
         self._driver.transaction(atomic_setitem, self._redis_key)
@@ -86,18 +86,18 @@ class MutableString(String, abc_atomic.MutableString):
             # Get Ranges
             length = pipe.strlen(self._redis_key)
             if (idx == 0) or (idx <= -length):
-                start = ""
+                start = str()
             else:
-                start = pipe.getrange(self._redis_key, 0, (idx-1))
+                start = self._decode_val_obj(pipe.getrange(self._redis_key, 0, (idx-1)))
             if (idx >= length):
-                end = ""
+                end = str()
             else:
-                end = pipe.getrange(self._redis_key, idx, length)
+                end = self._decode_val_obj(pipe.getrange(self._redis_key, idx, length))
 
             # Set New Val
             new = start + itm + end
             pipe.multi()
-            pipe.set(self._redis_key, new)
+            pipe.set(self._redis_key, self._encode_val_obj(new))
 
         # Execute Transaction
         self._driver.transaction(atomic_insert, self._redis_key)
@@ -119,7 +119,7 @@ class MutableString(String, abc_atomic.MutableString):
 
             # Append
             pipe.multi()
-            pipe.append(self._redis_key, itm)
+            pipe.append(self._redis_key, self._encode_val_item(itm))
 
         # Execute Transaction
         self._driver.transaction(atomic_append, self._redis_key)
@@ -135,14 +135,14 @@ class MutableString(String, abc_atomic.MutableString):
                 raise exceptions.ObjectDNE(self)
 
             # Read
-            seq = pipe.get(self._redis_key)
+            seq = self._decode_val_obj(pipe.get(self._redis_key))
 
             # Reverse
             rev = seq[::-1]
 
             # Write
             pipe.multi()
-            pipe.set(self._redis_key, rev)
+            pipe.set(self._redis_key, self._encode_val_obj(rev))
 
         # Execute Transaction
         self._driver.transaction(atomic_reverse, self._redis_key)
@@ -163,7 +163,7 @@ class MutableString(String, abc_atomic.MutableString):
 
             # Extend
             pipe.multi()
-            pipe.append(self._redis_key, seq)
+            pipe.append(self._redis_key, self._encode_val_obj(seq))
 
         # Execute Transaction
         if len(seq):
@@ -192,23 +192,23 @@ class MutableString(String, abc_atomic.MutableString):
 
             # Get Ranges
             if (idx == 0) or (idx == -length):
-                start = ""
+                start = str()
             else:
-                start = pipe.getrange(self._redis_key, 0, (idx-1))
+                start = self._decode_val_obj(pipe.getrange(self._redis_key, 0, (idx-1)))
             if (idx == (length-1)) or (idx == -1):
-                end = ""
+                end = str()
             else:
-                end = pipe.getrange(self._redis_key, (idx+1), length)
+                end = self._decode_val_obj(pipe.getrange(self._redis_key, (idx+1), length))
 
             # Set New Val
             new = start + end
             pipe.multi()
             pipe.getrange(self._redis_key, idx, idx)
-            pipe.set(self._redis_key, new)
+            pipe.set(self._redis_key, self._encode_val_obj(new))
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_pop, self._redis_key)
-        return str(ret[0])
+        return self._decode_val_obj(ret[0])
 
     def remove(self, itm):
         """Remove itm from Seq"""
@@ -226,26 +226,26 @@ class MutableString(String, abc_atomic.MutableString):
                 raise exceptions.ObjectDNE(self)
 
             # Get idx
-            seq = pipe.get(self._redis_key)
+            seq = self._decode_val_obj(pipe.get(self._redis_key))
             idx = seq.index(itm)
 
             # Get Ranges
             length = pipe.strlen(self._redis_key)
             if (idx == 0):
-                start = ""
+                start = str()
             else:
-                start = pipe.getrange(self._redis_key, 0, (idx-1))
+                start = self._decode_val_obj(pipe.getrange(self._redis_key, 0, (idx-1)))
             if (idx == (length-1)):
-                end = ""
+                end = str()
             else:
-                end = pipe.getrange(self._redis_key, (idx+1), length)
+                end = self._decode_val_obj(pipe.getrange(self._redis_key, (idx+1), length))
 
             # Set New Val
             new = start + end
 
             # Write
             pipe.multi()
-            pipe.set(self._redis_key, new)
+            pipe.set(self._redis_key, self._encode_val_obj(new))
 
         # Execute Transaction
         self._driver.transaction(atomic_remove, self._redis_key)
