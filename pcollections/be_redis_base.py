@@ -315,51 +315,27 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Call Parent
         super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
 
-    def _to_bytes(self, dict_in):
+    def _encode_val_object(self, obj_in):
 
-        dict_in = dict(dict_in)
-        dict_out = dict()
+        obj_in = dict(obj_in)
+        obj_out = dict()
+        for key, val in viewitems(obj_in):
+            key = self._encode_val_item(key)
+            val = self._encode_val_item(val)
+            obj_out[key] = val
+        return obj_out
 
-        for key, val in viewitems(dict_in):
-            if (isinstance(key, bytes)):
-                pass
-            elif (isinstance(key, str) or isinstance(key, native_str)):
-                key = bytes(key.encode(constants.ENCODING))
-            else:
-                raise TypeError("{} not supported in dictionary".format(type(val)))
-            if (isinstance(val, bytes)):
-                pass
-            elif (isinstance(val, str) or isinstance(val, native_str)):
-                val = bytes(val.encode(constants.ENCODING))
-            else:
-                raise TypeError("{} not supported in dictionary".format(type(val)))
-            dict_out[key] = val
+    def _decode_val_object(self, obj_in):
 
-        return dict_out
+        obj_in = dict(obj_in)
+        obj_out = dict()
+        for key, val in viewitems(obj_in):
+            key = self._decode_val_item(key)
+            val = self._decode_val_item(val)
+            obj_out[key] = val
+        return obj_out
 
-    def _to_str(self, dict_in):
-
-        dict_in = dict(dict_in)
-        dict_out = dict()
-
-        for key, val in viewitems(dict_in):
-            if (isinstance(key, bytes)):
-                key = str(key.decode(constants.ENCODING))
-            elif (isinstance(key, str) or isinstance(key, native_str)):
-                pass
-            else:
-                raise TypeError("{} not supported in dictionary".format(type(val)))
-            if (isinstance(val, bytes)):
-                val = str(val.decode(constants.ENCODING))
-            elif (isinstance(val, str) or isinstance(val, native_str)):
-                pass
-            else:
-                raise TypeError("{} not supported in dictionary".format(type(val)))
-            dict_out[key] = val
-
-        return dict_out
-
-    def _get_bytes(self):
+    def _get_val_raw(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -372,18 +348,10 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Bytes Object
-        return self._to_bytes(ret[0])
+        # Return Raw
+        return ret[0]
 
-    def _get_val(self):
-
-        # Return Strings Object
-        return self._to_str(self._get_bytes())
-
-    def _set_val(self, val, create=True, overwrite=True):
-
-        # Validate Input
-        val = self._to_bytes(val)
+    def _set_val_raw(self, val, create=True, overwrite=True):
 
         # Set Transaction
         def atomic_set(pipe):
