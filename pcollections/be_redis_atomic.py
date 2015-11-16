@@ -41,7 +41,7 @@ class MutableString(String, abc_atomic.MutableString):
         # Check Input
         itm = str(itm)
         if len(itm) != 1:
-            raise ValueError("{:s} must be a single charecter".format(itm))
+            raise ValueError("'{:s}' must be a single charecter".format(itm))
 
         # Transaction
         def atomic_setitem(pipe):
@@ -74,7 +74,7 @@ class MutableString(String, abc_atomic.MutableString):
         # Validate Input
         itm = str(itm)
         if len(itm) != 1:
-            raise ValueError("{:s} must be a single charecter".format(itm))
+            raise ValueError("'{:s}' must be a single charecter".format(itm))
 
         # Transaction
         def atomic_insert(pipe):
@@ -108,7 +108,7 @@ class MutableString(String, abc_atomic.MutableString):
         # Validate Input
         itm = str(itm)
         if len(itm) != 1:
-            raise ValueError("{:s} must be a single charecter".format(itm))
+            raise ValueError("'{:s}' must be a single charecter".format(itm))
 
         # Transaction
         def atomic_append(pipe):
@@ -216,7 +216,7 @@ class MutableString(String, abc_atomic.MutableString):
         # Validate Input
         itm = str(itm)
         if len(itm) != 1:
-            raise ValueError("{:s} must be a single charecter".format(itm))
+            raise ValueError("'{:s}' must be a single charecter".format(itm))
 
         # Transaction
         def atomic_remove(pipe):
