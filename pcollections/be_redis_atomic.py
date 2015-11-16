@@ -149,7 +149,7 @@ class MutableString(String, abc_atomic.MutableString):
 
 
     def extend(self, seq):
-        """Append Seq wuth another Seq"""
+        """Append Seq with another Seq"""
 
         # Validate Input
         seq = str(seq)
