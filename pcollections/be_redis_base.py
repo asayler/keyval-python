@@ -254,37 +254,21 @@ class Set(Persistent, abc_base.Set):
         # Call Parent
         super(Set, self).__init__(driver, key, _PREFIX_SET)
 
-    def _to_bytes(self, set_in):
+    def _encode_val_object(self, obj_in):
 
-        set_out = set()
+        obj_out = set()
+        for item in obj_in:
+            obj_out.add(self._encode_val_item(item))
+        return obj_out
 
-        for item in set_in:
-            if (isinstance(item, bytes)):
-                pass
-            elif (isinstance(item, str) or isinstance(item, native_str)):
-                item = bytes(item.encode(constants.ENCODING))
-            else:
-                raise TypeError("{} not supported in set".format(type(item)))
-            set_out.add(item)
+    def _decode_val_object(self, obj_in):
 
-        return set_out
+        obj_out = set()
+        for item in obj_in:
+            obj_out.add(self._decode_val_item(item))
+        return obj_out
 
-    def _to_str(self, set_in):
-
-        set_out = set()
-
-        for item in set_in:
-            if (isinstance(item, bytes)):
-                item = str(item.decode(constants.ENCODING))
-            elif (isinstance(item, str) or isinstance(item, native_str)):
-                pass
-            else:
-                raise TypeError("{} not supported in set".format(type(v)))
-            set_out.add(item)
-
-        return set_out
-
-    def _get_bytes(self):
+    def _get_val_raw(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -297,18 +281,10 @@ class Set(Persistent, abc_base.Set):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Bytes Object
-        return self._to_bytes(ret[0])
+        # Return Raw
+        return ret[0]
 
-    def _get_val(self):
-
-        # Return Strings Object
-        return self._to_str(self._get_bytes())
-
-    def _set_val(self, val, create=True, overwrite=True):
-
-        # Validate Input
-        val = self._to_bytes(val)
+    def _set_val_raw(self, val, create=True, overwrite=True):
 
         # Set Transaction
         def atomic_set(pipe):
