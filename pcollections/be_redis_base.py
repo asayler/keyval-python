@@ -142,11 +142,8 @@ class String(Persistent, abc_base.String):
         # Call Parent
         super(String, self).__init__(driver, key, _PREFIX_STRING)
 
-    def _encode_val_object(self, obj_in):
-        return self._encode_val_item(obj_in)
-
-    def _decode_val_object(self, obj_in):
-        return self._decode_val_item(obj_in)
+    def _map_conv_obj(self, obj_in, conv_func):
+        return conv_func(obj_in)
 
     def _get_val_raw(self):
 
@@ -193,18 +190,11 @@ class List(Persistent, abc_base.List):
         # Call Parent
         super(List, self).__init__(driver, key, _PREFIX_LIST)
 
-    def _encode_val_object(self, obj_in):
+    def _map_conv_obj(self, obj_in, conv_func):
 
         obj_out = list()
         for item in obj_in:
-            obj_out.append(self._encode_val_item(item))
-        return obj_out
-
-    def _decode_val_object(self, obj_in):
-
-        obj_out = list()
-        for item in obj_in:
-            obj_out.append(self._decode_val_item(item))
+            obj_out.append(conv_func(item))
         return obj_out
 
     def _get_val_raw(self):
@@ -254,18 +244,11 @@ class Set(Persistent, abc_base.Set):
         # Call Parent
         super(Set, self).__init__(driver, key, _PREFIX_SET)
 
-    def _encode_val_object(self, obj_in):
+    def _map_conv_obj(self, obj_in, conv_func):
 
         obj_out = set()
         for item in obj_in:
-            obj_out.add(self._encode_val_item(item))
-        return obj_out
-
-    def _decode_val_object(self, obj_in):
-
-        obj_out = set()
-        for item in obj_in:
-            obj_out.add(self._decode_val_item(item))
+            obj_out.add(conv_func(item))
         return obj_out
 
     def _get_val_raw(self):
@@ -315,23 +298,14 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Call Parent
         super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
 
-    def _encode_val_object(self, obj_in):
+    def _map_conv_obj(self, obj_in, conv_func):
+
 
         obj_in = dict(obj_in)
         obj_out = dict()
         for key, val in viewitems(obj_in):
-            key = self._encode_val_item(key)
-            val = self._encode_val_item(val)
-            obj_out[key] = val
-        return obj_out
-
-    def _decode_val_object(self, obj_in):
-
-        obj_in = dict(obj_in)
-        obj_out = dict()
-        for key, val in viewitems(obj_in):
-            key = self._decode_val_item(key)
-            val = self._decode_val_item(val)
+            key = conv_func(key)
+            val = conv_func(val)
             obj_out[key] = val
         return obj_out
 

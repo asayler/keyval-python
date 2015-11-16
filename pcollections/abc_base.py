@@ -95,13 +95,21 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         pass
 
     @abc.abstractmethod
-    def _encode_val_object(self, obj_in):
-        """Encode nested object items as backend types"""
+    def _map_conv_obj(self, obj_in, conv_func):
+        """Map conv_func across nested object"""
         pass
 
-    @abc.abstractmethod
+    def _encode_val_object(self, obj_in):
+        """Encode nested object items as backend types"""
+        return self._map_conv_obj(obj_in, self._encode_val_item)
+
     def _decode_val_object(self, obj_in):
         """Decode nested object items as Python types"""
+        return self._map_conv_obj(obj_in, self._decode_val_item)
+
+    @abc.abstractmethod
+    def _set_val_raw(self, val, create=True, overwrite=True):
+        """Set value as raw backend type"""
         pass
 
     @abc.abstractmethod
@@ -109,14 +117,17 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         """Get value as raw backend type"""
         pass
 
-    @abc.abstractmethod
-    def _set_val_raw(self, val, create=True, overwrite=True):
-        """Set value as raw backend type"""
-        pass
-
     def _set_val(self, val, create=False, overwrite=True):
         """Set value as python types"""
         self._set_val_raw(self._encode_val_object(val), create, overwrite)
+
+    def get_key(self):
+        """Get Key"""
+        return self._key
+
+    def get_val(self):
+        """Get value as Python types"""
+        return self._decode_val_object(self._get_val_raw())
 
     @abc.abstractmethod
     def exists(self):
@@ -139,14 +150,6 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
     def __bool__(self):
         """Test Bool"""
         return bool(self.get_val())
-
-    def get_key(self):
-        """Get Key"""
-        return self._key
-
-    def get_val(self):
-        """Get value as Python types"""
-        return self._decode_val_object(self._get_val_raw())
 
 class Mutable(Persistent):
 
