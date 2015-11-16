@@ -42,7 +42,8 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
             raise TypeError("driver must not be None")
         if key is None:
             raise TypeError("key must not be None")
-        key = str(key)
+        if not (isinstance(key, str) or isinstance(key, native_str)):
+            raise TypeError("key must by a str()")
 
         # Call Parent
         super(Persistent, self).__init__()
