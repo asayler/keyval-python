@@ -85,8 +85,6 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         return cls(driver, key, *args, **kwargs)
 
     @abc.abstractmethod
-    def _get_bytes(self):
-        """Get value as bytes"""
         pass
 
     @abc.abstractmethod
@@ -124,10 +122,6 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
     def get_key(self):
         """Get Key"""
         return self._key
-
-    def get_bytes(self):
-        """Get Value as Corresponding Python Object (Bytes)"""
-        return self._get_bytes()
 
     def get_val(self):
         """Get Value as Corresponding Python Object (String)"""

@@ -269,20 +269,6 @@ class PersistentMixin(object):
         instance.rem(force=True)
         self.assertFalse(instance.exists())
 
-    def test_get_bytes(self):
-
-        # Setup Test Vals
-        key = self.generate_key()
-        val = self.generate_val_multi(10)
-
-        # Create New Instance
-        instance = self.factory.from_new(key, val)
-        self.assertEqual(self.convert_bytes(val), instance.get_bytes())
-
-        # Rem Instance
-        instance.rem()
-        self.assertRaises(pcollections.exceptions.ObjectDNE, instance.get_bytes)
-
     def test_get_val(self):
 
         # Setup Test Vals
