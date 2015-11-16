@@ -82,21 +82,41 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
     @classmethod
     def from_raw(cls, driver, key, *args, **kwargs):
         """Raw Constructor"""
-
         return cls(driver, key, *args, **kwargs)
 
     @abc.abstractmethod
+    def _encode_val_item(self, item_in):
+        """Encode single item as backend type"""
         pass
 
     @abc.abstractmethod
-    def _get_val(self):
-        """Get value as str"""
+    def _decode_val_item(self, item_in):
+        """Decode single item as Python type"""
         pass
 
     @abc.abstractmethod
+    def _encode_val_object(self, obj_in):
+        """Encode nested object items as backend types"""
+        pass
+
+    @abc.abstractmethod
+    def _decode_val_object(self, obj_in):
+        """Decode nested object items as Python types"""
+        pass
+
+    @abc.abstractmethod
+    def _get_val_raw(self):
+        """Get value as raw backend type"""
+        pass
+
+    @abc.abstractmethod
+    def _set_val_raw(self, val, create=True, overwrite=True):
+        """Set value as raw backend type"""
+        pass
+
     def _set_val(self, val, create=False, overwrite=True):
-        """Set value"""
-        pass
+        """Set value as python types"""
+        self._set_val_raw(self._encode_val_object(val), create, overwrite)
 
     @abc.abstractmethod
     def exists(self):
@@ -125,8 +145,8 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         return self._key
 
     def get_val(self):
-        """Get Value as Corresponding Python Object (String)"""
-        return self._get_val()
+        """Get value as Python types"""
+        return self._decode_val_object(self._get_val_raw())
 
 class Mutable(Persistent):
 

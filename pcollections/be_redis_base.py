@@ -63,6 +63,30 @@ class Persistent(abc_base.Persistent):
 
         return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
 
+    def _encode_val_item(self, item_in):
+        """Encode single item as bytes"""
+
+        item_out = None
+        if isinstance(item_in, bytes):
+            item_out = item_in
+        elif isinstance(item_in, str) or isinstance(item_in, native_str):
+            item_out = bytes(item_in.encode(constants.ENCODING))
+        else:
+            raise TypeError("Encoding type '{}' not supported".format(type(item_in)))
+        return item_out
+
+    def _decode_val_item(self, item_in):
+        """Decode single item Python type"""
+
+        item_out = None
+        if isinstance(item_in, bytes):
+            item_out = str(item_in.decode(constants.ENCODING))
+        elif isinstance(item_in, str) or isinstance(item_in, native_str):
+            item_out = item_in
+        else:
+            raise TypeError("Decoding '{}' not supported".format(type(item_in)))
+        return item_out
+
     def exists(self):
         """Check if Object Exists (Transaction)"""
 
@@ -118,29 +142,13 @@ class String(Persistent, abc_base.String):
         # Call Parent
         super(String, self).__init__(driver, key, _PREFIX_STRING)
 
-    def _to_bytes(self, str_in):
+    def _encode_val_object(self, obj_in):
+        return self._encode_val_item(obj_in)
 
-        if isinstance(str_in, bytes):
-            str_out = str_in
-        elif isinstance(str_in, str) or isinstance(str_in, native_str) :
-            str_out = bytes(str_in.encode(constants.ENCODING))
-        else:
-            raise TypeError("{} not supported in string".format(type(str_in)))
+    def _decode_val_object(self, obj_in):
+        return self._decode_val_item(obj_in)
 
-        return str_out
-
-    def _to_str(self, str_in):
-
-        if isinstance(str_in, bytes):
-            str_out = str(str_in.decode(constants.ENCODING))
-        elif isinstance(str_in, str) or isinstance(str_in, native_str) :
-            str_out = str_in
-        else:
-            raise TypeError("{} not supported in string".format(type(str_in)))
-
-        return str_out
-
-    def _get_bytes(self):
+    def _get_val_raw(self):
 
         # Get Transaction
         def atomic_get(pipe):
@@ -153,18 +161,10 @@ class String(Persistent, abc_base.String):
         # Execute Transaction
         ret = self._driver.transaction(atomic_get, self._redis_key)
 
-        # Return Bytes Object
-        return self._to_bytes(ret[0])
+        # Return Raw
+        return ret[0]
 
-    def _get_val(self):
-
-        # Return Strings Object
-        return self._to_str(self._get_bytes())
-
-    def _set_val(self, val, create=True, overwrite=True):
-
-        # Validate Input
-        val = self._to_bytes(val)
+    def _set_val_raw(self, val, create=True, overwrite=True):
 
         # Set Transaction
         def atomic_set(pipe):
