@@ -465,8 +465,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Add Item to Set"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in set".format(type(itm)))
+        self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_add(pipe):
@@ -476,8 +475,9 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Add Item
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.sadd(self._redis_key, itm)
+            pipe.sadd(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_add, self._redis_key)
@@ -486,8 +486,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Remove Item from Set if Present"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in set".format(type(itm)))
+        self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_discard(pipe):
@@ -497,8 +496,9 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Remove Item
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.srem(self._redis_key, itm)
+            pipe.srem(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_discard, self._redis_key)
@@ -541,10 +541,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
         if ret[0] is None:
             raise KeyError("Empty set, can not pop()")
         else:
-            return ret[0]
+            return self._decode_val_item(ret[0])
 
     def remove(self, itm):
         """Remove itm from Set"""
+
+        # Validate Input
+        self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_remove(pipe):
@@ -554,12 +557,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Check Item in Set
-            if not pipe.sismember(self._redis_key, itm):
+            out = self._encode_val_item(itm)
+            if not pipe.sismember(self._redis_key, out):
                 raise KeyError("{} not in set".format(itm))
 
             # Remove Item
             pipe.multi()
-            pipe.srem(self._redis_key, itm)
+            pipe.srem(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_remove, self._redis_key)
@@ -568,7 +572,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Unary or"""
 
         # Validate Input
-        other = set(other)
+        other = self._encode_val_obj(other, test=True)
 
         # Transaction
         def atomic_ior(pipe):
@@ -578,11 +582,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Union Sets
-            val = pipe.smembers(self._redis_key)
+            val = self._decode_val_obj(pipe.smembers(self._redis_key))
             val |= other
+            out = self._encode_val_obj(val)
             pipe.multi()
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
+            pipe.delete(self._redis_key)
+            if len(out) > 0:
+                pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_ior, self._redis_key)
@@ -594,7 +600,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Unary and"""
 
         # Validate Input
-        other = set(other)
+        other = self._encode_val_obj(other, test=True)
 
         # Transaction
         def atomic_iand(pipe):
@@ -604,12 +610,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Intersect Sets
-            val = pipe.smembers(self._redis_key)
+            val = self._decode_val_obj(pipe.smembers(self._redis_key))
             val &= other
+            out = self._encode_val_obj(val)
             pipe.multi()
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
+            if len(out) > 0:
+                pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_iand, self._redis_key)
@@ -621,7 +628,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Unary xor"""
 
         # Validate Input
-        other = set(other)
+        other = self._encode_val_obj(other, test=True)
 
         # Transaction
         def atomic_ixor(pipe):
@@ -631,12 +638,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Xor Sets
-            val = pipe.smembers(self._redis_key)
+            val = self._decode_val_obj(pipe.smembers(self._redis_key))
             val ^= other
+            out = self._encode_val_obj(val)
             pipe.multi()
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
+            if len(out) > 0:
+                pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_ixor, self._redis_key)
@@ -648,7 +656,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         """Unary subtract"""
 
         # Validate Input
-        other = set(other)
+        other = self._encode_val_obj(other, test=True)
 
         # Transaction
         def atomic_isub(pipe):
@@ -658,12 +666,13 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 raise exceptions.ObjectDNE(self)
 
             # Difference Sets
-            val = pipe.smembers(self._redis_key)
+            val = self._decode_val_obj(pipe.smembers(self._redis_key))
             val -= other
+            out = self._encode_val_obj(val)
             pipe.multi()
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
+            if len(out) > 0:
+                pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_isub, self._redis_key)
