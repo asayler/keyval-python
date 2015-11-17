@@ -689,8 +689,8 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         """Set Mapping Item"""
 
         # Validate Input
-        if not (isinstance(val, str) or isinstance(val, native_str)):
-            raise TypeError("{} not supported in mapping".format(type(val)))
+        self._encode_val_item(key, test=True)
+        self._encode_val_item(val, test=True)
 
         # Transaction
         def atomic_setitem(pipe):
@@ -700,14 +700,19 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
+            key_out = self._encode_val_item(key)
+            val_out = self._encode_val_item(val)
             pipe.multi()
-            pipe.hset(self._redis_key, key, val)
+            pipe.hset(self._redis_key, key_out, val_out)
 
         # Execute Transaction
         self._driver.transaction(atomic_setitem, self._redis_key)
 
     def __delitem__(self, key):
         """Delete Mapping Item"""
+
+        # Validate Input
+        self._encode_val_item(key, test=True)
 
         # Transaction
         def atomic_delitem(pipe):
@@ -717,8 +722,9 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
+            key_out = self._encode_val_item(key)
             pipe.multi()
-            pipe.hdel(self._redis_key, key)
+            pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_delitem, self._redis_key)
@@ -733,7 +739,10 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         # Validate input:
         if (len(args) < 1) or (len(args) > 2):
             raise TypeError("pop() requires either 1 or 2 args: {}".format(args))
+        self._encode_val_item(args[0], test=True)
         key = args[0]
+        if len(args) > 1:
+            default = args[1]
 
         # Transaction
         def atomic_pop(pipe):
@@ -743,9 +752,10 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Pop Item
+            key_out = self._encode_val_item(key)
             pipe.multi()
-            pipe.hget(self._redis_key, key)
-            pipe.hdel(self._redis_key, key)
+            pipe.hget(self._redis_key, key_out)
+            pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_pop, self._redis_key)
@@ -753,11 +763,11 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         # Process Return
         if not ret[1]:
             if len(args) > 1:
-                return args[1]
+                return default
             else:
                 raise KeyError("'{}' not in dict".format(key))
         else:
-            return ret[0]
+            return self._decode_val_item(ret[0])
 
     def popitem(self):
         """Pop Arbitrary Item"""
@@ -770,21 +780,23 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
-            dic = pipe.hgetall(self._redis_key)
+            dic = self._decode_val_obj(pipe.hgetall(self._redis_key))
             key, val = dic.popitem()
+            key_out = self._encode_val_item(key)
+            val_out = self._encode_val_item(val)
             pipe.multi()
-            pipe.echo(key)
-            pipe.echo(val)
-            pipe.hdel(self._redis_key, key)
+            pipe.echo(key_out)
+            pipe.echo(val_out)
+            pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_popitem, self._redis_key)
 
         # Process Return
-        key = ret[0]
-        val = ret[1]
+        key_ret = self._decode_val_item(ret[0])
+        val_ret = self._decode_val_item(ret[1])
         assert ret[2] == 1
-        return (key, val)
+        return (key_ret, val_ret)
 
     def clear(self):
         """Clear Dictionary"""
@@ -816,12 +828,13 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Difference Sets
-            val = pipe.hgetall(self._redis_key)
+            val = self._decode_val_obj(pipe.hgetall(self._redis_key))
             val.update(*args, **kwargs)
+            out = self._encode_val_obj(val)
             pipe.multi()
             pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.hmset(self._redis_key, val)
+            if len(out) > 0:
+                pipe.hmset(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_update, self._redis_key)
@@ -832,6 +845,11 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
     def setdefault(self, key, default=None):
         """return Key or Set to Default"""
 
+        # Validate Input
+        self._encode_val_item(key, test=True)
+        if default is not None:
+            self._encode_val_item(default, test=True)
+
         # Transaction
         def atomic_setdefault(pipe):
 
@@ -840,17 +858,19 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 raise exceptions.ObjectDNE(self)
 
             # Validate Input
-            if not pipe.hexists(self._redis_key, key):
-                if not (isinstance(default, str) or isinstance(default, native_str)):
-                    raise TypeError("{} not supported in mapping".format(type(default)))
+            key_out = self._encode_val_item(key)
+            if not pipe.hexists(self._redis_key, key_out):
+                default_out = self._encode_val_item(default)
+            else:
+                default_out = None
 
             # Set val if not set
             pipe.multi()
-            pipe.hsetnx(self._redis_key, key, default)
-            pipe.hget(self._redis_key, key)
+            pipe.hsetnx(self._redis_key, key_out, default_out)
+            pipe.hget(self._redis_key, key_out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_setdefault, self._redis_key)
 
         # Return
-        return ret[1]
+        return self._decode_val_item(ret[1])
