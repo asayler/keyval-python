@@ -1,0 +1,14 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+branches:
+  only:
+    - master
+services:
+  - redis-server
+install:
+  - make reqs
+script:
+  - make tests
