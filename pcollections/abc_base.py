@@ -85,27 +85,27 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         return cls(driver, key, *args, **kwargs)
 
     @abc.abstractmethod
-    def _encode_val_item(self, item_in):
+    def _encode_val_item(self, item_in, test=False):
         """Encode single item as backend type"""
         pass
 
     @abc.abstractmethod
-    def _decode_val_item(self, item_in):
+    def _decode_val_item(self, item_in, test=False):
         """Decode single item as Python type"""
         pass
 
     @abc.abstractmethod
-    def _map_conv_obj(self, obj_in, conv_func):
+    def _map_conv_obj(self, obj_in, conv_func, test=False):
         """Map conv_func across nested object"""
         pass
 
-    def _encode_val_obj(self, obj_in):
+    def _encode_val_obj(self, obj_in, test=False):
         """Encode nested object items as backend types"""
-        return self._map_conv_obj(obj_in, self._encode_val_item)
+        return self._map_conv_obj(obj_in, self._encode_val_item, test=test)
 
-    def _decode_val_obj(self, obj_in):
+    def _decode_val_obj(self, obj_in, test=False):
         """Decode nested object items as Python types"""
-        return self._map_conv_obj(obj_in, self._decode_val_item)
+        return self._map_conv_obj(obj_in, self._decode_val_item, test=test)
 
     @abc.abstractmethod
     def _set_val_raw(self, val, create=True, overwrite=True):

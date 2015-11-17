@@ -63,26 +63,30 @@ class Persistent(abc_base.Persistent):
 
         return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
 
-    def _encode_val_item(self, item_in):
+    def _encode_val_item(self, item_in, test=False):
         """Encode single item as bytes"""
 
-        item_out = None
+        item_out = item_in
         if isinstance(item_in, bytes):
-            item_out = item_in
+            if not test:
+                item_out = item_in
         elif isinstance(item_in, str) or isinstance(item_in, native_str):
-            item_out = bytes(item_in.encode(constants.ENCODING))
+            if not test:
+                item_out = bytes(item_in.encode(constants.ENCODING))
         else:
             raise TypeError("Encoding type '{}' not supported".format(type(item_in)))
         return item_out
 
-    def _decode_val_item(self, item_in):
+    def _decode_val_item(self, item_in, test=False):
         """Decode single item Python type"""
 
-        item_out = None
+        item_out = item_in
         if isinstance(item_in, bytes):
-            item_out = str(item_in.decode(constants.ENCODING))
+            if not test:
+                item_out = str(item_in.decode(constants.ENCODING))
         elif isinstance(item_in, str) or isinstance(item_in, native_str):
-            item_out = item_in
+            if not test:
+                item_out = item_in
         else:
             raise TypeError("Decoding '{}' not supported".format(type(item_in)))
         return item_out
@@ -142,8 +146,8 @@ class String(Persistent, abc_base.String):
         # Call Parent
         super(String, self).__init__(driver, key, _PREFIX_STRING)
 
-    def _map_conv_obj(self, obj_in, conv_func):
-        return conv_func(obj_in)
+    def _map_conv_obj(self, obj_in, conv_func, test=False):
+        return conv_func(obj_in, test=test)
 
     def _get_val_raw(self):
 
@@ -190,11 +194,11 @@ class List(Persistent, abc_base.List):
         # Call Parent
         super(List, self).__init__(driver, key, _PREFIX_LIST)
 
-    def _map_conv_obj(self, obj_in, conv_func):
+    def _map_conv_obj(self, obj_in, conv_func, test=False):
 
         obj_out = list()
         for item in obj_in:
-            obj_out.append(conv_func(item))
+            obj_out.append(conv_func(item, test=test))
         return obj_out
 
     def _get_val_raw(self):
@@ -244,11 +248,11 @@ class Set(Persistent, abc_base.Set):
         # Call Parent
         super(Set, self).__init__(driver, key, _PREFIX_SET)
 
-    def _map_conv_obj(self, obj_in, conv_func):
+    def _map_conv_obj(self, obj_in, conv_func, test=False):
 
         obj_out = set()
         for item in obj_in:
-            obj_out.add(conv_func(item))
+            obj_out.add(conv_func(item, test=test))
         return obj_out
 
     def _get_val_raw(self):
@@ -298,14 +302,13 @@ class Dictionary(Persistent, abc_base.Dictionary):
         # Call Parent
         super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
 
-    def _map_conv_obj(self, obj_in, conv_func):
-
+    def _map_conv_obj(self, obj_in, conv_func, test=False):
 
         obj_in = dict(obj_in)
         obj_out = dict()
         for key, val in viewitems(obj_in):
-            key = conv_func(key)
-            val = conv_func(val)
+            key = conv_func(key, test=test)
+            val = conv_func(val, test=test)
             obj_out[key] = val
         return obj_out
 
