@@ -260,8 +260,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Set Seq Item"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in seq".format(type(itm)))
+        itm = self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_setitem(pipe):
@@ -282,8 +281,9 @@ class MutableList(List, abc_atomic.MutableList):
                 idx_norm = length + idx
 
             # Set Item
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.lset(self._redis_key, idx_norm, itm)
+            pipe.lset(self._redis_key, idx_norm, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_setitem, self._redis_key)
@@ -292,8 +292,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Insert Seq Item"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in seq".format(type(itm)))
+        itm = self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_insert(pipe):
@@ -305,19 +304,19 @@ class MutableList(List, abc_atomic.MutableList):
             # Get Ranges
             length = pipe.llen(self._redis_key)
             if (idx == 0) or (idx <= -length):
-                start = []
+                start = list()
             else:
-                start = pipe.lrange(self._redis_key, 0, (idx-1))
+                start = self._decode_val_obj(pipe.lrange(self._redis_key, 0, (idx-1)))
             if (idx >= length):
-                end = []
+                end = list()
             else:
-                end = pipe.lrange(self._redis_key, idx, length)
+                end = self._decode_val_obj(pipe.lrange(self._redis_key, idx, length))
 
             # Set New Val
-            new = start + [itm] + end
+            out = self._encode_val_obj(start + list(itm) + end)
             pipe.multi()
             pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *new)
+            pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_insert, self._redis_key)
@@ -326,8 +325,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Append Seq Item"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in seq".format(type(itm)))
+        itm = self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_append(pipe):
@@ -337,8 +335,9 @@ class MutableList(List, abc_atomic.MutableList):
                 raise exceptions.ObjectDNE(self)
 
             # Append
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.rpush(self._redis_key, itm)
+            pipe.rpush(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_append, self._redis_key)
@@ -354,15 +353,16 @@ class MutableList(List, abc_atomic.MutableList):
                 raise exceptions.ObjectDNE(self)
 
             # Read
-            seq = pipe.lrange(self._redis_key, 0, -1)
+            seq = self._decode_val_obj(pipe.lrange(self._redis_key, 0, -1))
 
             # Reverse
             rev = seq[::-1]
 
             # Write
+            out = self._encode_val_obj(rev)
             pipe.multi()
             pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *rev)
+            pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
         self._driver.transaction(atomic_reverse, self._redis_key)
@@ -371,10 +371,7 @@ class MutableList(List, abc_atomic.MutableList):
         """Append Seq wuth another Seq"""
 
         # Validate Input
-        seq = list(seq)
-        for s in seq:
-            if not (isinstance(s, str) or isinstance(s, native_str)):
-                raise TypeError("{} not supported in seq".format(type(s)))
+        seq = self._encode_val_obj(seq, test=True)
 
         # Transaction
         def atomic_extend(pipe):
@@ -384,8 +381,9 @@ class MutableList(List, abc_atomic.MutableList):
                 raise exceptions.ObjectDNE(self)
 
             # Extend
+            out = self._encode_val_obj(seq)
             pipe.multi()
-            pipe.rpush(self._redis_key, *seq)
+            pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
         if len(seq):
@@ -414,31 +412,30 @@ class MutableList(List, abc_atomic.MutableList):
 
             # Get Ranges
             if (idx == 0) or (idx == -length):
-                start = []
+                start = list()
             else:
-                start = pipe.lrange(self._redis_key, 0, (idx-1))
+                start = self._decode_val_obj(pipe.lrange(self._redis_key, 0, (idx-1)))
             if (idx == (length-1)) or (idx == -1):
-                end = []
+                end = list()
             else:
-                end = pipe.lrange(self._redis_key, (idx+1), length)
+                end = self._decode_val_obj(pipe.lrange(self._redis_key, (idx+1), length))
 
             # Set New Val
-            new = start + end
+            out = self._encode_val_obj(start + end)
             pipe.multi()
             pipe.lrange(self._redis_key, idx, idx)
             pipe.delete(self._redis_key)
-            pipe.rpush(self._redis_key, *new)
+            pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_pop, self._redis_key)
-        return str(ret[0][0])
+        return self._decode_val_item(ret[0][0])
 
     def remove(self, itm):
         """Remove itm from Seq"""
 
         # Validate Input
-        if not (isinstance(itm, str) or isinstance(itm, native_str)):
-            raise TypeError("{} not supported in seq".format(type(itm)))
+        itm = self._encode_val_item(itm, test=True)
 
         # Transaction
         def atomic_remove(pipe):
@@ -448,8 +445,9 @@ class MutableList(List, abc_atomic.MutableList):
                 raise exceptions.ObjectDNE(self)
 
             # Write
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.lrem(self._redis_key, 1, itm)
+            pipe.lrem(self._redis_key, 1, out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_remove, self._redis_key)
