@@ -336,12 +336,7 @@ class MutableMixin(PersistentMixin):
         self.assertEqual(ref, instance.get_val())
         ref_ret = test_func(ref, *args)
         instance_ret = test_func(instance, *args)
-        print("ref_ret = {}".format(ref_ret))
-        print("instance_ret = {}".format(instance_ret))
         self.assertEqual(ref_ret, instance_ret)
-        print("ref = {}".format(ref))
-        print("instance = {}".format(instance))
-        print("instance.get_val() = {}".format(instance.get_val()))
         self.assertEqual(ref, instance.get_val())
 
     def helper_exp_mutable(self, size, exp_ret, exp_val, test_func, *args):
@@ -1161,8 +1156,6 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Test In
         def discard_in(instance):
             itm = next(iter(instance))
-            print("discard_in instance = {}".format(instance))
-            print("discard_in itm = {}".format(itm))
             return discard(instance, itm)
         self.helper_ab_mutable(2, discard_in)
         self.helper_ab_mutable(10, discard_in)
