@@ -17,25 +17,30 @@ standard_library.install_aliases()
 from future.utils import native_str
 from builtins import *
 
+from . import keys
 
 ### Factories ###
 
 class InstanceFactory(object):
 
-    def __init__(self, driver, obj):
+    def __init__(self, driver, obj_type, key_type=keys.StrKey):
 
         # Call Parent
         super(InstanceFactory, self).__init__()
 
         # Save Attrs
-        self.driver = driver
-        self.obj = obj
+        self._driver = driver
+        self._key_type = key_type
+        self._obj_type = obj_type
 
     def from_new(self, key, val, *args, **kwargs):
-        return self.obj.from_new(self.driver, key, val, *args, **kwargs)
+        key = self._key_type(key)
+        return self._obj_type.from_new(self._driver, key, val, *args, **kwargs)
 
     def from_existing(self, key, *args, **kwargs):
-        return self.obj.from_existing(self.driver, key, *args, **kwargs)
+        key = self._key_type(key)
+        return self._obj_type.from_existing(self._driver, key, *args, **kwargs)
 
     def from_raw(self, key, *args, **kwargs):
-        return self.obj.from_raw(self.driver, key, *args, **kwargs)
+        key = self._key_type(key)
+        return self._obj_type.from_raw(self._driver, key, *args, **kwargs)

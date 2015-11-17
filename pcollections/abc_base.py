@@ -28,7 +28,7 @@ import collections
 
 from . import exceptions
 from . import constants
-
+from . import keys
 
 ### Abstract Base Objects ###
 
@@ -42,8 +42,8 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
             raise TypeError("driver must not be None")
         if key is None:
             raise TypeError("key must not be None")
-        if not (isinstance(key, str) or isinstance(key, native_str)):
-            raise TypeError("key must by a str()")
+        if not isinstance(key, keys.BaseKey):
+            raise TypeError("key must by an instance of keys.BaseKey()")
 
         # Call Parent
         super(Persistent, self).__init__()
@@ -123,7 +123,7 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def get_key(self):
         """Get Key"""
-        return self._key
+        return self._key.get_key()
 
     def get_val(self):
         """Get value as Python types"""

@@ -132,7 +132,7 @@ class Persistent(abc_base.Persistent):
         super(Persistent, self).__init__(driver, key)
 
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{:s}".format(prefix, _SEP_FIELD, self._key)
+        redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, self._key)
         self._redis_key = redis_key
 
 
