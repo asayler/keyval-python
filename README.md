@@ -10,10 +10,13 @@ A persistent implementation of the [Python Collections Abstract Base
 Classes](https://docs.python.org/2/library/collections.html#collections-abstract-base-classes),
 plus a few others.
 
+Supports both Python 2.7 and Python 3.3+.
+
 Status
 ------
 
 [![Build Status](https://drone.io/github.com/asayler/pcollections/status.png)](https://drone.io/github.com/asayler/pcollections/latest)
+[![Build Status](https://travis-ci.org/asayler/pcollections.svg?branch=master)](https://travis-ci.org/asayler/pcollections)
 
 ### Completed Data Structures ###
 + String (Sequence)
