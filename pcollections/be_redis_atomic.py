@@ -39,7 +39,7 @@ class MutableString(String, abc_atomic.MutableString):
         """Set Seq Item"""
 
         # Check Input
-        itm = str(itm)
+        itm = self._encode_val_item(itm, test=True)
         if len(itm) != 1:
             raise ValueError("'{:s}' must be a single charecter".format(itm))
 
@@ -62,8 +62,9 @@ class MutableString(String, abc_atomic.MutableString):
                 idx_norm = length + idx
 
             # Set Item
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.setrange(self._redis_key, idx_norm, self._encode_val_item(itm))
+            pipe.setrange(self._redis_key, idx_norm, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_setitem, self._redis_key)
@@ -72,7 +73,7 @@ class MutableString(String, abc_atomic.MutableString):
         """Insert Seq Item"""
 
         # Validate Input
-        itm = str(itm)
+        itm = self._encode_val_item(itm, test=True)
         if len(itm) != 1:
             raise ValueError("'{:s}' must be a single charecter".format(itm))
 
@@ -95,9 +96,9 @@ class MutableString(String, abc_atomic.MutableString):
                 end = self._decode_val_obj(pipe.getrange(self._redis_key, idx, length))
 
             # Set New Val
-            new = start + itm + end
+            out = self._encode_val_obj(start + itm + end)
             pipe.multi()
-            pipe.set(self._redis_key, self._encode_val_obj(new))
+            pipe.set(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_insert, self._redis_key)
@@ -106,7 +107,7 @@ class MutableString(String, abc_atomic.MutableString):
         """Append Seq Item"""
 
         # Validate Input
-        itm = str(itm)
+        itm = self._encode_val_item(itm, test=True)
         if len(itm) != 1:
             raise ValueError("'{:s}' must be a single charecter".format(itm))
 
@@ -118,8 +119,9 @@ class MutableString(String, abc_atomic.MutableString):
                 raise exceptions.ObjectDNE(self)
 
             # Append
+            out = self._encode_val_item(itm)
             pipe.multi()
-            pipe.append(self._redis_key, self._encode_val_item(itm))
+            pipe.append(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_append, self._redis_key)
@@ -135,24 +137,24 @@ class MutableString(String, abc_atomic.MutableString):
                 raise exceptions.ObjectDNE(self)
 
             # Read
-            seq = self._decode_val_obj(pipe.get(self._redis_key))
+            val = self._decode_val_obj(pipe.get(self._redis_key))
 
             # Reverse
-            rev = seq[::-1]
+            rev = val[::-1]
 
             # Write
+            out = self._encode_val_obj(rev)
             pipe.multi()
-            pipe.set(self._redis_key, self._encode_val_obj(rev))
+            pipe.set(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_reverse, self._redis_key)
-
 
     def extend(self, seq):
         """Append Seq with another Seq"""
 
         # Validate Input
-        seq = str(seq)
+        seq = self._encode_val_obj(seq, test=True)
 
         # Transaction
         def atomic_extend(pipe):
@@ -162,8 +164,9 @@ class MutableString(String, abc_atomic.MutableString):
                 raise exceptions.ObjectDNE(self)
 
             # Extend
+            out = self._encode_val_obj(seq)
             pipe.multi()
-            pipe.append(self._redis_key, self._encode_val_obj(seq))
+            pipe.append(self._redis_key, out)
 
         # Execute Transaction
         if len(seq):
@@ -201,20 +204,20 @@ class MutableString(String, abc_atomic.MutableString):
                 end = self._decode_val_obj(pipe.getrange(self._redis_key, (idx+1), length))
 
             # Set New Val
-            new = start + end
+            out = self._encode_val_obj(start + end)
             pipe.multi()
             pipe.getrange(self._redis_key, idx, idx)
-            pipe.set(self._redis_key, self._encode_val_obj(new))
+            pipe.set(self._redis_key, out)
 
         # Execute Transaction
         ret = self._driver.transaction(atomic_pop, self._redis_key)
-        return self._decode_val_obj(ret[0])
+        return self._decode_val_item(ret[0])
 
     def remove(self, itm):
         """Remove itm from Seq"""
 
         # Validate Input
-        itm = str(itm)
+        itm = self._encode_val_item(itm, test=True)
         if len(itm) != 1:
             raise ValueError("'{:s}' must be a single charecter".format(itm))
 
@@ -241,11 +244,9 @@ class MutableString(String, abc_atomic.MutableString):
                 end = self._decode_val_obj(pipe.getrange(self._redis_key, (idx+1), length))
 
             # Set New Val
-            new = start + end
-
-            # Write
+            out = self._encode_val_obj(start + end)
             pipe.multi()
-            pipe.set(self._redis_key, self._encode_val_obj(new))
+            pipe.set(self._redis_key, out)
 
         # Execute Transaction
         self._driver.transaction(atomic_remove, self._redis_key)
