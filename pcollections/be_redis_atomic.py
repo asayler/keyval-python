@@ -313,7 +313,7 @@ class MutableList(List, abc_atomic.MutableList):
                 end = self._decode_val_obj(pipe.lrange(self._redis_key, idx, length))
 
             # Set New Val
-            out = self._encode_val_obj(start + list(itm) + end)
+            out = self._encode_val_obj(start + [itm] + end)
             pipe.multi()
             pipe.delete(self._redis_key)
             pipe.rpush(self._redis_key, *out)
