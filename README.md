@@ -1,7 +1,7 @@
 Python Persistent Collections ABC Interface
 ===========================================
 
-By [Andy Sayler](https://www.andysayler.com)  
+By [Andy Sayler](https://www.andysayler.com)
 
 About
 -----
@@ -15,7 +15,6 @@ Supports both Python 2.7 and Python 3.3+.
 Status
 ------
 
-[![Build Status](https://drone.io/github.com/asayler/pcollections/status.png)](https://drone.io/github.com/asayler/pcollections/latest)
 [![Build Status](https://travis-ci.org/asayler/pcollections.svg?branch=master)](https://travis-ci.org/asayler/pcollections)
 
 ### Completed Data Structures ###
