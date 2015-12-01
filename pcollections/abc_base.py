@@ -123,7 +123,7 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def get_key(self):
         """Get Key"""
-        return self._key.get_key()
+        return self._key.key
 
     def get_val(self):
         """Get value as Python types"""

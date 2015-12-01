@@ -23,7 +23,7 @@ from . import keys
 
 class InstanceFactory(object):
 
-    def __init__(self, driver, obj_type, key_type=keys.StrKey):
+    def __init__(self, driver, obj_type, key_type=keys.StrKey, key_kwargs={}):
 
         # Call Parent
         super(InstanceFactory, self).__init__()
@@ -31,16 +31,17 @@ class InstanceFactory(object):
         # Save Attrs
         self._driver = driver
         self._key_type = key_type
+        self._key_kwargs = key_kwargs
         self._obj_type = obj_type
 
     def from_new(self, key, val, *args, **kwargs):
-        key = self._key_type(key)
+        key = self._key_type(key, **self._key_kwargs)
         return self._obj_type.from_new(self._driver, key, val, *args, **kwargs)
 
     def from_existing(self, key, *args, **kwargs):
-        key = self._key_type(key)
+        key = self._key_type(key, **self._key_kwargs)
         return self._obj_type.from_existing(self._driver, key, *args, **kwargs)
 
     def from_raw(self, key, *args, **kwargs):
-        key = self._key_type(key)
+        key = self._key_type(key, **self._key_kwargs)
         return self._obj_type.from_raw(self._driver, key, *args, **kwargs)
