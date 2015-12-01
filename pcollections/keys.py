@@ -78,10 +78,10 @@ class UUIDKey(BaseKey):
         # Setup Key
         key = str()
         if prefix:
-            key += (str(prefix) + _SEPERATOR)
+            key += (str(prefix) + self._SEPERATOR)
         key += str(uid)
         if postfix:
-            key += (_SEPERATOR + str(postixfix))
+            key += (self._SEPERATOR + str(postfix))
 
         # Call Parent
         super(UUIDKey, self).__init__(key)
