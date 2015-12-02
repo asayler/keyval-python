@@ -255,6 +255,9 @@ class PersistentMixin(object):
         instance.create(val)
         self.assertTrue(instance.exists())
 
+        # Cleanup
+        instance.rem()
+
     def test_rem(self):
 
         # Setup Test Vals
