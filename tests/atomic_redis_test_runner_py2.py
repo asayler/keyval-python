@@ -7,6 +7,10 @@
 # pcollections Tests
 
 
+import warnings
+
+
 from atomic_redis_tests import *
 if __name__ == '__main__':
+    warnings.simplefilter("always")
     unittest.main()

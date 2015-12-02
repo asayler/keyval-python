@@ -36,11 +36,6 @@ import pcollections.factories
 _TEST_KEY_PRE = "TESTKEY"
 
 
-### Initialization ###
-
-warnings.simplefilter('default')
-
-
 ### Exceptions ###
 
 class BaseTestError(Exception):

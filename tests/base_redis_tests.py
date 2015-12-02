@@ -69,6 +69,7 @@ class RedisBaseTestCase(test_mixins.BaseTestCase):
 
         # Confirm Empty DB
         if (self.driver.dbsize() != 0):
+            print("")
             warnings.warn("Redis database not empty prior to tearDown")
             self.driver.flushdb()
 

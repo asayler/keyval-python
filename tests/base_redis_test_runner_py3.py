@@ -9,4 +9,4 @@
 
 from base_redis_tests import *
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(warnings="always")
