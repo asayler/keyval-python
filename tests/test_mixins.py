@@ -248,6 +248,18 @@ class PersistentMixin(object):
         self.assertEqual(key, instance.get_key())
         self.assertRaises(pcollections.exceptions.ObjectDNE, instance.get_val)
 
+    def test_create(self):
+
+        # Setup Test Vals
+        key = self.generate_key()
+        val = self.generate_val_multi(10)
+
+        # Get Raw Instance
+        instance = self.factory.from_raw(key)
+        self.assertFalse(instance.exists())
+        instance.create(val)
+        self.assertTrue(instance.exists())
+
     def test_rem(self):
 
         # Setup Test Vals

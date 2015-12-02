@@ -134,6 +134,10 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         """Check if Object Exists"""
         pass
 
+    def create(self, val):
+        """Create Object"""
+        self._set_val_raw(self._encode_val_obj(val), create=True, overwrite=False)
+
     @abc.abstractmethod
     def rem(self, force=False):
         """Delete Object"""
