@@ -34,8 +34,15 @@ from . import keys
 
 class Persistent(with_metaclass(abc.ABCMeta, object)):
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, val=None,
+                 create=False, existing=True, overwrite=False):
         """Object Constructor"""
+
+        #                    create  existing  overwrite
+        # CREATE_OR_OPEN       Y        Y          N
+        # CREATE_OVERWRITE     Y        Y          Y
+        # CREATE_OR_FAIL       Y        N          *
+        # OPEN_EXISTING        N        *          *
 
         # Check Input
         if driver is None:
@@ -52,32 +59,25 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         self._driver = driver
         self._key = key
 
+        # Check create|existing|overwrite
+        if self.exists():
+            if create and not existing:
+                raise exceptions.ObjectExists(self)
+        else:
+            if create:
+                self._set_val(val, create=create, overwrite=overwrite)
+            else:
+                raise exceptions.ObjectDNE(self)
+
     @classmethod
     def from_new(cls, driver, key, val, *args, **kwargs):
         """New Constructor"""
-
-        # Get Object
-        obj = cls.from_raw(driver, key, *args, **kwargs)
-
-        # Create New Object
-        obj._set_val(val, create=True, overwrite=False)
-
-        # Return Object
-        return obj
+        return cls(driver, key, val=val, create=True, existing=False, overwrite=False)
 
     @classmethod
     def from_existing(cls, driver, key, *args, **kwargs):
         """Existing Constructor"""
-
-        # Get Object
-        obj = cls.from_raw(driver, key, *args, **kwargs)
-
-        # Check Existence
-        if not obj.exists():
-            raise exceptions.ObjectDNE(obj)
-
-        # Return Object
-        return obj
+        return cls(driver, key, create=False)
 
     @classmethod
     def from_raw(cls, driver, key, *args, **kwargs):
