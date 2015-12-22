@@ -3,3 +3,4 @@
 + Add support for vals other than strings
 + Add support for comparison with native types
 + Add testing for support (and unsupported) vals
++ Watch index var on create ops?
