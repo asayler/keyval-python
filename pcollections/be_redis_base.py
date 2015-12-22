@@ -125,26 +125,25 @@ class Persistent(abc_base.Persistent):
         self._driver.transaction(atomic_rem, self._redis_key)
 
     @abc.abstractmethod
-    def __init__(self, driver, key, prefix):
+    def __init__(self, driver, key, prefix, **kwargs):
         """ Constructor"""
 
-        # Call Parent
-        super(Persistent, self).__init__(driver, key)
-
         # Save Extra Attrs
-        redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, self._key)
-        self._redis_key = redis_key
+        self._redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, key)
+
+        # Call Parent
+        super(Persistent, self).__init__(driver, key, **kwargs)
 
 
 ### Objects ###
 
 class String(Persistent, abc_base.String):
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, **kwargs):
         """ Constructor"""
 
         # Call Parent
-        super(String, self).__init__(driver, key, _PREFIX_STRING)
+        super(String, self).__init__(driver, key, _PREFIX_STRING, **kwargs)
 
     def _map_conv_obj(self, obj_in, conv_func, test=False):
         return conv_func(obj_in, test=test)
@@ -188,11 +187,11 @@ class MutableString(String, abc_base.MutableString):
 
 class List(Persistent, abc_base.List):
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, **kwargs):
         """ Constructor"""
 
         # Call Parent
-        super(List, self).__init__(driver, key, _PREFIX_LIST)
+        super(List, self).__init__(driver, key, _PREFIX_LIST, **kwargs)
 
     def _map_conv_obj(self, obj_in, conv_func, test=False):
 
@@ -242,11 +241,11 @@ class MutableList(List, abc_base.MutableList):
 
 class Set(Persistent, abc_base.Set):
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, **kwargs):
         """Set Constructor"""
 
         # Call Parent
-        super(Set, self).__init__(driver, key, _PREFIX_SET)
+        super(Set, self).__init__(driver, key, _PREFIX_SET, **kwargs)
 
     def _map_conv_obj(self, obj_in, conv_func, test=False):
 
@@ -296,11 +295,11 @@ class MutableSet(Set, abc_base.MutableSet):
 
 class Dictionary(Persistent, abc_base.Dictionary):
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, key, **kwargs):
         """ Constructor"""
 
         # Call Parent
-        super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY)
+        super(Dictionary, self).__init__(driver, key, _PREFIX_DICTIONARY, **kwargs)
 
     def _map_conv_obj(self, obj_in, conv_func, test=False):
 

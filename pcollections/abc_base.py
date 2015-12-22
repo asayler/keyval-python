@@ -34,15 +34,16 @@ from . import keys
 
 class Persistent(with_metaclass(abc.ABCMeta, object)):
 
-    def __init__(self, driver, key, val=None,
-                 create=False, existing=True, overwrite=False):
+    def __init__(self, driver, key, create=None, existing=None):
         """Object Constructor"""
 
-        #                    create  existing  overwrite
-        # CREATE_OR_OPEN       Y        Y          N
-        # CREATE_OVERWRITE     Y        Y          Y
-        # CREATE_OR_FAIL       Y        N          *
-        # OPEN_EXISTING        N        *          *
+        #                      existing  create
+        # OPEN_EXISTING         True      None
+        # OVERWRITE_EXISTING    True      Val
+        # OPEN_ANY              None      None
+        # CREATE_OR_OPEN        None      Val
+        # CREATE_OR_FAIL        False     Val
+        # OPEN_NONEXISTING      False     None
 
         # Check Input
         if driver is None:
@@ -59,30 +60,46 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         self._driver = driver
         self._key = key
 
-        # Check create|existing|overwrite
-        if self.exists():
-            if create and not existing:
-                raise exceptions.ObjectExists(self)
-        else:
-            if create:
-                self._set_val(val, create=create, overwrite=overwrite)
+        # Check existing|create
+        if existing is True:
+            if self.exists():
+                if create is not None:
+                    self._set_val(create, create=True, overwrite=True)
             else:
                 raise exceptions.ObjectDNE(self)
+        elif existing is False:
+            if self.exists():
+                raise exceptions.ObjectExists(self)
+            else:
+                if create is not None:
+                    self._set_val(create, create=True, overwrite=False)
+        elif existing is None:
+            if self.exists():
+                pass
+            else:
+                if create is not None:
+                    self._set_val(create, create=True, overwrite=False)
+        else:
+            raise TypeError("existing must be None, True, or False")
 
     @classmethod
-    def from_new(cls, driver, key, val, *args, **kwargs):
+    def from_new(cls, driver, key, val):
         """New Constructor"""
-        return cls(driver, key, val=val, create=True, existing=False, overwrite=False)
+
+        if val is None:
+            raise TypeError("val must not be None")
+
+        return cls(driver, key, create=val, existing=False)
 
     @classmethod
-    def from_existing(cls, driver, key, *args, **kwargs):
+    def from_existing(cls, driver, key):
         """Existing Constructor"""
-        return cls(driver, key, create=False)
+        return cls(driver, key, create=None, existing=True)
 
     @classmethod
-    def from_raw(cls, driver, key, *args, **kwargs):
+    def from_raw(cls, driver, key):
         """Raw Constructor"""
-        return cls(driver, key, *args, **kwargs)
+        return cls(driver, key)
 
     @abc.abstractmethod
     def _encode_val_item(self, item_in, test=False):
