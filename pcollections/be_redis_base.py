@@ -134,6 +134,50 @@ class Persistent(abc_base.Persistent):
         # Call Parent
         super(Persistent, self).__init__(driver, key, **kwargs)
 
+    def _set_val_raw(self, val, create=True, overwrite=True):
+
+        # Set Transaction
+        def atomic_set(pipe):
+
+            exists = self._exists(pipe)
+            if not overwrite and exists:
+                raise exceptions.ObjectExists(self)
+            if not create and not exists:
+                raise exceptions.ObjectDNE(self)
+            pipe.multi()
+            if create:
+                self._register(pipe)
+            self._set_val_direct(pipe, val)
+
+        # Execute Transaction
+        self._driver.transaction(atomic_set, self._redis_key)
+
+    @abc.abstractmethod
+    def _set_val_direct(self, pipe, val):
+        """Set value via pipe"""
+        pass
+
+    def _get_val_raw(self):
+
+        # Get Transaction
+        def atomic_get(pipe):
+
+            if not self._exists(pipe):
+                raise exceptions.ObjectDNE(self)
+            pipe.multi()
+            self._get_val_direct(pipe)
+
+        # Execute Transaction
+        ret = self._driver.transaction(atomic_get, self._redis_key)
+
+        # Return Raw
+        return ret[0]
+
+    @abc.abstractmethod
+    def _get_val_direct(self, pipe):
+        """Get value via pipe"""
+        pass
+
 
 ### Objects ###
 
@@ -148,39 +192,13 @@ class String(Persistent, abc_base.String):
     def _map_conv_obj(self, obj_in, conv_func, test=False):
         return conv_func(obj_in, test=test)
 
-    def _get_val_raw(self):
+    def _set_val_direct(self, pipe, val):
 
-        # Get Transaction
-        def atomic_get(pipe):
+        pipe.set(self._redis_key, val)
 
-            if not self._exists(pipe):
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            pipe.get(self._redis_key)
+    def _get_val_direct(self, pipe):
 
-        # Execute Transaction
-        ret = self._driver.transaction(atomic_get, self._redis_key)
-
-        # Return Raw
-        return ret[0]
-
-    def _set_val_raw(self, val, create=True, overwrite=True):
-
-        # Set Transaction
-        def atomic_set(pipe):
-
-            exists = self._exists(pipe)
-            if not overwrite and exists:
-                raise exceptions.ObjectExists(self)
-            if not create and not exists:
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            if create:
-                self._register(pipe)
-            pipe.set(self._redis_key, val)
-
-        # Execute Transaction
-        self._driver.transaction(atomic_set, self._redis_key)
+        pipe.get(self._redis_key)
 
 class MutableString(String, abc_base.MutableString):
     pass
@@ -200,41 +218,15 @@ class List(Persistent, abc_base.List):
             obj_out.append(conv_func(item, test=test))
         return obj_out
 
-    def _get_val_raw(self):
+    def _set_val_direct(self, pipe, val):
 
-        # Get Transaction
-        def atomic_get(pipe):
+        pipe.delete(self._redis_key)
+        if len(val) > 0:
+            pipe.rpush(self._redis_key, *val)
 
-            if not self._exists(pipe):
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            pipe.lrange(self._redis_key, 0, -1)
+    def _get_val_direct(self, pipe):
 
-        # Execute Transaction
-        ret = self._driver.transaction(atomic_get, self._redis_key)
-
-        # Return Raw
-        return ret[0]
-
-    def _set_val_raw(self, val, create=True, overwrite=True):
-
-        # Set Transaction
-        def atomic_set(pipe):
-
-            exists = self._exists(pipe)
-            if not overwrite and exists:
-                raise exceptions.ObjectExists(self)
-            if not create and not exists:
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            if create:
-                self._register(pipe)
-            pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.rpush(self._redis_key, *val)
-
-        # Execute Transaction
-        self._driver.transaction(atomic_set, self._redis_key)
+        pipe.lrange(self._redis_key, 0, -1)
 
 class MutableList(List, abc_base.MutableList):
     pass
@@ -254,41 +246,15 @@ class Set(Persistent, abc_base.Set):
             obj_out.add(conv_func(item, test=test))
         return obj_out
 
-    def _get_val_raw(self):
+    def _set_val_direct(self, pipe, val):
 
-        # Get Transaction
-        def atomic_get(pipe):
+        pipe.delete(self._redis_key)
+        if len(val) > 0:
+            pipe.sadd(self._redis_key, *val)
 
-            if not self._exists(pipe):
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            pipe.smembers(self._redis_key)
+    def _get_val_direct(self, pipe):
 
-        # Execute Transaction
-        ret = self._driver.transaction(atomic_get, self._redis_key)
-
-        # Return Raw
-        return ret[0]
-
-    def _set_val_raw(self, val, create=True, overwrite=True):
-
-        # Set Transaction
-        def atomic_set(pipe):
-
-            exists = self._exists(pipe)
-            if not overwrite and exists:
-                raise exceptions.ObjectExists(self)
-            if not create and not exists:
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            if create:
-                self._register(pipe)
-            pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.sadd(self._redis_key, *val)
-
-        # Execute Transaction
-        self._driver.transaction(atomic_set, self._redis_key)
+        pipe.smembers(self._redis_key)
 
 class MutableSet(Set, abc_base.MutableSet):
     pass
@@ -311,41 +277,15 @@ class Dictionary(Persistent, abc_base.Dictionary):
             obj_out[key] = val
         return obj_out
 
-    def _get_val_raw(self):
+    def _set_val_direct(self, pipe, val):
 
-        # Get Transaction
-        def atomic_get(pipe):
+        pipe.delete(self._redis_key)
+        if len(val) > 0:
+            pipe.hmset(self._redis_key, val)
 
-            if not self._exists(pipe):
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            pipe.hgetall(self._redis_key)
+    def _get_val_direct(self, pipe):
 
-        # Execute Transaction
-        ret = self._driver.transaction(atomic_get, self._redis_key)
-
-        # Return Raw
-        return ret[0]
-
-    def _set_val_raw(self, val, create=True, overwrite=True):
-
-        # Set Transaction
-        def atomic_set(pipe):
-
-            exists = self._exists(pipe)
-            if not overwrite and exists:
-                raise exceptions.ObjectExists(self)
-            if not create and not exists:
-                raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            if create:
-                self._register(pipe)
-            pipe.delete(self._redis_key)
-            if len(val) > 0:
-                pipe.hmset(self._redis_key, val)
-
-        # Execute Transaction
-        self._driver.transaction(atomic_set, self._redis_key)
+        pipe.hgetall(self._redis_key)
 
 class MutableDictionary(Dictionary, abc_base.MutableDictionary):
     pass
