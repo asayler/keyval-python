@@ -47,7 +47,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_setitem(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Check Index
@@ -67,7 +67,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.setrange(self._redis_key, idx_norm, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, self._redis_key)
+        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
@@ -81,7 +81,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_insert(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Get Ranges
@@ -101,7 +101,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_insert, self._redis_key)
+        self._driver.transaction(atomic_insert, be_redis_base._INDEX_KEY, self._redis_key)
 
     def append(self, itm):
         """Append Seq Item"""
@@ -115,7 +115,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_append(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Append
@@ -124,7 +124,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.append(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_append, self._redis_key)
+        self._driver.transaction(atomic_append, be_redis_base._INDEX_KEY, self._redis_key)
 
     def reverse(self):
         """Reverse Seq"""
@@ -133,7 +133,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_reverse(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Read
@@ -148,7 +148,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_reverse, self._redis_key)
+        self._driver.transaction(atomic_reverse, be_redis_base._INDEX_KEY, self._redis_key)
 
     def extend(self, seq):
         """Append Seq with another Seq"""
@@ -160,7 +160,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_extend(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Extend
@@ -170,7 +170,7 @@ class MutableString(String, abc_atomic.MutableString):
 
         # Execute Transaction
         if len(seq):
-            self._driver.transaction(atomic_extend, self._redis_key)
+            self._driver.transaction(atomic_extend, be_redis_base._INDEX_KEY, self._redis_key)
         else:
             pass
 
@@ -181,7 +181,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_pop(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Check Index
@@ -197,11 +197,13 @@ class MutableString(String, abc_atomic.MutableString):
             if (idx == 0) or (idx == -length):
                 start = str()
             else:
-                start = self._decode_val_obj(pipe.getrange(self._redis_key, 0, (idx-1)))
+                start = self._decode_val_obj(pipe.getrange(self._redis_key,
+                                                           0, (idx-1)))
             if (idx == (length-1)) or (idx == -1):
                 end = str()
             else:
-                end = self._decode_val_obj(pipe.getrange(self._redis_key, (idx+1), length))
+                end = self._decode_val_obj(pipe.getrange(self._redis_key,
+                                                         (idx+1), length))
 
             # Set New Val
             out = self._encode_val_obj(start + end)
@@ -210,7 +212,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, self._redis_key)
+        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
         return self._decode_val_item(ret[0])
 
     def remove(self, itm):
@@ -225,7 +227,7 @@ class MutableString(String, abc_atomic.MutableString):
         def atomic_remove(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Get idx
@@ -249,7 +251,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_remove, self._redis_key)
+        self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
 
 class List(be_redis_base.List):
     pass
@@ -266,7 +268,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_setitem(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Check Index
@@ -286,7 +288,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.lset(self._redis_key, idx_norm, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, self._redis_key)
+        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
@@ -298,7 +300,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_insert(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Get Ranges
@@ -319,7 +321,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_insert, self._redis_key)
+        self._driver.transaction(atomic_insert, be_redis_base._INDEX_KEY, self._redis_key)
 
     def append(self, itm):
         """Append Seq Item"""
@@ -331,7 +333,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_append(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Append
@@ -340,7 +342,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_append, self._redis_key)
+        self._driver.transaction(atomic_append, be_redis_base._INDEX_KEY, self._redis_key)
 
     def reverse(self):
         """Reverse Seq"""
@@ -349,7 +351,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_reverse(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Read
@@ -365,7 +367,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_reverse, self._redis_key)
+        self._driver.transaction(atomic_reverse, be_redis_base._INDEX_KEY, self._redis_key)
 
     def extend(self, seq):
         """Append Seq wuth another Seq"""
@@ -377,7 +379,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_extend(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Extend
@@ -387,7 +389,7 @@ class MutableList(List, abc_atomic.MutableList):
 
         # Execute Transaction
         if len(seq):
-            self._driver.transaction(atomic_extend, self._redis_key)
+            self._driver.transaction(atomic_extend, be_redis_base._INDEX_KEY, self._redis_key)
         else:
             pass
 
@@ -398,7 +400,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_pop(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Check Index
@@ -428,7 +430,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, self._redis_key)
+        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
         return self._decode_val_item(ret[0][0])
 
     def remove(self, itm):
@@ -441,7 +443,7 @@ class MutableList(List, abc_atomic.MutableList):
         def atomic_remove(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Write
@@ -450,7 +452,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.lrem(self._redis_key, 1, out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_remove, self._redis_key)
+        ret = self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Check result
         if (ret[0] != 1):
@@ -471,7 +473,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_add(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Add Item
@@ -480,7 +482,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.sadd(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_add, self._redis_key)
+        self._driver.transaction(atomic_add, be_redis_base._INDEX_KEY, self._redis_key)
 
     def discard(self, itm):
         """Remove Item from Set if Present"""
@@ -492,7 +494,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_discard(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Remove Item
@@ -501,7 +503,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.srem(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_discard, self._redis_key)
+        self._driver.transaction(atomic_discard, be_redis_base._INDEX_KEY, self._redis_key)
 
     def clear(self):
         """Clear Set"""
@@ -510,7 +512,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_clear(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Remove Item
@@ -518,7 +520,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.delete(self._redis_key)
 
         # Execute Transaction
-        self._driver.transaction(atomic_clear, self._redis_key)
+        self._driver.transaction(atomic_clear, be_redis_base._INDEX_KEY, self._redis_key)
 
     def pop(self):
         """Pop item from Set"""
@@ -527,7 +529,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_pop(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Remove Item
@@ -535,7 +537,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.spop(self._redis_key)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, self._redis_key)
+        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Check and Return
         if ret[0] is None:
@@ -553,7 +555,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_remove(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Check Item in Set
@@ -566,7 +568,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.srem(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_remove, self._redis_key)
+        self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
 
     def __ior__(self, other):
         """Unary or"""
@@ -578,7 +580,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_ior(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Union Sets
@@ -591,7 +593,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_ior, self._redis_key)
+        self._driver.transaction(atomic_ior, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self
@@ -606,7 +608,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_iand(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Intersect Sets
@@ -619,7 +621,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_iand, self._redis_key)
+        self._driver.transaction(atomic_iand, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self
@@ -634,7 +636,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_ixor(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Xor Sets
@@ -647,7 +649,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_ixor, self._redis_key)
+        self._driver.transaction(atomic_ixor, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self
@@ -662,7 +664,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
         def atomic_isub(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Difference Sets
@@ -675,7 +677,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_isub, self._redis_key)
+        self._driver.transaction(atomic_isub, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self
@@ -696,7 +698,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_setitem(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
@@ -706,7 +708,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hset(self._redis_key, key_out, val_out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, self._redis_key)
+        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
 
     def __delitem__(self, key):
         """Delete Mapping Item"""
@@ -718,7 +720,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_delitem(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
@@ -727,7 +729,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_delitem, self._redis_key)
+        ret = self._driver.transaction(atomic_delitem, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Validate Return
         if not ret[0]:
@@ -748,7 +750,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_pop(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Pop Item
@@ -758,7 +760,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, self._redis_key)
+        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Process Return
         if not ret[1]:
@@ -776,7 +778,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_popitem(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Set Item
@@ -790,7 +792,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_popitem, self._redis_key)
+        ret = self._driver.transaction(atomic_popitem, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Process Return
         key_ret = self._decode_val_item(ret[0])
@@ -805,7 +807,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_clear(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Remove Item
@@ -813,7 +815,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.delete(self._redis_key)
 
         # Execute Transaction
-        self._driver.transaction(atomic_clear, self._redis_key)
+        self._driver.transaction(atomic_clear, be_redis_base._INDEX_KEY, self._redis_key)
 
     def update(self, *args, **kwargs):
         """Update Dictionary"""
@@ -824,7 +826,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_update(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Difference Sets
@@ -837,7 +839,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 pipe.hmset(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_update, self._redis_key)
+        self._driver.transaction(atomic_update, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self
@@ -854,7 +856,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
         def atomic_setdefault(pipe):
 
             # Check Exists
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
 
             # Validate Input
@@ -870,7 +872,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hget(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_setdefault, self._redis_key)
+        ret = self._driver.transaction(atomic_setdefault, be_redis_base._INDEX_KEY, self._redis_key)
 
         # Return
         return self._decode_val_item(ret[1])

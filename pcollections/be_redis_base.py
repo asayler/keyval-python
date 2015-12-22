@@ -58,8 +58,8 @@ class Persistent(abc_base.Persistent):
 
         pipe.srem(_INDEX_KEY, self._redis_key)
 
-    def _exists(self, pipe):
-        """Check if Object Exists (Immediate)"""
+    def _exists_direct(self, pipe):
+        """Check if Object Exists via pipe"""
 
         return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
 
@@ -98,13 +98,13 @@ class Persistent(abc_base.Persistent):
         def atomic_exists(pipe):
 
             pipe.multi()
-            pipe.sismember(_INDEX_KEY, self._redis_key)
+            self._exists_direct(pipe)
 
         # Check if Object Exists
-        ret = self._driver.transaction(atomic_exists, self._redis_key)
+        ret = self._driver.transaction(atomic_exists, _INDEX_KEY, self._redis_key)
 
         # Return Bool
-        return bool(ret[0])
+        return ret[0]
 
     def rem(self, force=False):
         """Delete Object"""
@@ -112,7 +112,7 @@ class Persistent(abc_base.Persistent):
         # Delete Transaction
         def atomic_rem(pipe):
 
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 if force:
                     return
                 else:
@@ -122,7 +122,7 @@ class Persistent(abc_base.Persistent):
             self._unregister(pipe)
 
         # Delete Object
-        self._driver.transaction(atomic_rem, self._redis_key)
+        self._driver.transaction(atomic_rem, _INDEX_KEY, self._redis_key)
 
     @abc.abstractmethod
     def __init__(self, driver, key, prefix, **kwargs):
@@ -139,7 +139,7 @@ class Persistent(abc_base.Persistent):
         # Set Transaction
         def atomic_set(pipe):
 
-            exists = self._exists(pipe)
+            exists = self._exists_direct(pipe)
             if not overwrite and exists:
                 raise exceptions.ObjectExists(self)
             if not create and not exists:
@@ -150,7 +150,7 @@ class Persistent(abc_base.Persistent):
             self._set_val_direct(pipe, val)
 
         # Execute Transaction
-        self._driver.transaction(atomic_set, self._redis_key)
+        self._driver.transaction(atomic_set, _INDEX_KEY, self._redis_key)
 
     @abc.abstractmethod
     def _set_val_direct(self, pipe, val):
@@ -162,13 +162,13 @@ class Persistent(abc_base.Persistent):
         # Get Transaction
         def atomic_get(pipe):
 
-            if not self._exists(pipe):
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
             pipe.multi()
             self._get_val_direct(pipe)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_get, self._redis_key)
+        ret = self._driver.transaction(atomic_get, _INDEX_KEY, self._redis_key)
 
         # Return Raw
         return ret[0]
