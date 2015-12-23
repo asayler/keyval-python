@@ -76,7 +76,7 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         return cls(driver, key, create=None, existing=True)
 
     @classmethod
-    def from_raw(cls, driver, key):
+    def from_raw(cls, driver, key, create=None, existing=None):
         """Raw Constructor"""
         return cls(driver, key)
 
