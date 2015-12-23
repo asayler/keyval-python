@@ -48,20 +48,15 @@ class Driver(redis.StrictRedis):
 
 class Persistent(abc_base.Persistent):
 
-    def _register(self, pipe):
-        """Register Object as Existing"""
+    @abc.abstractmethod
+    def __init__(self, driver, key, prefix, **kwargs):
+        """ Constructor"""
 
-        pipe.sadd(_INDEX_KEY, self._redis_key)
+        # Save Extra Attrs
+        self._redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, key)
 
-    def _unregister(self, pipe):
-        """Unregister Object as Existing"""
-
-        pipe.srem(_INDEX_KEY, self._redis_key)
-
-    def _exists_direct(self, pipe):
-        """Check if Object Exists via pipe"""
-
-        return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
+        # Call Parent
+        super(Persistent, self).__init__(driver, key, **kwargs)
 
     def _encode_val_item(self, item_in, test=False):
         """Encode single item as bytes"""
@@ -91,48 +86,20 @@ class Persistent(abc_base.Persistent):
             raise TypeError("Decoding '{}' not supported".format(type(item_in)))
         return item_out
 
-    def exists(self):
-        """Check if Object Exists (Transaction)"""
+    def _register(self, pipe):
+        """Register Object as Existing"""
 
-        # Exists Transaction
-        def atomic_exists(pipe):
+        pipe.sadd(_INDEX_KEY, self._redis_key)
 
-            pipe.multi()
-            self._exists_direct(pipe)
+    def _unregister(self, pipe):
+        """Unregister Object as Existing"""
 
-        # Check if Object Exists
-        ret = self._driver.transaction(atomic_exists, _INDEX_KEY, self._redis_key)
+        pipe.srem(_INDEX_KEY, self._redis_key)
 
-        # Return Bool
-        return ret[0]
+    def _exists_direct(self, pipe):
+        """Check if Object Exists via pipe"""
 
-    def rem(self, force=False):
-        """Delete Object"""
-
-        # Delete Transaction
-        def atomic_rem(pipe):
-
-            if not self._exists_direct(pipe):
-                if force:
-                    return
-                else:
-                    raise exceptions.ObjectDNE(self)
-            pipe.multi()
-            pipe.delete(self._redis_key)
-            self._unregister(pipe)
-
-        # Delete Object
-        self._driver.transaction(atomic_rem, _INDEX_KEY, self._redis_key)
-
-    @abc.abstractmethod
-    def __init__(self, driver, key, prefix, **kwargs):
-        """ Constructor"""
-
-        # Save Extra Attrs
-        self._redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, key)
-
-        # Call Parent
-        super(Persistent, self).__init__(driver, key, **kwargs)
+        return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
 
     def _set_val_raw(self, val, create=True, overwrite=True):
 
@@ -177,6 +144,39 @@ class Persistent(abc_base.Persistent):
     def _get_val_direct(self, pipe):
         """Get value via pipe"""
         pass
+
+    def exists(self):
+        """Check if Object Exists (Transaction)"""
+
+        # Exists Transaction
+        def atomic_exists(pipe):
+
+            pipe.multi()
+            self._exists_direct(pipe)
+
+        # Check if Object Exists
+        ret = self._driver.transaction(atomic_exists, _INDEX_KEY, self._redis_key)
+
+        # Return Bool
+        return ret[0]
+
+    def rem(self, force=False):
+        """Delete Object"""
+
+        # Delete Transaction
+        def atomic_rem(pipe):
+
+            if not self._exists_direct(pipe):
+                if force:
+                    return
+                else:
+                    raise exceptions.ObjectDNE(self)
+            pipe.multi()
+            pipe.delete(self._redis_key)
+            self._unregister(pipe)
+
+        # Delete Object
+        self._driver.transaction(atomic_rem, _INDEX_KEY, self._redis_key)
 
 
 ### Objects ###
