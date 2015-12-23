@@ -67,7 +67,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.setrange(self._redis_key, idx_norm, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_setitem)
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
@@ -101,7 +101,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_insert, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_insert)
 
     def append(self, itm):
         """Append Seq Item"""
@@ -124,7 +124,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.append(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_append, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_append)
 
     def reverse(self):
         """Reverse Seq"""
@@ -148,7 +148,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_reverse, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_reverse)
 
     def extend(self, seq):
         """Append Seq with another Seq"""
@@ -170,7 +170,7 @@ class MutableString(String, abc_atomic.MutableString):
 
         # Execute Transaction
         if len(seq):
-            self._driver.transaction(atomic_extend, be_redis_base._INDEX_KEY, self._redis_key)
+            self._transact(atomic_extend)
         else:
             pass
 
@@ -212,7 +212,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_pop)
         return self._decode_val_item(ret[0])
 
     def remove(self, itm):
@@ -251,7 +251,7 @@ class MutableString(String, abc_atomic.MutableString):
             pipe.set(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_remove)
 
 class List(be_redis_base.List):
     pass
@@ -288,7 +288,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.lset(self._redis_key, idx_norm, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_setitem)
 
     def insert(self, idx, itm):
         """Insert Seq Item"""
@@ -321,7 +321,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_insert, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_insert)
 
     def append(self, itm):
         """Append Seq Item"""
@@ -342,7 +342,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_append, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_append)
 
     def reverse(self):
         """Reverse Seq"""
@@ -367,7 +367,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_reverse, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_reverse)
 
     def extend(self, seq):
         """Append Seq wuth another Seq"""
@@ -389,7 +389,7 @@ class MutableList(List, abc_atomic.MutableList):
 
         # Execute Transaction
         if len(seq):
-            self._driver.transaction(atomic_extend, be_redis_base._INDEX_KEY, self._redis_key)
+            self._transact(atomic_extend)
         else:
             pass
 
@@ -430,7 +430,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.rpush(self._redis_key, *out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_pop)
         return self._decode_val_item(ret[0][0])
 
     def remove(self, itm):
@@ -452,7 +452,7 @@ class MutableList(List, abc_atomic.MutableList):
             pipe.lrem(self._redis_key, 1, out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_remove)
 
         # Check result
         if (ret[0] != 1):
@@ -482,7 +482,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.sadd(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_add, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_add)
 
     def discard(self, itm):
         """Remove Item from Set if Present"""
@@ -503,7 +503,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.srem(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_discard, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_discard)
 
     def clear(self):
         """Clear Set"""
@@ -520,7 +520,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.delete(self._redis_key)
 
         # Execute Transaction
-        self._driver.transaction(atomic_clear, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_clear)
 
     def pop(self):
         """Pop item from Set"""
@@ -537,7 +537,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.spop(self._redis_key)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_pop)
 
         # Check and Return
         if ret[0] is None:
@@ -568,7 +568,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
             pipe.srem(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_remove, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_remove)
 
     def __ior__(self, other):
         """Unary or"""
@@ -593,7 +593,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_ior, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_ior)
 
         # Return
         return self
@@ -621,7 +621,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_iand, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_iand)
 
         # Return
         return self
@@ -649,7 +649,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_ixor, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_ixor)
 
         # Return
         return self
@@ -677,7 +677,7 @@ class MutableSet(Set, abc_atomic.MutableSet):
                 pipe.sadd(self._redis_key, *out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_isub, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_isub)
 
         # Return
         return self
@@ -708,7 +708,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hset(self._redis_key, key_out, val_out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_setitem, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_setitem)
 
     def __delitem__(self, key):
         """Delete Mapping Item"""
@@ -729,7 +729,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_delitem, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_delitem)
 
         # Validate Return
         if not ret[0]:
@@ -760,7 +760,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_pop, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_pop)
 
         # Process Return
         if not ret[1]:
@@ -792,7 +792,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hdel(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_popitem, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_popitem)
 
         # Process Return
         key_ret = self._decode_val_item(ret[0])
@@ -815,7 +815,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.delete(self._redis_key)
 
         # Execute Transaction
-        self._driver.transaction(atomic_clear, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_clear)
 
     def update(self, *args, **kwargs):
         """Update Dictionary"""
@@ -839,7 +839,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
                 pipe.hmset(self._redis_key, out)
 
         # Execute Transaction
-        self._driver.transaction(atomic_update, be_redis_base._INDEX_KEY, self._redis_key)
+        self._transact(atomic_update)
 
         # Return
         return self
@@ -872,7 +872,7 @@ class MutableDictionary(Dictionary, abc_atomic.MutableDictionary):
             pipe.hget(self._redis_key, key_out)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_setdefault, be_redis_base._INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_setdefault)
 
         # Return
         return self._decode_val_item(ret[1])

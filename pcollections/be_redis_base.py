@@ -86,6 +86,12 @@ class Persistent(abc_base.Persistent):
             raise TypeError("Decoding '{}' not supported".format(type(item_in)))
         return item_out
 
+    def _transact(self, func, *extra_watches, **kwargs):
+
+        watches = [_INDEX_KEY, self._redis_key]
+        watches += extra_watches
+        return self._driver.transaction(func, *watches, **kwargs)
+
     def _register(self, pipe):
         """Register Object as Existing"""
 
@@ -117,7 +123,7 @@ class Persistent(abc_base.Persistent):
             self._set_val_direct(pipe, val)
 
         # Execute Transaction
-        self._driver.transaction(atomic_set, _INDEX_KEY, self._redis_key)
+        self._transact(atomic_set)
 
     @abc.abstractmethod
     def _set_val_direct(self, pipe, val):
@@ -135,7 +141,7 @@ class Persistent(abc_base.Persistent):
             self._get_val_direct(pipe)
 
         # Execute Transaction
-        ret = self._driver.transaction(atomic_get, _INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_get)
 
         # Return Raw
         return ret[0]
@@ -155,7 +161,7 @@ class Persistent(abc_base.Persistent):
             self._exists_direct(pipe)
 
         # Check if Object Exists
-        ret = self._driver.transaction(atomic_exists, _INDEX_KEY, self._redis_key)
+        ret = self._transact(atomic_exists)
 
         # Return Bool
         return ret[0]
@@ -176,7 +182,7 @@ class Persistent(abc_base.Persistent):
             self._unregister(pipe)
 
         # Delete Object
-        self._driver.transaction(atomic_rem, _INDEX_KEY, self._redis_key)
+        self._transact(atomic_rem)
 
 
 ### Objects ###
