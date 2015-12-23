@@ -28,7 +28,6 @@ import warnings
 ### pcollections ###
 import pcollections.constants
 import pcollections.exceptions
-import pcollections.factories
 
 
 ### Globals ###
@@ -1787,7 +1786,6 @@ class StringMixin(SequenceMixin):
     def __init__(self, *args, **kwargs):
         super(StringMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.String
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.String)
 
     def generate_val_single(self, exclude=None):
 
@@ -1932,7 +1930,6 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
     def __init__(self, *args, **kwargs):
         super(MutableStringMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.MutableString
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.MutableString)
 
     def generate_val_single(self, exclude=None):
 
@@ -1968,7 +1965,6 @@ class ListMixin(SequenceMixin):
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.List
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.List)
 
     def generate_val_single(self, exclude=None):
 
@@ -2011,14 +2007,12 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
     def __init__(self, *args, **kwargs):
         super(MutableListMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.MutableList
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.MutableList)
 
 class SetMixin(BaseSetMixin):
 
     def __init__(self, *args, **kwargs):
         super(SetMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.Set
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.Set)
 
     def generate_val_single(self, exclude=None):
 
@@ -2063,14 +2057,12 @@ class MutableSetMixin(MutableBaseSetMixin, SetMixin):
     def __init__(self, *args, **kwargs):
         super(MutableSetMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.MutableSet
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.MutableSet)
 
 class DictionaryMixin(MappingMixin):
 
     def __init__(self, *args, **kwargs):
         super(DictionaryMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.Dictionary
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.Dictionary)
 
     def generate_val_single(self, exclude=None):
 
@@ -2119,4 +2111,3 @@ class MutableDictionaryMixin(MutableMappingMixin, DictionaryMixin):
     def __init__(self, *args, **kwargs):
         super(MutableDictionaryMixin, self).__init__(*args, **kwargs)
         self.obj = self.module.MutableDictionary
-        self.factory = pcollections.factories.InstanceFactory(self.driver, self.module.MutableDictionary)

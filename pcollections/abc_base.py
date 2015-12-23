@@ -28,7 +28,6 @@ import collections
 
 from . import exceptions
 from . import constants
-from . import keys
 
 ### Abstract Base Objects ###
 
@@ -49,7 +48,7 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         if driver is None:
             raise TypeError("driver must not be None")
         if not (isinstance(key, str) or isinstance(key, native_str)):
-            raise TypeError("key must by an instance of keys.BaseKey() or str")
+            raise TypeError("key must by an instance of str")
 
         # Call Parent
         super(Persistent, self).__init__()
