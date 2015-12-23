@@ -60,35 +60,14 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         self._driver = driver
         self._key = key
 
-        # Check existing|create
-        if existing is True:
-            if self.exists():
-                if create is not None:
-                    self._set_val(create, create=True, overwrite=True)
-            else:
-                raise exceptions.ObjectDNE(self)
-        elif existing is False:
-            if self.exists():
-                raise exceptions.ObjectExists(self)
-            else:
-                if create is not None:
-                    self._set_val(create, create=True, overwrite=False)
-        elif existing is None:
-            if self.exists():
-                pass
-            else:
-                if create is not None:
-                    self._set_val(create, create=True, overwrite=False)
-        else:
-            raise TypeError("existing must be None, True, or False")
+        # Init Value
+        self._init_val(create=create, existing=existing)
 
     @classmethod
     def from_new(cls, driver, key, val):
         """New Constructor"""
-
         if val is None:
             raise TypeError("val must not be None")
-
         return cls(driver, key, create=val, existing=False)
 
     @classmethod
@@ -124,12 +103,23 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         """Decode nested object items as Python types"""
         return self._map_conv_obj(obj_in, self._decode_val_item, test=test)
 
-    def _set_val(self, val, create=False, overwrite=True):
-        """Set value as python types"""
-        self._set_val_raw(self._encode_val_obj(val), create, overwrite)
+    def _init_val(self, create=None, existing=None):
+        """Init value from python types"""
+        if create is not None:
+            create = self._encode_val_obj(create)
+        self._init_val_raw(create=create, existing=existing)
 
     @abc.abstractmethod
-    def _set_val_raw(self, val, create=True, overwrite=True):
+    def _init_val_raw(self, create=None, existing=None):
+        """Init value from raw backend type"""
+        pass
+
+    def _set_val(self, val):
+        """Set value as python types"""
+        self._set_val_raw(self._encode_val_obj(val))
+
+    @abc.abstractmethod
+    def _set_val_raw(self, val):
         """Set value as raw backend type"""
         pass
 
@@ -153,7 +143,9 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def create(self, val):
         """Create Object"""
-        self._set_val_raw(self._encode_val_obj(val), create=True, overwrite=False)
+        if val is None:
+            raise TypeError("val must not be None")
+        self._init_val(create=val, existing=False)
 
     @abc.abstractmethod
     def rem(self, force=False):
@@ -176,7 +168,7 @@ class Mutable(Persistent):
 
     def set_val(self, val):
         """Set Value of Persistent Object"""
-        return self._set_val(val, create=False, overwrite=True)
+        return self._set_val(val)
 
 class Equality(Persistent):
 

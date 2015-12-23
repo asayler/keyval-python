@@ -107,19 +107,49 @@ class Persistent(abc_base.Persistent):
 
         return bool(pipe.sismember(_INDEX_KEY, self._redis_key))
 
-    def _set_val_raw(self, val, create=True, overwrite=True):
+    def _init_val_raw(self, create=None, existing=None):
+
+        # Init Transaction
+        def atomic_init(pipe):
+
+            exists = self._exists_direct(pipe)
+            if existing is True:
+                if exists:
+                    if create is not None:
+                        pipe.multi()
+                        self._set_val_direct(pipe, create)
+                else:
+                    raise exceptions.ObjectDNE(self)
+            elif existing is False:
+                if exists:
+                    raise exceptions.ObjectExists(self)
+                else:
+                    if create is not None:
+                        pipe.multi()
+                        self._register(pipe)
+                        self._set_val_direct(pipe, create)
+            elif existing is None:
+                if exists:
+                    pass
+                else:
+                    if create is not None:
+                        pipe.multi()
+                        self._register(pipe)
+                        self._set_val_direct(pipe, create)
+            else:
+                raise TypeError("existing must be None, True, or False")
+
+        # Execute Transaction
+        self._transact(atomic_init)
+
+    def _set_val_raw(self, val):
 
         # Set Transaction
         def atomic_set(pipe):
 
-            exists = self._exists_direct(pipe)
-            if not overwrite and exists:
-                raise exceptions.ObjectExists(self)
-            if not create and not exists:
+            if not self._exists_direct(pipe):
                 raise exceptions.ObjectDNE(self)
             pipe.multi()
-            if create:
-                self._register(pipe)
             self._set_val_direct(pipe, val)
 
         # Execute Transaction
