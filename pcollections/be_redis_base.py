@@ -109,35 +109,44 @@ class Persistent(abc_base.Persistent):
 
     def _init_val_raw(self, create=None, existing=None):
 
+        # Check Args
+        if existing is None or isinstance(existing, bool):
+            pass
+        else:
+            raise TypeError("existing must be bool or None")
+
         # Init Transaction
         def atomic_init(pipe):
 
             exists = self._exists_direct(pipe)
-            if existing is True:
-                if exists:
-                    if create is not None:
-                        pipe.multi()
-                        self._set_val_direct(pipe, create)
-                else:
-                    raise exceptions.ObjectDNE(self)
-            elif existing is False:
-                if exists:
+            if exists:
+                if existing is False:
+                    # Fail - Exists
                     raise exceptions.ObjectExists(self)
-                else:
+                elif existing is True:
                     if create is not None:
+                        # Overwrite
                         pipe.multi()
-                        self._register(pipe)
                         self._set_val_direct(pipe, create)
-            elif existing is None:
-                if exists:
+                    else:
+                        # Open Existing
+                        pass
+                else:
+                    # Open Existing
                     pass
+            else:
+                if existing is True:
+                    # Fail - DNE
+                    raise exceptions.ObjectDNE(self)
                 else:
                     if create is not None:
+                        # Create
                         pipe.multi()
                         self._register(pipe)
                         self._set_val_direct(pipe, create)
-            else:
-                raise TypeError("existing must be None, True, or False")
+                    else:
+                        # Open Nonexisting
+                        pass
 
         # Execute Transaction
         self._transact(atomic_init)
