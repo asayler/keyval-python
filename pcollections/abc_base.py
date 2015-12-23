@@ -48,10 +48,8 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         # Check Input
         if driver is None:
             raise TypeError("driver must not be None")
-        if key is None:
-            raise TypeError("key must not be None")
-        if not isinstance(key, keys.BaseKey):
-            raise TypeError("key must by an instance of keys.BaseKey()")
+        if not (isinstance(key, str) or isinstance(key, native_str)):
+            raise TypeError("key must by an instance of keys.BaseKey() or str")
 
         # Call Parent
         super(Persistent, self).__init__()
@@ -134,7 +132,7 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
 
     def get_key(self):
         """Get Key"""
-        return self._key.key
+        return self._key
 
     @abc.abstractmethod
     def exists(self):

@@ -64,14 +64,16 @@ class BaseTestCase(unittest.TestCase):
         self.key_cnt += 1
         return key
 
-    def from_new(key, val):
+    def from_new(self, key, val):
+        if val is None:
+            raise TypeError("val must not be None")
         return self.obj(self.driver, key, create=val, existing=False)
 
-    def from_existing(key):
+    def from_existing(self, key):
         return self.obj(self.driver, key, create=None, existing=True)
 
-    def from_raw(key):
-        return self.obj(self.driver, create=None, existing=None)
+    def from_raw(self, key):
+        return self.obj(self.driver, key, create=None, existing=None)
 
 
 ### Base Mixins ###
@@ -82,7 +84,7 @@ class PersistentMixin(object):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.helper_raises_core(instance, val, error, test_func, *args)
         instance.rem()
 
@@ -94,7 +96,7 @@ class PersistentMixin(object):
     def helper_dne(self, test_func, *args):
 
         key = self.generate_key()
-        instance = self.factory.from_raw(key)
+        instance = self.from_raw(key)
         self.helper_dne_core(instance, test_func, *args)
 
     def helper_dne_core(self, instance, test_func, *args):
@@ -106,7 +108,7 @@ class PersistentMixin(object):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.helper_ab_immutable_core(instance, val, test_func, *args)
         instance.rem()
 
@@ -125,7 +127,7 @@ class PersistentMixin(object):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.helper_exp_immutable_core(instance, val, exp_ret, test_func, *args)
         instance.rem()
 
@@ -147,18 +149,18 @@ class PersistentMixin(object):
         self.assertEqual(len(val), 0)
 
         # Create Invalid Instance
-        self.assertRaises(TypeError, self.factory.from_new, None, None)
-        self.assertRaises(TypeError, self.factory.from_new, None, val)
-        self.assertRaises(TypeError, self.factory.from_new, key,  None)
+        self.assertRaises(TypeError, self.from_new, None, None)
+        self.assertRaises(TypeError, self.from_new, None, val)
+        self.assertRaises(TypeError, self.from_new, key,  None)
 
         # Create Valid Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
 
         # Recreate Instance
-        self.assertRaises(pcollections.exceptions.ObjectExists, self.factory.from_new, key, val)
+        self.assertRaises(pcollections.exceptions.ObjectExists, self.from_new, key, val)
 
         # Cleanup
         instance.rem()
@@ -171,18 +173,18 @@ class PersistentMixin(object):
         self.assertGreater(len(val), 0)
 
         # Create Invalid Instance
-        self.assertRaises(TypeError, self.factory.from_new, None, None)
-        self.assertRaises(TypeError, self.factory.from_new, None, val)
-        self.assertRaises(TypeError, self.factory.from_new, key,  None)
+        self.assertRaises(TypeError, self.from_new, None, None)
+        self.assertRaises(TypeError, self.from_new, None, val)
+        self.assertRaises(TypeError, self.from_new, key,  None)
 
         # Create Valid Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
 
         # Recreate Instance
-        self.assertRaises(pcollections.exceptions.ObjectExists, self.factory.from_new, key, val)
+        self.assertRaises(pcollections.exceptions.ObjectExists, self.from_new, key, val)
 
         # Cleanup
         instance.rem()
@@ -195,17 +197,17 @@ class PersistentMixin(object):
         self.assertEqual(len(val), 0)
 
         # Get Invalid Instance
-        self.assertRaises(TypeError, self.factory.from_existing, None)
+        self.assertRaises(TypeError, self.from_existing, None)
 
         # Get Nonexistant Instance
-        self.assertRaises(pcollections.exceptions.ObjectDNE, self.factory.from_existing, key)
+        self.assertRaises(pcollections.exceptions.ObjectDNE, self.from_existing, key)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertTrue(instance.exists())
 
         # Get Existing Instance
-        instance = self.factory.from_existing(key)
+        instance = self.from_existing(key)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
@@ -221,17 +223,17 @@ class PersistentMixin(object):
         self.assertGreater(len(val), 0)
 
         # Get Invalid Instance
-        self.assertRaises(TypeError, self.factory.from_existing, None)
+        self.assertRaises(TypeError, self.from_existing, None)
 
         # Get Nonexistant Instance
-        self.assertRaises(pcollections.exceptions.ObjectDNE, self.factory.from_existing, key)
+        self.assertRaises(pcollections.exceptions.ObjectDNE, self.from_existing, key)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertTrue(instance.exists())
 
         # Get Existing Instance
-        instance = self.factory.from_existing(key)
+        instance = self.from_existing(key)
         self.assertTrue(instance.exists())
         self.assertEqual(key, instance.get_key())
         self.assertEqual(val, instance.get_val())
@@ -245,10 +247,10 @@ class PersistentMixin(object):
         key = self.generate_key()
 
         # Get Invalid Instance
-        self.assertRaises(TypeError, self.factory.from_raw, None)
+        self.assertRaises(TypeError, self.from_raw, None)
 
         # Get Raw Instance
-        instance = self.factory.from_raw(key)
+        instance = self.from_raw(key)
         self.assertFalse(instance.exists())
         self.assertEqual(key, instance.get_key())
         self.assertRaises(pcollections.exceptions.ObjectDNE, instance.get_val)
@@ -260,7 +262,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Get Raw Instance
-        instance = self.factory.from_raw(key)
+        instance = self.from_raw(key)
         self.assertFalse(instance.exists())
         instance.create(val)
         self.assertTrue(instance.exists())
@@ -275,7 +277,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertTrue(instance.exists())
 
         # Remove Instance
@@ -296,7 +298,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertEqual(val, instance.get_val())
 
         # Rem Instance
@@ -310,7 +312,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertEqual(key, instance.get_key())
 
         # Rem Instance
@@ -334,7 +336,7 @@ class PersistentMixin(object):
         val = self.generate_val_multi(10)
 
         # Create New Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.assertEqual(key, repr(instance))
 
         # Cleanup
@@ -346,7 +348,7 @@ class MutableMixin(PersistentMixin):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.helper_ab_mutable_core(instance, val, test_func, *args)
         instance.rem()
 
@@ -363,7 +365,7 @@ class MutableMixin(PersistentMixin):
 
         key = self.generate_key()
         val = self.generate_val_multi(size)
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
         self.helper_exp_mutable_core(instance, val, exp_ret, exp_val, test_func, *args)
         instance.rem()
 
@@ -421,8 +423,8 @@ class EqualityMixin(PersistentMixin):
         val = self.generate_val_multi(10)
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val)
-        instance_b = self.factory.from_new(key_b, val)
+        instance_a = self.from_new(key_a, val)
+        instance_b = self.from_new(key_b, val)
         self.assertEqual(instance_a, instance_b)
         self.assertEqual(instance_b, instance_a)
 
@@ -440,8 +442,8 @@ class EqualityMixin(PersistentMixin):
         self.assertNotEqual(val_a, val_b)
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
         self.assertNotEqual(instance_a, instance_b)
 
         # Cleanup
@@ -476,7 +478,7 @@ class ComparableMixin(EqualityMixin):
         instances = []
         for val in sorted_vals:
             key = self.generate_key()
-            instance = self.factory.from_new(key, val)
+            instance = self.from_new(key, val)
             instances.append(instance)
 
         # Test Inequality
@@ -576,7 +578,7 @@ class IterableMixin(PersistentMixin):
         val = self.generate_val_multi(10)
 
         # Create Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
 
         # Test Instance
         for i in instance:
@@ -679,7 +681,7 @@ class SequenceMixin(ContainerMixin, IterableMixin, SizedMixin):
         val = self.generate_val_multi(10)
 
         # Create Instance
-        instance = self.factory.from_new(key, val)
+        instance = self.from_new(key, val)
 
         # Test Instance
         cnt = -1
@@ -920,9 +922,9 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         set_x = set([])
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
+        instance_c = self.from_new(key_c, val_c)
         self.assertEqual(set_b, func(instance_a, instance_b))
         self.assertEqual(set_b, func(instance_b, instance_a))
         self.assertEqual(set_c, func(instance_b, instance_c))
@@ -966,9 +968,9 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         set_c = set(['a', 'b', 'c', 'd'])
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
+        instance_c = self.from_new(key_c, val_c)
         self.assertEqual(set_a, func(instance_a, instance_b))
         self.assertEqual(set_a, func(instance_b, instance_a))
         self.assertEqual(set_b, func(instance_b, instance_c))
@@ -1012,9 +1014,9 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         set_x = set([])
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
+        instance_c = self.from_new(key_c, val_c)
         self.assertEqual(set_a, func(instance_a, instance_b))
         self.assertEqual(set_c, func(instance_b, instance_a))
         self.assertEqual(set_x, func(instance_a, instance_c))
@@ -1059,9 +1061,9 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         set_x = set([])
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
+        instance_c = self.from_new(key_c, val_c)
         self.assertEqual(set_a, func(instance_a, instance_b))
         self.assertEqual(set_a, func(instance_b, instance_a))
         self.assertEqual(set_b, func(instance_b, instance_c))
@@ -1102,9 +1104,9 @@ class BaseSetMixin(ComparableMixin, ContainerMixin, IterableMixin, SizedMixin):
         val_c = set(['c', 'd'])
 
         # Create Instance
-        instance_a = self.factory.from_new(key_a, val_a)
-        instance_b = self.factory.from_new(key_b, val_b)
-        instance_c = self.factory.from_new(key_c, val_c)
+        instance_a = self.from_new(key_a, val_a)
+        instance_b = self.from_new(key_b, val_b)
+        instance_c = self.from_new(key_c, val_c)
         self.assertFalse(instance_a.isdisjoint(instance_b))
         self.assertFalse(instance_b.isdisjoint(instance_a))
         self.assertFalse(instance_b.isdisjoint(instance_c))
@@ -1199,7 +1201,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         i_key = self.generate_key()
         i_val = set(["a", "b", "c"])
         self.assertGreater(len(i_val), 0)
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
         self.assertGreater(len(instance), 0)
         self.assertEqual(instance.get_val(), i_val)
 
@@ -1231,7 +1233,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = set(["a", "b", "c"])
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         while len(instance) > 0:
             i = pop(instance)
@@ -1259,7 +1261,7 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = set(["a", "b", "c"])
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Bad Key
         self.helper_raises_core(instance, i_val, KeyError, remove, "d")
@@ -1279,8 +1281,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
     def test_ior(self):
 
         # Test Overlap
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['b', 'c']))
         instance_a |= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c']), instance_a.get_val())
@@ -1289,8 +1291,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Discreet
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['c', 'd']))
         instance_a |= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
@@ -1299,15 +1301,15 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Identity
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
         instance_a |= instance_a
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         instance_a.rem()
 
         # Test Empty
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set([]))
         instance_a |= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
@@ -1318,8 +1320,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
     def test_iand(self):
 
         # Test Overlap
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['b', 'c']))
         instance_a &= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['b']), instance_a.get_val())
@@ -1328,8 +1330,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Discreet
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['c', 'd']))
         instance_a &= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
@@ -1338,15 +1340,15 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Identity
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
         instance_a &= instance_a
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
         instance_a.rem()
 
         # Test Empty
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set([]))
         instance_a &= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
@@ -1357,8 +1359,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
     def test_ixor(self):
 
         # Test Overlap
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['b', 'c']))
         instance_a ^= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'c']), instance_a.get_val())
@@ -1367,8 +1369,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Discreet
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['c', 'd']))
         instance_a ^= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b', 'c', 'd']), instance_a.get_val())
@@ -1377,15 +1379,15 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Identity
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
         instance_a ^= instance_a
         self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         instance_a.rem()
 
         # Test Empty
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set([]))
         instance_a ^= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
@@ -1396,8 +1398,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
     def test_isub(self):
 
         # Test Overlap
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['b', 'c']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['b', 'c']))
         instance_a -= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a']), instance_a.get_val())
@@ -1406,8 +1408,8 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Discreet
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set(['c', 'd']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set(['c', 'd']))
         instance_a -= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
@@ -1416,15 +1418,15 @@ class MutableBaseSetMixin(MutableMixin, BaseSetMixin):
         instance_b.rem()
 
         # Test Identity
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
         instance_a -= instance_a
         self.assertIsNotNone(instance_a)
         self.assertEqual(set([]), instance_a.get_val())
         instance_a.rem()
 
         # Test Empty
-        instance_a = self.factory.from_new("key_a", set(['a', 'b']))
-        instance_b = self.factory.from_new("key_b", set([]))
+        instance_a = self.from_new("key_a", set(['a', 'b']))
+        instance_b = self.from_new("key_b", set([]))
         instance_a -= instance_b
         self.assertIsNotNone(instance_a)
         self.assertEqual(set(['a', 'b']), instance_a.get_val())
@@ -1445,7 +1447,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Good Keys
         for k in i_val:
@@ -1471,7 +1473,7 @@ class MappingMixin(EqualityMixin, ContainerMixin, IterableMixin, SizedMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Bad Key (Full)
         self.helper_ab_immutable_core(instance, i_val, get_default, "key_d", "val_x")
@@ -1557,7 +1559,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         i_val_1 = {"key_a": "val_a_1", "key_b": "val_b_1", "key_c": "val_c_1"}
         i_val_2 = {"key_a": "val_a_2", "key_b": "val_b_2", "key_c": "val_c_2"}
         i_val_3 = {"key_d": "val_d", "key_e": "val_e", "key_f": "val_f"}
-        instance = self.factory.from_new(i_key, i_val_1)
+        instance = self.from_new(i_key, i_val_1)
 
         # Test Existing Keys
         for k, v in i_val_2.items():
@@ -1581,7 +1583,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Existing Keys
         for k in list(i_val.keys()):
@@ -1610,7 +1612,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Bad Key (Full)
         self.helper_raises_core(instance, i_val, KeyError, pop, "key_d")
@@ -1645,7 +1647,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
 
         # Test Existing Keys
         while len(instance) > 0:
@@ -1676,7 +1678,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         i_key = self.generate_key()
         i_val = {"key_a": "val_a", "key_b": "val_b", "key_c": "val_c"}
         self.assertGreater(len(i_val), 0)
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
         self.assertGreater(len(instance), 0)
         self.assertEqual(instance.get_val(), i_val)
 
@@ -1710,7 +1712,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         i_val = {}
         i_val_1 = {"key_a": "val_a_1", "key_b": "val_b_1", "key_c": "val_c_1"}
         i_val_2 = {"key_b": "val_b_2", "key_c": "val_c_2", "key_d": "val_d_2"}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
         self.assertEqual(instance.get_val(), i_val)
 
         # Test Empty
@@ -1741,7 +1743,7 @@ class MutableMappingMixin(MutableMixin, MappingMixin):
         # Create Instance
         i_key = self.generate_key()
         i_val = {}
-        instance = self.factory.from_new(i_key, i_val)
+        instance = self.from_new(i_key, i_val)
         self.assertEqual(instance.get_val(), i_val)
 
         # Test Empty
