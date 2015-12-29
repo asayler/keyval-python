@@ -66,13 +66,13 @@ class BaseTestCase(unittest.TestCase):
     def from_new(self, key, val):
         if val is None:
             raise TypeError("val must not be None")
-        return self.obj(self.driver, key, create=val, existing=False)
+        return self.obj(key, create=val, existing=False)
 
     def from_existing(self, key):
-        return self.obj(self.driver, key, create=None, existing=True)
+        return self.obj(key, create=None, existing=True)
 
     def from_raw(self, key):
-        return self.obj(self.driver, key, create=None, existing=None)
+        return self.obj(key, create=None, existing=None)
 
 
 ### Base Mixins ###
@@ -1785,7 +1785,7 @@ class StringMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
         super(StringMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.String
+        self.obj = self.collection.String
 
     def generate_val_single(self, exclude=None):
 
@@ -1929,7 +1929,7 @@ class MutableStringMixin(MutableSequenceMixin, StringMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableStringMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.MutableString
+        self.obj = self.collection.MutableString
 
     def generate_val_single(self, exclude=None):
 
@@ -1964,7 +1964,7 @@ class ListMixin(SequenceMixin):
 
     def __init__(self, *args, **kwargs):
         super(ListMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.List
+        self.obj = self.collection.List
 
     def generate_val_single(self, exclude=None):
 
@@ -2006,13 +2006,13 @@ class MutableListMixin(MutableSequenceMixin, ListMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableListMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.MutableList
+        self.obj = self.collection.MutableList
 
 class SetMixin(BaseSetMixin):
 
     def __init__(self, *args, **kwargs):
         super(SetMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.Set
+        self.obj = self.collection.Set
 
     def generate_val_single(self, exclude=None):
 
@@ -2056,13 +2056,13 @@ class MutableSetMixin(MutableBaseSetMixin, SetMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableSetMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.MutableSet
+        self.obj = self.collection.MutableSet
 
 class DictionaryMixin(MappingMixin):
 
     def __init__(self, *args, **kwargs):
         super(DictionaryMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.Dictionary
+        self.obj = self.collection.Dictionary
 
     def generate_val_single(self, exclude=None):
 
@@ -2110,4 +2110,4 @@ class MutableDictionaryMixin(MutableMappingMixin, DictionaryMixin):
 
     def __init__(self, *args, **kwargs):
         super(MutableDictionaryMixin, self).__init__(*args, **kwargs)
-        self.obj = self.module.MutableDictionary
+        self.obj = self.collection.MutableDictionary

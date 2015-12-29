@@ -20,12 +20,13 @@ from builtins import *
 ## stdlib ##
 import unittest
 
-## keyval ##
-import pcollections.be_redis_atomic
+## pcollections ##
+from pcollections import drivers
+from pcollections import backends
+from pcollections import collections
 
 ## tests ##
 import test_mixins
-import base_redis_tests
 
 
 ### Globals ###
@@ -35,12 +36,33 @@ _REDIS_DB = 9
 
 ### Base Class ###
 
-class RedisAtomicTestCase(base_redis_tests.RedisBaseTestCase):
+class RedisAtomicTestCase(test_mixins.BaseTestCase):
 
     def __init__(self, *args, **kwargs):
         super(RedisAtomicTestCase, self).__init__(*args, **kwargs)
-        self.module = pcollections.be_redis_atomic
-        self.driver = self.module.Driver(db=_REDIS_DB)
+        self.driver = drivers.RedisDriver(db=_REDIS_DB)
+        self.backend = backends.RedisAtomicBackend(self.driver)
+        self.collection = collections.PCollections(self.backend)
+
+    def setUp(self):
+
+        # Call Parent
+        super(RedisAtomicTestCase, self).setUp()
+
+        # Confirm Empty DB
+        if (self.driver.redis.dbsize() != 0):
+            raise RedisDatabaseNotEmpty(self.driver.redis)
+
+    def tearDown(self):
+
+        # Confirm Empty DB
+        if (self.driver.redis.dbsize() != 0):
+            print("")
+            warnings.warn("Redis database not empty prior to tearDown")
+            self.driver.redis.flushdb()
+
+        # Call Parent
+        super(RedisAtomicTestCase, self).tearDown()
 
 
 ### Object Classes ###

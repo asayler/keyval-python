@@ -22,12 +22,6 @@ from . import be_redis_base
 from . import abc_atomic
 
 
-### Driver ###
-
-class Driver(be_redis_base.Driver):
-    pass
-
-
 ### Objects ###
 
 class String(be_redis_base.String):

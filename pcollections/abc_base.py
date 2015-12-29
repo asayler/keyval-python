@@ -28,11 +28,13 @@ import collections
 
 from . import exceptions
 from . import constants
+from . import drivers
 
 ### Abstract Base Objects ###
 
 class Persistent(with_metaclass(abc.ABCMeta, object)):
 
+    @abc.abstractmethod
     def __init__(self, driver, key, create=None, existing=None):
         """Object Constructor"""
 
@@ -45,10 +47,10 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
         # OPEN_NONEXISTING      False     None
 
         # Check Input
-        if driver is None:
-            raise TypeError("driver must not be None")
+        if not isinstance(driver, drivers.Driver):
+            raise TypeError("driver be an instance of Driver")
         if not (isinstance(key, str) or isinstance(key, native_str)):
-            raise TypeError("key must by an instance of str")
+            raise TypeError("key must be an instance of str")
 
         # Call Parent
         super(Persistent, self).__init__()
@@ -59,6 +61,14 @@ class Persistent(with_metaclass(abc.ABCMeta, object)):
 
         # Init Value
         self._init_val(create=create, existing=existing)
+
+    @property
+    def driver(self):
+        return self._driver
+
+    @property
+    def key(self):
+        return self._key
 
     @classmethod
     def from_new(cls, driver, key, val):

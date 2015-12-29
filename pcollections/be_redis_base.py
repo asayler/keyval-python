@@ -20,10 +20,9 @@ from builtins import *
 
 import abc
 
-import redis
-
 from . import exceptions
 from . import constants
+from . import drivers
 from . import abc_base
 
 
@@ -37,13 +36,6 @@ _PREFIX_DICTIONARY = "hash"
 _INDEX_KEY = "_obj_index"
 
 
-### Driver ###
-
-class Driver(redis.StrictRedis):
-
-    pass
-
-
 ### Base Objects ###
 
 class Persistent(abc_base.Persistent):
@@ -51,6 +43,10 @@ class Persistent(abc_base.Persistent):
     @abc.abstractmethod
     def __init__(self, driver, key, prefix, **kwargs):
         """ Constructor"""
+
+        # Check Args
+        if not isinstance(driver, drivers.RedisDriver):
+            raise TypeError("driver must be instance of RedisDriver")
 
         # Save Extra Attrs
         self._redis_key = "{:s}{:s}{!s:s}".format(prefix, _SEP_FIELD, key)
@@ -90,7 +86,7 @@ class Persistent(abc_base.Persistent):
 
         watches = [_INDEX_KEY, self._redis_key]
         watches += extra_watches
-        return self._driver.transaction(func, *watches, **kwargs)
+        return self.driver.redis.transaction(func, *watches, **kwargs)
 
     def _register(self, pipe):
         """Register Object as Existing"""
