@@ -34,6 +34,20 @@ import test_mixins
 _REDIS_DB = 9
 
 
+### Exceptions ###
+
+class RedisAtomicTestError(test_mixins.BaseTestError):
+    """Base class for RedisAtomicTest Exceptions"""
+
+    pass
+
+class RedisDatabaseNotEmpty(RedisAtomicTestError):
+
+    def __init__(self, redis):
+        msg = "Redis DB not empty: {:d} keys".format(redis.dbsize())
+        super(RedisDatabaseNotEmpty, self).__init__(msg)
+
+
 ### Base Class ###
 
 class RedisAtomicTestCase(test_mixins.BaseTestCase):
