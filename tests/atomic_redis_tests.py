@@ -19,6 +19,7 @@ from builtins import *
 
 ## stdlib ##
 import unittest
+import warnings
 
 ## pcollections ##
 from pcollections import drivers
