@@ -54,6 +54,7 @@ lint:
 clean:
 	$(RM) tests/*.pyc
 	$(RM) tests/*~
-	$(RM) keyval/*.pyc
-	$(RM) keyval/*~
+	$(RM) pcollections/*.pyc
+	$(RM) pcollections/*~
 	$(RM) *~
+	$(RM) *.pyc
