@@ -3,3 +3,7 @@
 
 # Python Cruft
 *.pyc
+
+# PIP Cruft
+pcollections.egg-info
+dist
