@@ -1,13 +1,13 @@
 Python Persistent Collections ABC Interface
 ===========================================
 
-By [Andy Sayler](https://www.andysayler.com)
+By `Andy Sayler <https://www.andysayler.com>`_
 
 About
 -----
 
-A persistent implementation of the [Python Collections Abstract Base
-Classes](https://docs.python.org/2/library/collections.html#collections-abstract-base-classes),
+A persistent implementation of the `Python Collections Abstract Base
+Classes <https://docs.python.org/2/library/collections.html#collections-abstract-base-classes>`_,
 plus a few others.
 
 Supports both Python 2.7 and Python 3.3+.
@@ -15,29 +15,34 @@ Supports both Python 2.7 and Python 3.3+.
 Status
 ------
 
-[![Build Status](https://travis-ci.org/asayler/pcollections.svg?branch=master)](https://travis-ci.org/asayler/pcollections)
+.. image:: https://travis-ci.org/asayler/pcollections.svg?branch=master
+   :target: https://travis-ci.org/asayler/pcollections
 
-### Completed Data Structures ###
-+ String (Sequence)
-+ MutableString (MutableSequence)
-+ List (Sequence)
-+ MutableList (MutableSequence)
-+ Set (Set)
-+ MutableSet (MutableSet)
-+ Dictionary (Mapping)
-+ MutableDictionary (MutableMapping)
+Completed Data Structures
+^^^^^^^^^^^^^^^^^^^^^^^^^
+* String (Sequence)
+* MutableString (MutableSequence)
+* List (Sequence)
+* MutableList (MutableSequence)
+* Set (Set)
+* MutableSet (MutableSet)
+* Dictionary (Mapping)
+* MutableDictionary (MutableMapping)
 
-### Completed Flavors ###
-+ base - atomic reads
-+ atomic - atomic reads and writes
+Completed Flavors
+^^^^^^^^^^^^^^^^^
+* base - atomic reads
+* atomic - atomic reads and writes
 
-### Completed Backends ###
-+ Redis
+Completed Backends
+^^^^^^^^^^^^^^^^^^
+* Redis
 
-### Planned Backends ###
-+ In Memory (?)
-+ SQL (?)
-+ Disk (?)
+Planned Backends
+^^^^^^^^^^^^^^^^
+* In Memory (?)
+* SQL (?)
+* Disk (?)
 
 Providence
 ----------
