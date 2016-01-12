@@ -12,6 +12,7 @@ PIP3 = pip3
 PYLINT = pylint
 PYLINT_OPTIONS = --disable=all --enable=E,W --reports=n
 
+SETUP = setup.py
 REQUIRMENTS = requirments.txt
 
 UNITTEST_PATTERN = '*_tests.py'
@@ -22,10 +23,14 @@ EXPORTPATH = export PYTHONPATH="$(PYTHONPATH)"
 
 COGS = cogs
 
-.PHONY: all reqs tests reqs2 tests2 reqs3 tests3 clean
+.PHONY: all pkg reqs tests reqs2 tests2 reqs3 tests3 clean
 
 all:
 	$(ECHO) "This is a python project; nothing to build!"
+
+pkg:
+	$(PYTHON) $(SETUP) sdist
+	$(PYTHON) $(SETUP) bdist_wheel
 
 reqs: $(REQUIRMENTS)
 	$(PIP) --version
