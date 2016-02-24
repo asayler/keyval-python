@@ -20,6 +20,9 @@ from builtins import *
 ## stdlib ##
 import time
 
+## extlib ##
+import redis
+
 ## pcollections ##
 from pcollections import drivers
 from pcollections import backends
@@ -43,20 +46,52 @@ if __name__ == '__main__':
 
     print("Testing Native String Read...")
     s = str("Test String 1..2..3..")
+    val = None
     start = time.perf_counter()
     for i in range(itr):
         val = str(s)
     end = time.perf_counter()
+    assert(val == "Test String 1..2..3..")
+    dur = end - start
+    iops = itr/dur
+    print("iops ({} iterations) = {}".format(itr, iops))
+
+    print("Testing Pure Redis String Read...")
+    driver.redis.set("test_string_pure", "Test String 1..2..3..")
+    val = None
+    start = time.perf_counter()
+    for i in range(itr):
+        val = str(driver.redis.get("test_string_pure").decode())
+    end = time.perf_counter()
+    assert(val == "Test String 1..2..3..")
+    dur = end - start
+    iops = itr/dur
+    print("iops ({} iterations) = {}".format(itr, iops))
+
+    print("Testing Transaction Redis String Read...")
+    driver.redis.set("test_string_trans", "Test String 1..2..3..")
+    val = None
+    start = time.perf_counter()
+    for i in range(itr):
+        def trans(pipe):
+            pipe.multi()
+            pipe.get("test_string_trans")
+        ret = driver.redis.transaction(trans, "test_string_trans")
+        val = str(ret[0].decode())
+    end = time.perf_counter()
+    assert(val == "Test String 1..2..3..")
     dur = end - start
     iops = itr/dur
     print("iops ({} iterations) = {}".format(itr, iops))
 
     print("Testing Collections String Read...")
-    s = collections.String("test_string", create="Test String 1..2..3..")
+    s = collections.String("test_string_col", create="Test String 1..2..3..")
+    val = None
     start = time.perf_counter()
     for i in range(itr):
         val = str(s)
     end = time.perf_counter()
+    assert(val == "Test String 1..2..3..")
     dur = end - start
     iops = itr/dur
     print("iops ({} iterations) = {}".format(itr, iops))
