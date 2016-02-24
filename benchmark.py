@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # Setup Connection
     driver = drivers.RedisDriver(db=_REDIS_DB)
-    backend = backends.RedisBaseBackend(driver)
+    backend = backends.RedisAtomicBackend(driver)
     collections = collections.PCollections(backend)
 
     itr = _ITR
