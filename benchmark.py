@@ -21,15 +21,16 @@ from builtins import *
 import time
 
 ## extlib ##
-import redis
 
 ## pcollections ##
 from pcollections import drivers
 from pcollections import backends
 from pcollections import collections
 
+
 _REDIS_DB = 9
 _ITR = 100000
+
 
 if __name__ == '__main__':
 
